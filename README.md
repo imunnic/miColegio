@@ -1,37 +1,22 @@
-<h1 style="text-align:center;">MiColegioHorario</h1>
+# Definición de Proyecto Individual
 
-# 1. Introdución y alcance
-MiColegioHorario es un componente de la aplicación MiColegio. Su finalidad es poder gestionar los horarios de un centro educativo de forma colaborativa. Su finalidad es poder permitir a los profesores elegir las franjas horarias que mejor se adapten a sus necesidades dentro de las posibilidades del centro y con la mínima participación del equipo directivo, actuando la aplicación como mediadora y elemento de propuesta de soluciones a conflictos.
-La aplicación mostrará un horario en el que los profesores podrán reservar franjas horarias y lugares para su asignatura. 
+## Descripción
+MiColegioLugares es un componente de la aplicación MiColeg.io(Multiherramienta Innovadora para la COLaboración Educativa Global.io). Su finalidad es poder gestionar los lugares disponibles en el centro de forma colaborativa permitiendo a los profesores elegir los lugares para dar su asignatura que mejor se adapten a sus necesidades dentro de las posibilidades del centro y con la mínima participación del equipo directivo.
+La aplicación mostrará las reservas efectuadas para cada lugar 
 
-# 2. Cumplimiento de requisitos
+## Diagrama de clases de diseño
+![Diagrama de Diseño MVP](https://git.institutomilitar.com/RodrigoDG23/MiColegio/-/wikis/miColegioDiagramaClases_Simplificado.svg)
 
-* **Herencia**: 
-  * Existe herencia dentro de la clase Lugar para especificar distintos lugares con propiedades y comportamientos diferentes.
-* **Relaciones entre clases**:
-  Nótese que tanto las relaciones One-To-Many como las Many-To-Many son direccionales por lo que sólo hay que generar objetos de una de las entidades en la otra (de acuerdo con la dirección, se crea en el objeto origen de la flecha)
-  * **Relación One-To-Many**: 
-    * Relación entre Reserva y Lugar
-    * Relación entre Reserva y Asignatura
-    * Relación entre reserva y FranjaHorario
-* **Método personalizado**: 
-  1. Reserva:
-        * asignarFranjaHoaria(FranjaHoraria): Asigna una franja horaria a una reserva cumpliendo con las restricciones de lugar, y grupo (a través de asignatura)
-        * asignarLugar(Lugar): Asigna un lugar a una reserva de acuerdo con las restricciones de asignatura.
-  2. Asignatura:
-        * compruebaLugar(Lugar): comprueba si un lugar está autorizado para una asignatura.
+**Cumplimiento de requisitos**
 
-* **Listados a mostrar**: 
-  * Horario con reservas
-  * Asignaturas
-  * Lugares
-    * Patio
-    * Aula
-    * Laboratorio
-  * Franjas Horarias
+1. **Herencia**: Se realizará sobre `Lugar` y sus subtipos.
+2. **Relación One-To-Many**: elación entre `Lugar` y `Reserva`.
+3. **Método personalizado**: `Reserva.asignarLugar(Lugar)` Asigna un lugar a una reserva de acuerdo con las restricciones de asignatura.
+4. **Listado**: Se mostrarán las reservas para un lugar tal como aparece en la figura 1.
+5. **CRUD**: En la misma pantalla que la anterior se usarán
 
 
-* **CRUD**: 
+* : 
   El CRUD se realizará en cada una de las pantallas de visualización de listados. La inserción se realizará a través de un botón que mostrará el correspondiente formulario. Véaseen el apartado Pantallas de Interfaz gráfica.
   * Insertar lugar (con diferenciación entre Patio, Aula o Laboratorio)
   * Asignatura
@@ -51,8 +36,7 @@ Web: pendiente despliegue en servidor propio, alternativa de mercado pendiente.
 
 
 
-# 3. Diagrama de clases
-![foto](https://git.institutomilitar.com/RodrigoDG23/MiColegio/-/wikis/miColegioDiagramaClases_Simplificado.svg)
+
 
 # 4. Pantallas de interfaz gráfica
 ### 4.0.1. Asignaturas
