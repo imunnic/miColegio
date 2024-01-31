@@ -10,7 +10,7 @@ La aplicación mostrará las reservas efectuadas para cada lugar.
 **Cumplimiento de requisitos**
 
 1. **Herencia**: Se realizará sobre `Lugar` y sus subtipos `Patio` y `Laboratorio`.
-2. **Relación One-To-Many**: elación entre `Lugar` y `Reserva`.
+2. **Relación One-To-Many**: Relación entre `Lugar` y `Reserva`.
 3. **Método personalizado**: `Reserva.asignarLugar(Lugar)` Asigna un lugar a una reserva de acuerdo con las restricciones del lugar (disponibilidad).
 4. **Listado**: Se mostrarán las reservas para un lugar tal como aparece en la figura 1.
 5. **CRUD**: En la misma pantalla que la anterior se usarán controles para añadir nuevos lugares y asignar reservas a lugares. El formulario para añadir un lugar tendrá dos derivaciones en función del tipo de lugar que se seleccione. Esto es debido a que en función del tipo de lugar éste tendrá unas propiedades u otras. Sólo se podrán reservar aquellos lugares disponibles (en función de su aforo).
