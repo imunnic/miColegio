@@ -11,12 +11,12 @@ La aplicación mostrará las reservas efectuadas por cada profesor permitiendo a
 
 1. **Herencia**: Se realizará sobre `Lugar` y sus subtipos `Patio` y `Aula`.
 2. **Relación One-To-Many**: Relación entre `Lugar` y `Reserva`.
-3. **Método personalizado**: `consultarDisponible(Profesor)` Dado un profesor devuelve una matriz que contiene para cada franja horaria (especificada como un String) una matriz de las asignaturas impartidas por el profesor que a su vez contienen una lista de los posibles lugares que están disponibles en dicha franja (para filtrar los lugares se tiene en cuenta el aforo del lugar y los posibles lugares que son compatibles para cada asignatura, y para filtrar la asignatura se tiene en cuenta si el grupo asociado ya tiene una asignatura en esa franja). Si el profesor ya tiene una reserva en esa franja el contenido para ese elemento de la matriz será null.
+3. **Método personalizado**: `consultarDisponible(Profesor,fechaHoraInicio, fechaHoraFin)` Dado un profesor y un periodo de tiempo, devuelve una lista con todas las reservas que estén relacionadas con los lugares o grupos de alumnos de las asignaturas que él imparte. Esta relación de lugares y grupos se obtendrá a partir de  la propiedad asignatura e la Reserva.
 4. **Listado**: Se mostrarán para cada profesor las reservas que tiene efectuadas (cada reserva contendrá información sobre el Lugar, la Franja Horaria y la Asignatura) tal como aparece en la figura 1.
 5. **CRUD**: Existirá un formulario para añadir o modificar un lugar y tendrá dos derivaciones en función del tipo de lugar que se seleccione. Esto es debido a que en función del tipo de lugar éste tendrá unas propiedades u otras. Sólo se podrán reservar aquellos lugares disponibles (en función de su aforo).
 6. **URLs** del proyecto:
    1. Repositorio proyecto: https://git.institutomilitar.com/RodrigoDG23/MiColegio
-   2. Librería: https://git.institutomilitar.com/RodrigoDG23/MiColegio
+   2. Librería: TBD
 7. **Despliegue** en Internet:
    1. API: TBD
    2. Web: TBD
