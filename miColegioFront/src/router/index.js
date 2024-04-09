@@ -5,7 +5,7 @@ const routes = [
     {
         path:'/',
         name:'home',
-        component: () => import('../vistas/LandingView.vue')
+        component: () => import('../vistas/VistaCalendario.vue')
       }
 ]
 
