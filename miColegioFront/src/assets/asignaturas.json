@@ -1,0 +1,54 @@
+{
+  "asignaturas": [
+    {
+      "nombre": "Matemáticas",
+      "lugares": ["Aula 101", "Laboratorio de Matemáticas"],
+      "grupos": ["Grupo 1", "Grupo 2", "Grupo 3"]
+    },
+    {
+      "nombre": "Física",
+      "lugares": ["Aula 202", "Laboratorio de Física"],
+      "grupos": ["Grupo 2", "Grupo 3", "Grupo 4"]
+    },
+    {
+      "nombre": "Lengua Española",
+      "lugares": ["Aula 303", "Biblioteca"],
+      "grupos": ["Grupo 1", "Grupo 2", "Grupo 3"]
+    },
+    {
+      "nombre": "Literatura",
+      "lugares": ["Aula 404", "Sala de Estudio"],
+      "grupos": ["Grupo 1", "Grupo 2", "Grupo 3"]
+    },
+    {
+      "nombre": "Historia",
+      "lugares": ["Aula 505", "Sala de Conferencias"],
+      "grupos": ["Grupo 1", "Grupo 2", "Grupo 3"]
+    },
+    {
+      "nombre": "Geografía",
+      "lugares": ["Aula 606", "Sala de Mapas"],
+      "grupos": ["Grupo 1", "Grupo 2"]
+    },
+    {
+      "nombre": "Ciencias Naturales",
+      "lugares": ["Laboratorio de Biología", "Laboratorio de Química"],
+      "grupos": ["Grupo 2", "Grupo 3"]
+    },
+    {
+      "nombre": "Química",
+      "lugares": ["Laboratorio de Química", "Aula 707"],
+      "grupos": ["Grupo 2", "Grupo 3", "Grupo 4"]
+    },
+    {
+      "nombre": "Educación Física",
+      "lugares": ["Patio Central", "Gimnasio"],
+      "grupos": ["Grupo 1", "Grupo 2", "Grupo 3"]
+    },
+    {
+      "nombre": "Deportes",
+      "lugares": ["Campo de Fútbol", "Pista de Atletismo"],
+      "grupos": ["Grupo 1"]
+    }
+  ]
+}

@@ -1,0 +1,80 @@
+{
+  "lugares": [
+    {
+      "nombre": "Aula 101",
+      "capacidad": 27
+    },
+    {
+      "nombre": "Laboratorio de Matemáticas",
+      "capacidad": 30
+    },
+    {
+      "nombre": "Aula 202",
+      "capacidad": 28
+    },
+    {
+      "nombre": "Laboratorio de Física",
+      "capacidad": 26
+    },
+    {
+      "nombre": "Aula 303",
+      "capacidad": 25
+    },
+    {
+      "nombre": "Biblioteca",
+      "capacidad": 30
+    },
+    {
+      "nombre": "Aula 404",
+      "capacidad": 29
+    },
+    {
+      "nombre": "Sala de Estudio",
+      "capacidad": 27
+    },
+    {
+      "nombre": "Aula 505",
+      "capacidad": 26
+    },
+    {
+      "nombre": "Sala de Conferencias",
+      "capacidad": 25
+    },
+    {
+      "nombre": "Aula 606",
+      "capacidad": 30
+    },
+    {
+      "nombre": "Sala de Mapas",
+      "capacidad": 28
+    },
+    {
+      "nombre": "Laboratorio de Biología",
+      "capacidad": 29
+    },
+    {
+      "nombre": "Laboratorio de Química",
+      "capacidad": 27
+    },
+    {
+      "nombre": "Aula 707",
+      "capacidad": 25
+    },
+    {
+      "nombre": "Patio Central",
+      "capacidad": 30
+    },
+    {
+      "nombre": "Gimnasio",
+      "capacidad": 28
+    },
+    {
+      "nombre": "Campo de Fútbol",
+      "capacidad": 26
+    },
+    {
+      "nombre": "Pista de Atletismo",
+      "capacidad": 29
+    }
+  ]
+}
