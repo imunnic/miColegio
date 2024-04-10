@@ -1,3 +1,6 @@
+<!-- 
+  Componente que construye el footer de la página
+ -->
 <template>
   <v-footer>
     <v-container>

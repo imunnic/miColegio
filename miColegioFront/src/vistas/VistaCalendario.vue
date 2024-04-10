@@ -6,7 +6,12 @@
   <div class="contenedorColumnas">
     <div class="columnaIzquierda">
       <div class="formularioReserva">
-
+        <div v-if="profesorSeleccionado != null">
+          {{ profesorSeleccionado.nombre }} {{ profesorSeleccionado.apellido }}
+        </div>
+        <div v-else>
+          No hay profesor seleccionado
+        </div>
       </div>
     </div>
     <div class="columnaDerecha">
@@ -23,7 +28,8 @@
 </template>
 <script>
 import { Qalendar } from '../../node_modules/qalendar';
-
+import { mapState } from 'pinia';
+import { useProfesoresStore } from '../store/profesoresStore';
 export default {
   components: { Qalendar },
   data() {
@@ -41,6 +47,11 @@ export default {
         }
       }
     }
+  },
+  computed:{
+    ...mapState(useProfesoresStore,['profesorSeleccionado'])
+  },
+  methods:{
   }
 }
 </script>

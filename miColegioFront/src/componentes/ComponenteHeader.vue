@@ -1,3 +1,6 @@
+<!-- 
+  Componente que construye el banner principal de la página
+ -->
 <template>
   <v-app-bar>
     <v-container>
