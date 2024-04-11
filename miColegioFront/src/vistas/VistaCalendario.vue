@@ -12,6 +12,12 @@
           </v-select>
           <v-select v-model="grupoSeleccionado" label="Grupo" :items="['A', 'B']">
           </v-select>
+          <v-text-field
+            class = "fecha"
+            prepend-icon = "mdi-calendar"
+            v-model = "fechaSeleccionada">
+
+          </v-text-field>
         </div>
         <div v-else>
           No hay profesor seleccionado
@@ -59,14 +65,17 @@ export default {
       grupoSeleccionado:null,
       date: (new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000)).toISOString().substr(0, 10),
       menu: false,
+      fechaSeleccionada:""
     }
   },
   computed: {
     ...mapState(useProfesoresStore, ['profesorSeleccionado'])
   },
   methods: {
+    //Maneja el click en un intervalo
     clickEnIntervalo(evento){
-      console.log(evento)
+      this.fechaSeleccionada = evento.intervalStart.substr(0,10) + " " 
+      + evento.intervalStart.substr(11,2) + "-" + evento.intervalEnd.substr(11,2);
     }
   },
   watch: {
@@ -119,6 +128,9 @@ export default {
   min-height: 60px;
 }
 
+.fecha{
+  min-width: 200px;
+}
 @media (max-width: 500px) {
   .contenedorColumnas {
     flex-flow: column;
@@ -134,3 +146,4 @@ export default {
   }
 }
 </style>
+<!-- TODO dar la vuelta al formato de la fecha -->
