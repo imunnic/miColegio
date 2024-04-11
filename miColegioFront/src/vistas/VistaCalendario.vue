@@ -78,5 +78,15 @@ export default {
 .celdaDia{
   min-height: 60px;
 }
-
+@media (max-width: 500px) {
+.contenedorColumnas{
+flex-flow: column;
+}
+.columnaIzquierda{
+  width: 100%;
+}
+.columnaDerecha{
+  width: 100%;
+}
+}
 </style>

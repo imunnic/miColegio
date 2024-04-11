@@ -4,9 +4,11 @@
 <template>
   <v-layout>
     <v-navigation-drawer 
-    expand-on-hover 
-    rail 
-    class="barraNavegacion">
+    v-model="drawer" 
+    :rail="rail"
+    permanent
+    class="barraNavegacion"
+    @click="rail = false">
       <v-list>
         <v-list-item
         v-for="profesor in profesorado" 
@@ -14,12 +16,7 @@
         :key="profesor.nombre" 
         :title="profesor.nombre + ' ' + profesor.apellido"
         prepend-icon="mdi-account" 
-        @click="cambiarProfesor(profesor)"></v-list-item>
-        <!-- <v-list-item v-for ="profesor in profesores"
-          prepend-avatar = {{profesor.avatar}}
-          title = {{ profesor.nombre }}
-          >
-          </v-list-item> -->
+        @click.stop="cambiarProfesor(profesor)"></v-list-item>
       </v-list>
     </v-navigation-drawer>
     <v-main>
@@ -34,6 +31,8 @@ import {useProfesoresStore} from '../store/profesoresStore'
 export default {
   data() {
     return {
+      drawer: true,
+      rail: true,
       profesores: [
         {
           avatar: "https://randomuser.me/api/portraits/women/83.jpg",
@@ -52,6 +51,8 @@ export default {
   methods: {
     ...mapActions(useProfesoresStore,['seleccionarProfesor']),
     cambiarProfesor(profesor) {
+      this.rail = true;
+      console.log(this.rail);
       this.seleccionarProfesor(profesor);
     }
   }
