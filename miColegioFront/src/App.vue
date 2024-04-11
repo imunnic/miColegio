@@ -24,9 +24,11 @@ export default {
 
 .contenido {
   min-height: 86vh;
+  max-width: none;
 }
 
 .pie {
+  z-index: 1000;
   width: 100vw;
 }
 </style>
