@@ -12,10 +12,6 @@
           </v-select>
           <v-select v-model="grupoSeleccionado" label="Grupo" :items="['A', 'B']">
           </v-select>
-          <v-date-picker></v-date-picker>
-          <v-btn @click="console.log(asignaturaSeleccionada)">
-            Ver Asignatura
-          </v-btn>
         </div>
         <div v-else>
           No hay profesor seleccionado
@@ -23,7 +19,11 @@
       </div>
     </div>
     <div class="columnaDerecha">
-      <Qalendar class="calendario" :config="configuracion">
+      <Qalendar 
+        class="calendario" 
+        :config="configuracion"
+        @interval-was-clicked="clickEnIntervalo"
+        >
         <template #dayCell="{ dayData }">
           <div class="celdaDia">
             <div> {{ dayData.dateTimeString.substring(8, 10) }}</div>
@@ -48,6 +48,7 @@ export default {
           end: 15
         },
         dayIntervals: {
+          displayClickableInterval:true,
           height: 90
         },
         style: {
@@ -57,13 +58,16 @@ export default {
       asignaturaSeleccionada: null,
       grupoSeleccionado:null,
       date: (new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000)).toISOString().substr(0, 10),
-      menu: false
+      menu: false,
     }
   },
   computed: {
     ...mapState(useProfesoresStore, ['profesorSeleccionado'])
   },
   methods: {
+    clickEnIntervalo(evento){
+      console.log(evento)
+    }
   },
   watch: {
     profesorSeleccionado: {
@@ -80,6 +84,11 @@ export default {
 }
 </script>
 <style scoped>
+.formularioReserva{
+  display: flex;
+  flex-flow: column;
+  align-items: center;
+}
 .contenedorColumnas {
   padding: 16px;
   width: 100%;
