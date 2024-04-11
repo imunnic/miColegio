@@ -8,6 +8,14 @@
       <div class="formularioReserva">
         <div v-if="profesorSeleccionado != null">
           {{ profesorSeleccionado.nombre }} {{ profesorSeleccionado.apellido }}
+          <v-select 
+            v-model="asignaturaSeleccionada"
+            label="Asignaturas"
+            :items="profesorSeleccionado.asignaturas">
+          </v-select>
+          <v-btn @click="console.log(asignaturaSeleccionada)">
+            Ver Asignatura
+          </v-btn>
         </div>
         <div v-else>
           No hay profesor seleccionado
@@ -45,48 +53,61 @@ export default {
         style: {
           fontFamily: 'arial'
         }
-      }
+      },
+      asignaturaSeleccionada:null
     }
   },
-  computed:{
-    ...mapState(useProfesoresStore,['profesorSeleccionado'])
+  computed: {
+    ...mapState(useProfesoresStore, ['profesorSeleccionado'])
   },
-  methods:{
+  methods: {
   }
 }
 </script>
 <style scoped>
-.contenedorColumnas{
+.contenedorColumnas {
   padding: 16px;
   width: 100%;
   display: flex;
   flex-flow: row;
   justify-content: center;
 }
-.columnaIzquierda{
+
+.columnaIzquierda {
+  padding: 10px;
   width: 33%;
 }
-.columnaDerecha{
+
+.columnaDerecha {
+
+  padding: 10px;
   width: 67%;
 }
+
 .calendario {
   width: 100%;
   max-height: 700px;
   text-align: start;
   overflow-y: scroll;
 }
-.celdaDia{
+
+.celdaDia {
   min-height: 60px;
 }
+
 @media (max-width: 500px) {
-.contenedorColumnas{
-flex-flow: column;
-}
-.columnaIzquierda{
-  width: 100%;
-}
-.columnaDerecha{
-  width: 100%;
-}
+  .contenedorColumnas {
+    flex-flow: column;
+  }
+
+  .columnaIzquierda {
+
+    width: 100%;
+  }
+
+  .columnaDerecha {
+    width: 100%;
+  }
 }
 </style>
+<!-- TODO Controlar que se anule la asignatura al cambiar de profesor -->
