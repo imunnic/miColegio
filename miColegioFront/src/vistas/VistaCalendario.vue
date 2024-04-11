@@ -8,11 +8,11 @@
       <div class="formularioReserva">
         <div v-if="profesorSeleccionado != null">
           {{ profesorSeleccionado.nombre }} {{ profesorSeleccionado.apellido }}
-          <v-select 
-            v-model="asignaturaSeleccionada"
-            label="Asignaturas"
-            :items="profesorSeleccionado.asignaturas">
+          <v-select v-model="asignaturaSeleccionada" label="Asignaturas" :items="profesorSeleccionado.asignaturas">
           </v-select>
+          <v-select v-model="grupoSeleccionado" label="Grupo" :items="['A', 'B']">
+          </v-select>
+          <v-date-picker></v-date-picker>
           <v-btn @click="console.log(asignaturaSeleccionada)">
             Ver Asignatura
           </v-btn>
@@ -54,13 +54,28 @@ export default {
           fontFamily: 'arial'
         }
       },
-      asignaturaSeleccionada:null
+      asignaturaSeleccionada: null,
+      grupoSeleccionado:null,
+      date: (new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000)).toISOString().substr(0, 10),
+      menu: false
     }
   },
   computed: {
     ...mapState(useProfesoresStore, ['profesorSeleccionado'])
   },
   methods: {
+  },
+  watch: {
+    profesorSeleccionado: {
+      handler(nuevoProfesor) {
+        if (nuevoProfesor !== null) {
+          this.asignaturaSeleccionada = nuevoProfesor.asignaturas[0];
+        } else {
+          this.asignaturaSeleccionada = null;
+        }
+      },
+      immediate: true
+    }
   }
 }
 </script>
@@ -110,4 +125,3 @@ export default {
   }
 }
 </style>
-<!-- TODO Controlar que se anule la asignatura al cambiar de profesor -->
