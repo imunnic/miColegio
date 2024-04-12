@@ -1,22 +1,28 @@
-import { createApp } from 'vue'
-import './style.css'
 import App from './App.vue'
+import { createApp } from 'vue'
 import { createPinia } from 'pinia'
-import router from './router/index'
-import './scss/styles.scss'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-import '@mdi/font/scss/materialdesignicons.scss'
+import { createVuetify } from 'vuetify'
+import router from './router/index'
+import * as directives from 'vuetify/directives'
+import * as components from 'vuetify/components'
 import * as bootstrap from 'bootstrap'
 import 'vuetify/styles'
-import { createVuetify } from 'vuetify'
-import * as components from 'vuetify/components'
-import * as directives from 'vuetify/directives'
+import {es} from 'vuetify/locale' //importar idioma español
+import '@mdi/font/scss/materialdesignicons.scss'
+import './scss/styles.scss'
+import './style.css'
 
 const vuetify = createVuetify({
   components,
   directives,
   icons: {
     defaultSet: 'mdi',
+  },
+  locale:{ //poner el local en español para traducir los textos por defecto
+    locale:'es',
+    fallback:'es',
+    messages: {es}
   }
 })
 
