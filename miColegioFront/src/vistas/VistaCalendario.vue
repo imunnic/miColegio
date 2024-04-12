@@ -74,8 +74,13 @@ export default {
   methods: {
     //Maneja el click en un intervalo
     clickEnIntervalo(evento){
-      this.fechaSeleccionada = evento.intervalStart.substr(0,10) + " " 
-      + evento.intervalStart.substr(11,2) + "-" + evento.intervalEnd.substr(11,2);
+      if(this.profesorSeleccionado !== null){
+        let fecha = evento.intervalStart.substr(0,10);
+        let partes = fecha.split("-");
+        fecha = partes[2] + "-" + partes[1] + "-" + partes[0];
+        this.fechaSeleccionada = fecha + " " 
+        + evento.intervalStart.substr(11,2) + "-" + evento.intervalEnd.substr(11,2);
+      }
     }
   },
   watch: {
@@ -146,4 +151,3 @@ export default {
   }
 }
 </style>
-<!-- TODO dar la vuelta al formato de la fecha -->
