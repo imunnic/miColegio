@@ -34,6 +34,7 @@ export const useReservasStore = defineStore("reservas", {
         this.eventos = [];
       }
     },
+    
     //función que al coger una reserva la mapea en un evento de qalendar para que se pueda mostrar
     //dando también el formato a la fecha adecuado
     mapReservaToEvento(reserva) {
