@@ -8,8 +8,6 @@
       <div class="formularioReserva">
         <div v-if="profesorSeleccionado != null">
           {{ profesorSeleccionado.nombre }} {{ profesorSeleccionado.apellido }}
-<<<<<<< Updated upstream
-=======
           <v-select v-model="asignaturaSeleccionada" label="Asignaturas" :items="profesorSeleccionado.asignaturas">
             <template v-slot:selection="{ item, index }">
               {{getAsignaturaPorId(item.props.value).nombre}}
@@ -23,7 +21,6 @@
           <v-text-field class="fecha" prepend-icon="mdi-calendar" v-model="fechaSeleccionada">
 
           </v-text-field>
->>>>>>> Stashed changes
         </div>
         <div v-else>
           No hay profesor seleccionado
@@ -31,11 +28,7 @@
       </div>
     </div>
     <div class="columnaDerecha">
-<<<<<<< Updated upstream
-      <Qalendar class="calendario" :config="configuracion">
-=======
       <Qalendar class="calendario" :events="eventos" :config="configuracion" @interval-was-clicked="clickEnIntervalo">
->>>>>>> Stashed changes
         <template #dayCell="{ dayData }">
           <div class="celdaDia">
             <div> {{ dayData.dateTimeString.substring(8, 10) }}</div>
@@ -62,24 +55,12 @@ export default {
           end: 15
         },
         dayIntervals: {
-<<<<<<< Updated upstream
-=======
           displayClickableInterval: true,
->>>>>>> Stashed changes
           height: 90
         },
         style: {
           fontFamily: 'arial'
         }
-<<<<<<< Updated upstream
-      }
-    }
-  },
-  computed:{
-    ...mapState(useProfesoresStore,['profesorSeleccionado'])
-  },
-  methods:{
-=======
       },
       asignaturaSeleccionada: null,
       grupoSeleccionado: null,
@@ -123,14 +104,10 @@ export default {
   mounted() {
     this.cargarReservas();
     console.log(this.reservas);
->>>>>>> Stashed changes
   }
 }
 </script>
 <style scoped>
-<<<<<<< Updated upstream
-.contenedorColumnas{
-=======
 .formularioReserva {
   display: flex;
   flex-flow: column;
@@ -138,7 +115,6 @@ export default {
 }
 
 .contenedorColumnas {
->>>>>>> Stashed changes
   padding: 16px;
   width: 100%;
   display: flex;
@@ -160,14 +136,11 @@ export default {
 .celdaDia{
   min-height: 60px;
 }
-<<<<<<< Updated upstream
-=======
 
 .fecha {
   min-width: 200px;
 }
 
->>>>>>> Stashed changes
 @media (max-width: 500px) {
 .contenedorColumnas{
 flex-flow: column;
