@@ -16,11 +16,18 @@
               <v-list-item v-bind="props" :title="getAsignaturaPorId(item.props.value).nombre"></v-list-item>
             </template>
           </v-select>
-          <v-select v-model="grupoSeleccionado" label="Grupo" :items="asignaturaSeleccionada.grupos">
+          <v-select v-model="grupoSeleccionado" label="Grupo" :items="getAsignaturaPorId(asignaturaSeleccionada).grupos">
+            <template v-slot:selection="{ item, index }">
+              {{getGrupoPorId(item.props.value).nombre}}
+            </template>
+            <template v-slot:item="{ props, item }">
+              <v-list-item v-bind="props" :title="getGrupoPorId(item.props.value).nombre"></v-list-item>
+            </template>
           </v-select>
           <v-text-field class="fecha" prepend-icon="mdi-calendar" v-model="fechaSeleccionada">
 
           </v-text-field>
+          <v-btn @click="">Reservar</v-btn>
         </div>
         <div v-else>
           No hay profesor seleccionado
@@ -45,6 +52,7 @@ import { mapState, mapActions } from 'pinia';
 import { useProfesoresStore } from '../store/profesoresStore';
 import { useReservasStore } from '../store/reservasStore';
 import {useAsignaturasStore} from '../store/asignaturasStore';
+import { useGruposStore } from '../store/gruposStore';
 export default {
   components: { Qalendar },
   data() {
@@ -76,6 +84,7 @@ export default {
   methods: {
     ...mapActions(useReservasStore, ['cargarReservas']),
     ...mapActions(useAsignaturasStore,['getAsignaturaPorId']),
+    ...mapActions(useGruposStore,['getGrupoPorId']),
     //Maneja el click en un intervalo
     clickEnIntervalo(evento) {
       if (this.profesorSeleccionado !== null) {
@@ -103,7 +112,6 @@ export default {
   },
   mounted() {
     this.cargarReservas();
-    console.log(this.reservas);
   }
 }
 </script>

@@ -52,7 +52,6 @@ export default {
     ...mapActions(useProfesoresStore,['seleccionarProfesor']),
     cambiarProfesor(profesor) {
       this.rail = true;
-      console.log(this.rail);
       this.seleccionarProfesor(profesor);
     }
   }

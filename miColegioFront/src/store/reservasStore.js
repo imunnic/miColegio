@@ -12,23 +12,27 @@ export const useReservasStore = defineStore("reservas", {
     eventos: [],
   }),
   actions: {
+    //funcion que carga las reservas siempre que haya un profesor seleccionado
     cargarReservas() {
       let profesores = useProfesoresStore();
-      this.reservasService
-        .getAll()
-        .then((response) => {
-          this.reservas = response.data._embedded.reservas.filter(reserva => {
-            return reserva.profesor == profesores.profesorSeleccionado.id;
+      if(profesores.profesorSeleccionado != null){
+        this.reservasService
+          .getAll()
+          .then((response) => {
+            this.reservas = response.data._embedded.reservas.filter(reserva => {
+              return reserva.profesor == profesores.profesorSeleccionado.id;
+            });
+            this.eventos = this.reservas.map((reserva) =>{
+              return this.mapReservaToEvento(reserva);
+            });
+          })
+          .catch((error) => {
+            console.log(error);
           });
-          // console.log(typeof this.reservas);
-          this.eventos = this.reservas.map((reserva) =>{
-            return this.mapReservaToEvento(reserva);
-          });
-          console.log(this.eventos);
-        })
-        .catch((error) => {
-          console.log(error);
-        });
+      } else{
+        this.reservas = [];
+        this.eventos = [];
+      }
     },
     //función que al coger una reserva la mapea en un evento de qalendar para que se pueda mostrar
     //dando también el formato a la fecha adecuado
