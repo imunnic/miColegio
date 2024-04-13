@@ -1,35 +1,39 @@
 {
-    "profesores": [
+  "profesores": [
       {
-        "nombre": "Alejandro",
-        "apellido": "Martínez",
-        "avatar": "https://randomuser.me/api/portraits/men/5.jpg",
-        "asignaturas": ["Matemáticas", "Física"]
+          "id": 1,
+          "nombre": "Alejandro",
+          "apellido": "Martínez",
+          "avatar": "https://randomuser.me/api/portraits/men/5.jpg",
+          "asignaturas": [1, 2]
       },
       {
-        "nombre": "Sofía",
-        "apellido": "García",
-        "avatar": "https://randomuser.me/api/portraits/women/5.jpg",
-        "asignaturas": ["Lengua Española", "Literatura"]
+          "id": 2,
+          "nombre": "Sofía",
+          "apellido": "García",
+          "avatar": "https://randomuser.me/api/portraits/women/5.jpg",
+          "asignaturas": [3, 4]
       },
       {
-        "nombre": "Javier",
-        "apellido": "López",
-        "avatar": "https://randomuser.me/api/portraits/men/10.jpg",
-        "asignaturas": ["Historia", "Geografía"]
+          "id": 3,
+          "nombre": "Javier",
+          "apellido": "López",
+          "avatar": "https://randomuser.me/api/portraits/men/10.jpg",
+          "asignaturas": [5, 6]
       },
       {
-        "nombre": "María",
-        "apellido": "Rodríguez",
-        "avatar": "https://randomuser.me/api/portraits/women/10.jpg",
-        "asignaturas": ["Ciencias Naturales", "Química"]
+          "id": 4,
+          "nombre": "María",
+          "apellido": "Rodríguez",
+          "avatar": "https://randomuser.me/api/portraits/women/10.jpg",
+          "asignaturas": [7, 8]
       },
       {
-        "nombre": "Carlos",
-        "apellido": "Fernández",
-        "avatar": "https://randomuser.me/api/portraits/men/15.jpg",
-        "asignaturas": ["Educación Física", "Deportes"]
+          "id": 5,
+          "nombre": "Carlos",
+          "apellido": "Fernández",
+          "avatar": "https://randomuser.me/api/portraits/men/15.jpg",
+          "asignaturas": [9, 10]
       }
-    ]
-  }
-  
+  ]
+}
