@@ -4,6 +4,7 @@ const host='http://localhost:8080/api';
 const reservasEndPoint='/reservas';
 
 export default class reservasService{
+    //TODO método que devuelva solo las reservas de un profesor
     
     getAll(){
         return axios.get(host + reservasEndPoint)
