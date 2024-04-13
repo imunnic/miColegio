@@ -94,8 +94,13 @@ export default {
     ...mapActions(useReservasStore, ['cargarReservas']),
     ...mapActions(useAsignaturasStore,['getAsignaturaPorId']),
     ...mapActions(useGruposStore,['getGrupoPorId']),
-
-    //Maneja el click en un intervalo del calendario
+    /**
+     * Función para controlar los click en los intervalos del calendario. Coge la franja 
+     * horaria y la fecha sobre la que se ha realizado click y la guarda en 
+     * this.fechaSeleccionada 
+     * @param evento es el evento elevado desde calendar al hacer click. El contenido se 
+     * encuentra en la documentación oficial de Qalendar
+     */
     clickEnIntervalo(evento) {
       if (this.profesorSeleccionado !== null) {
         let fecha = evento.intervalStart.substr(0, 10);
@@ -107,7 +112,11 @@ export default {
     }
   },
   watch: {
-    //Controlar el cambio de profesor para la carga de eventos y los valores a mostrar
+    /**
+     * Observador que permite controlar el cambio de un profesor a otro y cambiar los parámetros
+     * relacionados con cada uno, que en este caso afectan al formulario (asignaturas y grupos)
+     * y al calendario, con las reservas (eventos de Qalendar) de cada uno.
+     */
     profesorSeleccionado: {
       handler(nuevoProfesor) {
         if (nuevoProfesor !== null) {

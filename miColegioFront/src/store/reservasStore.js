@@ -12,7 +12,11 @@ export const useReservasStore = defineStore("reservas", {
     eventos: [],
   }),
   actions: {
-    //funcion que carga las reservas siempre que haya un profesor seleccionado
+    /**
+    * Función que carga las reservas desde la api y los eventos en el formato
+    * de la librería "Qalendar" siempre que se seleccione un profesor. Modifica 
+    * this.reservas y this.eventos.
+    */
     cargarReservas() {
       let profesores = useProfesoresStore();
       if(profesores.profesorSeleccionado != null){
@@ -34,9 +38,11 @@ export const useReservasStore = defineStore("reservas", {
         this.eventos = [];
       }
     },
-    
-    //función que al coger una reserva la mapea en un evento de qalendar para que se pueda mostrar
-    //dando también el formato a la fecha adecuado
+    /**
+     * Función que mapea una reserva en un evento de la librería "Qalendar"
+     * @param reserva la reserva como se recibe de la API
+     * @returns el evento en el formato de la librería "Qalendar"
+     */
     mapReservaToEvento(reserva) {
       let asignatura = useAsignaturasStore();
       let grupos = useGruposStore();
