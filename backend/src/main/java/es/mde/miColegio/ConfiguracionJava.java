@@ -22,8 +22,8 @@ import jakarta.persistence.EntityManagerFactory;
 @Configuration
 @PropertySource({ "classpath:configuracion/rest.properties", "classpath:configuracion/jackson.properties" })
 @EnableTransactionManagement
-@EnableJpaRepositories("${misRepositorios}") // leer valor de propiedades? pero solo para las entidades anotadas
-@ComponentScan("es.mde.miColegio.rest")//para que escanee los Controller...
+@EnableJpaRepositories("${misRepositorios}")
+@ComponentScan("es.mde.miColegio.rest")
 @Import(ConfiguracionRest.class)
 public class ConfiguracionJava {
   @Value("${misEntidades}")
@@ -35,17 +35,12 @@ public class ConfiguracionJava {
 
       LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
       em.setDataSource(dataSource);
-//    JpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter(); // O pedirlo como parametro y que haga el Autowired
       em.setJpaVendorAdapter(vendorAdapter);
 
-      em.setPackagesToScan(entidades); // leer valor de propiedades? pero solo para las entidades anotadas
-      // em.setMappingResources("jpa/Usuario.orm.xml", "jpa/Cuaderno.orm.xml"); //para
-      // escanear archivos xml...
-      // leerValorDePropiedades?
+      em.setPackagesToScan(entidades);
 
       Properties jpaProperties = new Properties();
-      Arrays.asList("dialect", "show_sql", "hbm2ddl.auto", "enable_lazy_load_no_trans") // leer valor de para las
-                                                                                          // entidades anotadas
+      Arrays.asList("dialect", "show_sql", "hbm2ddl.auto", "enable_lazy_load_no_trans") 
               .stream().map(s -> "hibernate." + s)
               .map(p -> new AbstractMap.SimpleEntry<String, String>(p, env.getProperty(p)))
               .filter(e -> e.getValue() != null).forEach(e -> jpaProperties.put(e.getKey(), e.getValue()));
@@ -62,16 +57,4 @@ public class ConfiguracionJava {
 
       return emf.createEntityManager();
   }
-
-//Configuracion mixer
-//  @Bean
-//  public ObjectMapper getObjectMapper() {
-//
-//      ObjectMapper mapper = new ObjectMapper();
-//      mapper.addMixIn(Cliente.class, MixIns.Clientes.class);
-//      mapper.addMixIn(Libro.class, MixIns.Libros.class);
-//      mapper.addMixIn(Cuaderno.class, MixIns.Cuadernos.class);
-//
-//      return mapper;
-//  }
 }

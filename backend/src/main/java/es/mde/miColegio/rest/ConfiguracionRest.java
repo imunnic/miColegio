@@ -23,14 +23,13 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
+import es.mde.miColegio.entidades.Reserva;
 
 @Configuration
 public class ConfiguracionRest {
   @Bean
   RepresentationModelProcessor<RepositorySearchesResource> addSearchLinks(RepositoryRestConfiguration config) {
       Map<Class<?>, Class<?>> controllersRegistrados = new HashMap<>();
-//      controllersRegistrados.put(Producto.class, ProductoController.class);
-//      controllersRegistrados.put(Cliente.class, ClienteController.class);
 
       return new RepresentationModelProcessor<RepositorySearchesResource>() {
 
