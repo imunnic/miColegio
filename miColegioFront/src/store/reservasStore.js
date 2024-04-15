@@ -85,15 +85,12 @@ export const useReservasStore = defineStore("reservas", {
       return evento;
     },
 
-    guardarReserva(profesor, asignatura, grupo, grupoFechaHora){
-      this.reserva.profesor = profesor.id;
-      this.reserva.asignatura = asignatura;
-      this.reserva.grupo = grupo;
-      this.reserva.lugar = 3;
-      this.reserva.fecha = grupoFechaHora.split(" ")[0];
-      this.reserva.hora = parseInt(grupoFechaHora.split(" ")[1].split("-")[0]);
-      this.reservasService.create(this.reserva);
-      this.resetReserva();
+    guardarReserva(){
+      this.reservasService.create(this.reserva)
+      .then(() => {this.cargarReservas();})
+      .catch((error) => {
+        console.log(error);
+      });
     },
     
     resetReserva(){
@@ -106,6 +103,16 @@ export const useReservasStore = defineStore("reservas", {
       // for (propiedad in this.reserva) {
       //   this.reserva[propiedad] = null;
       // }
+    },
+
+    /*
+    *
+    *
+    */
+    formatarFechaParaAPI(fecha){
+      let fechaPartida = fecha.split("-");
+      let fechaNueva = fechaPartida[2] + "-" + fechaPartida[1] + "-" + fechaPartida[0];
+      return fechaNueva;
     }
   },
 });

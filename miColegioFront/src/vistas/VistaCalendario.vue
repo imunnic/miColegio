@@ -92,10 +92,10 @@ export default {
   },
   computed: {
     ...mapState(useProfesoresStore, ['profesorSeleccionado']),
-    ...mapState(useReservasStore, ['reservas', 'eventos'])
+    ...mapState(useReservasStore, ['reservas', 'eventos', 'reserva'])
   },
   methods: {
-    ...mapActions(useReservasStore, ['cargarReservas', 'guardarReserva']),
+    ...mapActions(useReservasStore, ['cargarReservas', 'guardarReserva', 'resetReserva', 'formatarFechaParaAPI']),
     ...mapActions(useAsignaturasStore,['getAsignaturaPorId']),
     ...mapActions(useGruposStore,['getGrupoPorId']),
     /**
@@ -115,10 +115,15 @@ export default {
       }
     },
     reservar(){
-      this.guardarReserva(this.profesorSeleccionado, 
-                          this.asignaturaSeleccionada, 
-                          this.grupoSeleccionado, 
-                          this.fechaSeleccionada);
+      this.reserva.profesor = this.profesorSeleccionado.id;
+      this.reserva.asignatura = this.asignaturaSeleccionada;
+      this.reserva.grupo = this.grupoSeleccionado;
+      this.reserva.lugar = 3;
+      this.reserva.fecha = this.formatarFechaParaAPI(this.fechaSeleccionada.split(" ")[0]);
+      this.reserva.hora = parseInt(this.fechaSeleccionada.split(" ")[1].split("-")[0]);
+      this.guardarReserva();
+      this.resetReserva();
+      // this.cargarReservas();
     }
   },
   watch: {
