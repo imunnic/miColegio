@@ -39,8 +39,11 @@
       </div>
     </div>
     <div class="columnaDerecha">
-      
-      <Qalendar class="calendario" :events="eventos" :config="configuracion" @interval-was-clicked="clickEnIntervalo">
+      <Qalendar 
+        class="calendario" 
+        :config="configuracion"
+        @interval-was-clicked="clickEnIntervalo"
+        >
         <template #dayCell="{ dayData }">
           <div class="celdaDia">
             <div> {{ dayData.dateTimeString.substring(8, 10) }}</div>
@@ -147,19 +150,26 @@ export default {
   flex-flow: row;
   justify-content: center;
 }
-.columnaIzquierda{
+
+.columnaIzquierda {
+  padding: 10px;
   width: 33%;
 }
-.columnaDerecha{
+
+.columnaDerecha {
+
+  padding: 10px;
   width: 67%;
 }
+
 .calendario {
   width: 100%;
   max-height: 700px;
   text-align: start;
   overflow-y: scroll;
 }
-.celdaDia{
+
+.celdaDia {
   min-height: 60px;
 }
 
@@ -177,5 +187,18 @@ flex-flow: column;
 .columnaDerecha{
   width: 100%;
 }
+@media (max-width: 500px) {
+  .contenedorColumnas {
+    flex-flow: column;
+  }
+
+  .columnaIzquierda {
+
+    width: 100%;
+  }
+
+  .columnaDerecha {
+    width: 100%;
+  }
 }
 </style>

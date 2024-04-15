@@ -4,19 +4,20 @@
 <template>
   <v-layout>
     <v-navigation-drawer 
-    v-model="drawer" 
-    :rail="rail"
-    permanent
-    class="barraNavegacion"
-    @click="rail = false">
+      v-model="drawer" 
+      :rail="rail"
+      permanent
+      class="barraNavegacion"
+      @click="rail = false">
       <v-list>
         <v-list-item
-        v-for="profesor in profesorado" 
-        class="profesor"  
-        :key="profesor.nombre" 
-        :title="profesor.nombre + ' ' + profesor.apellido"
-        prepend-icon="mdi-account" 
-        @click.stop="cambiarProfesor(profesor)"></v-list-item>
+          v-for="profesor in profesorado" 
+          class="profesor"  
+          :key="profesor.nombre" 
+          :title="profesor.nombre + ' ' + profesor.apellido"
+          prepend-icon="mdi-account" 
+        @click.stop="cambiarProfesor(profesor)">
+      </v-list-item>
       </v-list>
     </v-navigation-drawer>
     <v-main>
