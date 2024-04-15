@@ -10,6 +10,14 @@ export const useReservasStore = defineStore("reservas", {
     reservas: [],
     reservasService: new ReservasService(),
     eventos: [],
+    reserva:{
+      profesor:null,
+      lugar:null,
+      asignatura:null,
+      grupo:null,
+      fecha:null,
+      hora:null
+    }
   }),
   actions: {
     /**
@@ -76,5 +84,28 @@ export const useReservasStore = defineStore("reservas", {
 
       return evento;
     },
+
+    guardarReserva(profesor, asignatura, grupo, grupoFechaHora){
+      this.reserva.profesor = profesor.id;
+      this.reserva.asignatura = asignatura;
+      this.reserva.grupo = grupo;
+      this.reserva.lugar = 3;
+      this.reserva.fecha = grupoFechaHora.split(" ")[0];
+      this.reserva.hora = parseInt(grupoFechaHora.split(" ")[1].split("-")[0]);
+      this.reservasService.create(this.reserva);
+      this.resetReserva();
+    },
+    
+    resetReserva(){
+      this.reserva.profesor = null;
+      this.reserva.asignatura = null;
+      this.reserva.grupo = null;
+      this.reserva.lugar = null;
+      this.reserva.fecha = null;
+      this.reserva.hora = null;
+      // for (propiedad in this.reserva) {
+      //   this.reserva[propiedad] = null;
+      // }
+    }
   },
 });

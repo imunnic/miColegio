@@ -27,10 +27,10 @@
             </template>
           </v-select>
           
-          <v-text-field class="fecha" prepend-icon="mdi-calendar" v-model="fechaSeleccionada">
+          <v-text-field class="fecha" prepend-icon="mdi-calendar" v-model="fechaSeleccionada" :disabled="true">
           </v-text-field>
 
-          <v-btn @click="">Reservar</v-btn>
+          <v-btn @click="reservar">Reservar</v-btn>
     
         </div>
         <div v-else>
@@ -43,6 +43,7 @@
         class="calendario" 
         :config="configuracion"
         @interval-was-clicked="clickEnIntervalo"
+        :events="eventos"
         >
         <template #dayCell="{ dayData }">
           <div class="celdaDia">
@@ -94,7 +95,7 @@ export default {
     ...mapState(useReservasStore, ['reservas', 'eventos'])
   },
   methods: {
-    ...mapActions(useReservasStore, ['cargarReservas']),
+    ...mapActions(useReservasStore, ['cargarReservas', 'guardarReserva']),
     ...mapActions(useAsignaturasStore,['getAsignaturaPorId']),
     ...mapActions(useGruposStore,['getGrupoPorId']),
     /**
@@ -112,6 +113,12 @@ export default {
         this.fechaSeleccionada = fecha + " "
           + evento.intervalStart.substr(11, 2) + "-" + evento.intervalEnd.substr(11, 2);
       }
+    },
+    reservar(){
+      this.guardarReserva(this.profesorSeleccionado, 
+                          this.asignaturaSeleccionada, 
+                          this.grupoSeleccionado, 
+                          this.fechaSeleccionada);
     }
   },
   watch: {
