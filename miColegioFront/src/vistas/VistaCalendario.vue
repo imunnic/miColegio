@@ -178,16 +178,6 @@ export default {
 }
 /*Vista para dispositivos de menos de 500px*/
 @media (max-width: 500px) {
-.contenedorColumnas{
-flex-flow: column;
-}
-.columnaIzquierda{
-  width: 100%;
-}
-.columnaDerecha{
-  width: 100%;
-}
-@media (max-width: 500px) {
   .contenedorColumnas {
     flex-flow: column;
   }
