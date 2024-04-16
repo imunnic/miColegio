@@ -6,9 +6,14 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 
 @Entity
-@Table(name = "RESERVAS")
+@Table(name = "RESERVAS",
+uniqueConstraints = {
+    @UniqueConstraint(columnNames = {"grupo","fecha","hora"}),
+    @UniqueConstraint(columnNames = {"lugar", "fecha", "hora"})
+})
 public class Reserva {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)

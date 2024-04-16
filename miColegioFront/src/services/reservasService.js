@@ -2,12 +2,21 @@ import axios from 'axios';
 
 const host='http://localhost:8080/api';
 const reservasEndPoint='/reservas';
+const search = '/search'
 
 export default class reservasService{
     //TODO método que devuelva solo las reservas de un profesor
     
     getAll(){
-        return axios.get(host + reservasEndPoint)
+        return axios.get(host + reservasEndPoint);
+    }
+
+    getReservasProfesor(href){
+        return axios.get(host + reservasEndPoint + search + '/findByProfesor?profesor=' + href);
+    }
+
+    getLugaresNoDisponibles(fecha, hora){
+        return axios.get(host + reservasEndPoint + search + '/lugares-no-disponibles?fecha=' + fecha + '&hora=' + hora);
     }
 
     create(reserva) {
@@ -15,10 +24,10 @@ export default class reservasService{
     }
 
     delete(href){
-        return axios.delete(href)
+        return axios.delete(href);
     }
 
     update(id, lugarData){
-        return axios.put(host + reservasEndPoint + "/"+ id, lugarData)
+        return axios.put(host + reservasEndPoint + "/"+ id, lugarData);
     }
 }

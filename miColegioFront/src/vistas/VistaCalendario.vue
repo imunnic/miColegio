@@ -188,8 +188,8 @@ export default {
 .fecha {
   min-width: 200px;
 }
-/*Vista para dispositivos de menos de 500px*/
-@media (max-width: 500px) {
+/*Vista para dispositivos de menos de 575px*/
+@media (max-width: 575px) {
   .contenedorColumnas {
     flex-flow: column;
   }

@@ -29,17 +29,15 @@ export const useReservasStore = defineStore("reservas", {
       let profesores = useProfesoresStore();
       if(profesores.profesorSeleccionado != null){
         this.reservasService
-          .getAll()
+          .getReservasProfesor(profesores.profesorSeleccionado.id)
           .then((response) => {
-            this.reservas = response.data._embedded.reservas.filter(reserva => {
-              return reserva.profesor == profesores.profesorSeleccionado.id;
-            });
+            this.reservas = response.data._embedded.reservas;
             this.eventos = this.reservas.map((reserva) =>{
               return this.mapReservaToEvento(reserva);
             });
           })
           .catch((error) => {
-            console.log(error);
+            console.log(error.code);
           });
       } else{
         this.reservas = [];
@@ -86,11 +84,15 @@ export const useReservasStore = defineStore("reservas", {
     },
 
     guardarReserva(){
-      this.reservasService.create(this.reserva)
-      .then(() => {this.cargarReservas();})
-      .catch((error) => {
-        console.log(error);
-      });
+      this.reservasService
+      .getLugaresNoDisponibles(this.reserva.fecha, this.reserva.hora)
+      .then((response) => console.log(response.data.length))
+      .catch((error) => console.log(error))
+      // this.reservasService.create(this.reserva)
+      // .then(() => {this.cargarReservas();})
+      // .catch((error) => {
+      //   console.log(error);
+      // });
     },
     
     resetReserva(){
