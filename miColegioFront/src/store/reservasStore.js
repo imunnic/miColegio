@@ -1,45 +1,45 @@
 import { defineStore } from "pinia";
 import ReservasService from "../services/reservasService";
 import { useAsignaturasStore } from "./asignaturasStore";
-import {useGruposStore} from "./gruposStore"
+import { useGruposStore } from "./gruposStore";
 import { useLugaresStore } from "./lugaresStores";
-import {useProfesoresStore} from "./profesoresStore";
+import { useProfesoresStore } from "./profesoresStore";
 
 export const useReservasStore = defineStore("reservas", {
   state: () => ({
     reservas: [],
     reservasService: new ReservasService(),
     eventos: [],
-    reserva:{
-      profesor:null,
-      lugar:null,
-      asignatura:null,
-      grupo:null,
-      fecha:null,
-      hora:null
-    }
+    reserva: {
+      profesor: null,
+      lugar: null,
+      asignatura: null,
+      grupo: null,
+      fecha: null,
+      hora: null,
+    },
   }),
   actions: {
     /**
-    * Función que carga las reservas desde la api y los eventos en el formato
-    * de la librería "Qalendar" siempre que se seleccione un profesor. Modifica 
-    * this.reservas y this.eventos.
-    */
+     * Función que carga las reservas desde la api y los eventos en el formato
+     * de la librería "Qalendar" siempre que se seleccione un profesor. Modifica
+     * this.reservas y this.eventos.
+     */
     cargarReservas() {
       let profesores = useProfesoresStore();
-      if(profesores.profesorSeleccionado != null){
+      if (profesores.profesorSeleccionado != null) {
         this.reservasService
           .getReservasProfesor(profesores.profesorSeleccionado.id)
           .then((response) => {
             this.reservas = response.data._embedded.reservas;
-            this.eventos = this.reservas.map((reserva) =>{
+            this.eventos = this.reservas.map((reserva) => {
               return this.mapReservaToEvento(reserva);
             });
           })
           .catch((error) => {
             console.log(error.code);
           });
-      } else{
+      } else {
         this.reservas = [];
         this.eventos = [];
       }
@@ -77,25 +77,57 @@ export const useReservasStore = defineStore("reservas", {
         with: grupos.getGrupoPorId(reserva.grupo).nombre,
         isEditable: true,
         disableDnD: ["month", "week", "day"],
-        disableResize: ["month", "week", "day"]
+        disableResize: ["month", "week", "day"],
       };
 
       return evento;
     },
-
-    guardarReserva(){
-      this.reservasService
-      .getLugaresNoDisponibles(this.reserva.fecha, this.reserva.hora)
-      .then((response) => console.log(response.data.length))
-      .catch((error) => console.log(error))
-      // this.reservasService.create(this.reserva)
-      // .then(() => {this.cargarReservas();})
-      // .catch((error) => {
-      //   console.log(error);
-      // });
+    /**
+     *
+     */
+    escogerLugarDisponible(asignaturaId) {
+      let asignatura = useAsignaturasStore().getAsignaturaPorId(asignaturaId);
+      let lugaresId = asignatura.lugares;
+      let lugares = [];
+      lugaresId.forEach(id => {
+        lugares.push(useLugaresStore().getLugarPorId(id))
+      });
+      lugares.sort((a,b) => b.capacidad - a.capacidad);
+      // TODO hacer el flujo adecuado para que se coordine todo
+      for (let lugar in lugares) {
+        let disponible = false;
+        this.reservasService.isLugarDisponible(lugar,this.reserva.fecha, this.reserva.hora)
+        .then(response => {
+          if (response.data == true){
+            console.log(response.data);
+            disponible = true;
+          }
+        }).catch(error => console.log(error.code));
+        console.log(disponible);
+        if (disponible){
+          break;
+        }
+      }
+      console.log(this.reserva.fecha);
+      console.log(this.reserva.hora);
+      console.log(lugares);
+      //pasar asignatura
+      //ver lugares de la asignatura
+      //ordenar de mayor a menor
+      //si está disponible, escoger
     },
-    
-    resetReserva(){
+    guardarReserva() {
+      this.reservasService
+        .create(this.reserva)
+        .then(() => {
+          this.cargarReservas();
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+
+    resetReserva() {
       this.reserva.profesor = null;
       this.reserva.asignatura = null;
       this.reserva.grupo = null;
@@ -108,13 +140,14 @@ export const useReservasStore = defineStore("reservas", {
     },
 
     /*
-    *
-    *
-    */
-    formatarFechaParaAPI(fecha){
+     *
+     *
+     */
+    formatarFechaParaAPI(fecha) {
       let fechaPartida = fecha.split("-");
-      let fechaNueva = fechaPartida[2] + "-" + fechaPartida[1] + "-" + fechaPartida[0];
+      let fechaNueva =
+        fechaPartida[2] + "-" + fechaPartida[1] + "-" + fechaPartida[0];
       return fechaNueva;
-    }
+    },
   },
 });

@@ -1,33 +1,57 @@
-import axios from 'axios';
+import axios from "axios";
 
-const host='http://localhost:8080/api';
-const reservasEndPoint='/reservas';
-const search = '/search'
+const host = "http://localhost:8080/api";
+const reservasEndPoint = "/reservas";
+const search = "/search";
 
-export default class reservasService{
-    //TODO método que devuelva solo las reservas de un profesor
-    
-    getAll(){
-        return axios.get(host + reservasEndPoint);
-    }
+export default class reservasService {
+  //TODO método que devuelva solo las reservas de un profesor
 
-    getReservasProfesor(href){
-        return axios.get(host + reservasEndPoint + search + '/findByProfesor?profesor=' + href);
-    }
+  getAll() {
+    return axios.get(host + reservasEndPoint);
+  }
 
-    getLugaresNoDisponibles(fecha, hora){
-        return axios.get(host + reservasEndPoint + search + '/lugares-no-disponibles?fecha=' + fecha + '&hora=' + hora);
-    }
+  getReservasProfesor(href) {
+    return axios.get(
+      host + reservasEndPoint + search + "/findByProfesor?profesor=" + href
+    );
+  }
 
-    create(reserva) {
-        return axios.post(host + reservasEndPoint, reserva);
-    }
+  isLugarDisponible(lugarId, fecha, hora) {
+    return axios.get(
+      host +
+      reservasEndPoint +
+      search +
+      "/lugar-disponible?lugar=" +
+      lugarId +
+      "&fecha=" +
+      fecha +
+      "&hora=" +
+      hora
+    );
+  }
 
-    delete(href){
-        return axios.delete(href);
-    }
+  getLugaresNoDisponibles(fecha, hora) {
+    return axios.get(
+      host +
+        reservasEndPoint +
+        search +
+        "/lugares-no-disponibles?fecha=" +
+        fecha +
+        "&hora=" +
+        hora
+    );
+  }
 
-    update(id, lugarData){
-        return axios.put(host + reservasEndPoint + "/"+ id, lugarData);
-    }
+  create(reserva) {
+    return axios.post(host + reservasEndPoint, reserva);
+  }
+
+  delete(href) {
+    return axios.delete(href);
+  }
+
+  update(id, lugarData) {
+    return axios.put(host + reservasEndPoint + "/" + id, lugarData);
+  }
 }

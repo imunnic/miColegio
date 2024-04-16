@@ -4,6 +4,6 @@ import java.time.LocalDate;
 import java.util.List;
 
 public interface ReservaDAOCustom {
-  boolean isReservaPosible(int lugar, int grupo, LocalDate fecha, int hora);
+  boolean isLugarDisponible(int lugar, LocalDate fecha, int hora);
   List<Integer> getLugaresReservas(LocalDate fecha, int hora);
 }

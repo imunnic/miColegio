@@ -18,9 +18,8 @@ public class ReservaDAOImpl implements ReservaDAOCustom{
   private EntityManager entityManager;
   
   @Override
-  public boolean isReservaPosible(int lugar, int grupo, LocalDate fecha, int hora) {
-    return (reservaDAO.findByLugarAndFechaAndHora(lugar, fecha, hora).size() == 0 
-        && reservaDAO.findByGrupoAndFechaAndHora(grupo, fecha, hora).size() == 0);
+  public boolean isLugarDisponible(int lugar, LocalDate fecha, int hora) {
+    return (reservaDAO.findByLugarAndFechaAndHora(lugar, fecha, hora).size() == 0);
   }
 
   @Override

@@ -24,12 +24,11 @@ public class ReservaController {
     this.reservaDAO = reservaDAO;
   }
 
-  @GetMapping("/reservas/search/es-posible-reservar")
+  @GetMapping("/reservas/search/lugar-disponible")
   @ResponseBody
   public ResponseEntity<Boolean> isReservaPosible(@RequestParam("lugar") int lugar,
-      @RequestParam("grupo") int grupo, @RequestParam("fecha") LocalDate fecha,
-      @RequestParam("hora") int hora) {
-    Boolean retorno = reservaDAO.isReservaPosible(lugar, grupo, fecha, hora);
+      @RequestParam("fecha") LocalDate fecha, @RequestParam("hora") int hora) {
+    Boolean retorno = reservaDAO.isLugarDisponible(lugar, fecha, hora);
     return new ResponseEntity<Boolean>(retorno, HttpStatus.OK);
   }
 
