@@ -119,7 +119,7 @@ export const useReservasStore = defineStore("reservas", {
         })
         .catch((error) => {
           if (error.response.status == 409){
-            alert('El grupo ya tiene asignada esa franja horaria')
+            alert('El grupo ya tiene asignada esa franja horaria. Puede elejir otra.')
           }
         });
     },
