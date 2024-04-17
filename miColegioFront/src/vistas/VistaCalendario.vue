@@ -27,10 +27,10 @@
             </template>
           </v-select>
           
-          <v-text-field class="fecha" prepend-icon="mdi-calendar" v-model="fechaSeleccionada">
+          <v-text-field class="fecha" prepend-icon="mdi-calendar" v-model="fechaSeleccionada" :disabled="true">
           </v-text-field>
 
-          <v-btn @click="">Reservar</v-btn>
+          <v-btn @click="reservar">Reservar</v-btn>
     
         </div>
         <div v-else>
@@ -43,6 +43,7 @@
         class="calendario" 
         :config="configuracion"
         @interval-was-clicked="clickEnIntervalo"
+        :events="eventos"
         >
         <template #dayCell="{ dayData }">
           <div class="celdaDia">
@@ -91,10 +92,10 @@ export default {
   },
   computed: {
     ...mapState(useProfesoresStore, ['profesorSeleccionado']),
-    ...mapState(useReservasStore, ['reservas', 'eventos'])
+    ...mapState(useReservasStore, ['reservas', 'eventos', 'reserva'])
   },
   methods: {
-    ...mapActions(useReservasStore, ['cargarReservas']),
+    ...mapActions(useReservasStore, ['cargarReservas', 'guardarReserva', 'resetReserva', 'formatarFechaParaAPI', 'escogerLugarDisponible']),
     ...mapActions(useAsignaturasStore,['getAsignaturaPorId']),
     ...mapActions(useGruposStore,['getGrupoPorId']),
     /**
@@ -111,6 +112,27 @@ export default {
         fecha = partes[2] + "-" + partes[1] + "-" + partes[0];
         this.fechaSeleccionada = fecha + " "
           + evento.intervalStart.substr(11, 2) + "-" + evento.intervalEnd.substr(11, 2);
+      }
+    },
+
+    /**
+     * Función que realiza comprueba si hay lugares disponibles, si lo hay asigna uno y 
+     * después realiza la reserva. Si no lo hay informa al usuario.
+     */
+    async reservar(){
+      this.reserva.fecha = this.formatarFechaParaAPI(this.fechaSeleccionada.split(" ")[0]);
+      this.reserva.hora = parseInt(this.fechaSeleccionada.split(" ")[1].split("-")[0]);
+      let posible = await this.escogerLugarDisponible(this.asignaturaSeleccionada);
+      if (posible){
+        this.reserva.profesor = this.profesorSeleccionado.id;
+        this.reserva.asignatura = this.asignaturaSeleccionada;
+        this.reserva.grupo = this.grupoSeleccionado;
+        this.guardarReserva();
+        this.resetReserva();
+        this.cargarReservas();
+      } else{
+        alert('No hay lugares disponibles para esa franja horaria, elija otra franja');
+        this.resetReserva();
       }
     }
   },
@@ -176,8 +198,8 @@ export default {
 .fecha {
   min-width: 200px;
 }
-/*Vista para dispositivos de menos de 500px*/
-@media (max-width: 500px) {
+/*Vista para dispositivos de menos de 575px*/
+@media (max-width: 575px) {
   .contenedorColumnas {
     flex-flow: column;
   }

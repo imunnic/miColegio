@@ -19,6 +19,15 @@ import org.springframework.context.annotation.PropertySource;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 
+
+/**
+ * ConfiguracionJava va a establecer los parametros configurables en los
+ * distintos properties, referenciándolos.
+ * 
+ * @author JOSE LUIS PUENTES ALAMOS
+ *
+ */
+
 @Configuration
 @PropertySource({ "classpath:configuracion/rest.properties", "classpath:configuracion/jackson.properties" })
 @EnableTransactionManagement
@@ -29,6 +38,15 @@ public class ConfiguracionJava {
   @Value("${misEntidades}")
   String entidades;
 
+  /**
+   * Entity manager que sustituye al jpa-config.xml
+   *
+   * @param dataSource Parametro del tipo DataSource
+   * @param env Parametro del tipo Environment
+   * @param vendorAdapter Parametro del tipo JpaVendorAdapter
+   * 
+   * @return Devuelve un "@Bean" de LocalContainerEntityManagerFactory
+   */
   @Bean
   public LocalContainerEntityManagerFactoryBean entityManagerFactory(DataSource dataSource, Environment env,
           JpaVendorAdapter vendorAdapter) {

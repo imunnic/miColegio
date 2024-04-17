@@ -1,39 +1,45 @@
 import { defineStore } from "pinia";
 import ReservasService from "../services/reservasService";
 import { useAsignaturasStore } from "./asignaturasStore";
-import {useGruposStore} from "./gruposStore"
+import { useGruposStore } from "./gruposStore";
 import { useLugaresStore } from "./lugaresStores";
-import {useProfesoresStore} from "./profesoresStore";
+import { useProfesoresStore } from "./profesoresStore";
 
 export const useReservasStore = defineStore("reservas", {
   state: () => ({
     reservas: [],
     reservasService: new ReservasService(),
     eventos: [],
+    reserva: {
+      profesor: null,
+      lugar: null,
+      asignatura: null,
+      grupo: null,
+      fecha: null,
+      hora: null,
+    },
   }),
   actions: {
     /**
-    * Función que carga las reservas desde la api y los eventos en el formato
-    * de la librería "Qalendar" siempre que se seleccione un profesor. Modifica 
-    * this.reservas y this.eventos.
-    */
+     * Función que carga las reservas desde la api y los eventos en el formato
+     * de la librería "Qalendar" siempre que se seleccione un profesor. Modifica
+     * this.reservas y this.eventos.
+     */
     cargarReservas() {
       let profesores = useProfesoresStore();
-      if(profesores.profesorSeleccionado != null){
+      if (profesores.profesorSeleccionado != null) {
         this.reservasService
-          .getAll()
+          .getReservasProfesor(profesores.profesorSeleccionado.id)
           .then((response) => {
-            this.reservas = response.data._embedded.reservas.filter(reserva => {
-              return reserva.profesor == profesores.profesorSeleccionado.id;
-            });
-            this.eventos = this.reservas.map((reserva) =>{
+            this.reservas = response.data._embedded.reservas;
+            this.eventos = this.reservas.map((reserva) => {
               return this.mapReservaToEvento(reserva);
             });
           })
           .catch((error) => {
-            console.log(error);
+            console.log(error.code);
           });
-      } else{
+      } else {
         this.reservas = [];
         this.eventos = [];
       }
@@ -71,10 +77,69 @@ export const useReservasStore = defineStore("reservas", {
         with: grupos.getGrupoPorId(reserva.grupo).nombre,
         isEditable: true,
         disableDnD: ["month", "week", "day"],
-        disableResize: ["month", "week", "day"]
+        disableResize: ["month", "week", "day"],
       };
 
       return evento;
+    },
+    /**
+     * Función que permite la selección automática de lugar entre los lugares disponibles para una
+     * asignatura y se la asigna a la reserva.
+     * @param asignaturaId parametro de id de la asignatura sobre la que seleccionar el lugar.
+     */
+    async escogerLugarDisponible(asignaturaId) {
+      let asignatura = useAsignaturasStore().getAsignaturaPorId(asignaturaId);
+      let lugaresId = asignatura.lugares;
+      let lugares = [];
+      let disponible = false;
+      lugaresId.forEach(id => {
+        lugares.push(useLugaresStore().getLugarPorId(id))
+      });
+      lugares.sort((a,b) => b.capacidad - a.capacidad);
+      for (let lugar of lugares) {
+        await this.reservasService.isLugarDisponible(lugar.id,this.reserva.fecha, this.reserva.hora)
+        .then(response => {
+          if (response.data == true){
+            this.reserva.lugar = lugar.id
+            disponible = true;
+          }
+        }).catch(error => console.log(error.code));
+        if (disponible){
+          break;
+        }
+      }
+      return disponible;
+    },
+
+    guardarReserva() {
+      this.reservasService
+        .create(this.reserva)
+        .then(() => {
+          this.cargarReservas();
+        })
+        .catch((error) => {
+          if (error.response.status == 409){
+            alert('El grupo ya tiene asignada esa franja horaria')
+          }
+        });
+    },
+
+    resetReserva() {
+      for (let propiedad in this.reserva) {
+        this.reserva[propiedad] = null;
+      }
+    },
+
+    /**
+     * Función que permite dar la vuelta a una fecha para guardarla en la API
+     * @param fecha la fecha en formato dd-MM-yyyy
+     * @returns la fecha en formato yyyy-MM-dd
+     */
+    formatarFechaParaAPI(fecha) {
+      let fechaPartida = fecha.split("-");
+      let fechaNueva =
+        fechaPartida[2] + "-" + fechaPartida[1] + "-" + fechaPartida[0];
+      return fechaNueva;
     },
   },
 });
