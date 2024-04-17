@@ -32,7 +32,6 @@
           </v-text-field>
 
           <v-btn @click="reservar">Reservar</v-btn>
-          <v-btn @click="addEvento">Eventar</v-btn>
 
         </div>
         <div v-else>
@@ -41,7 +40,7 @@
       </div>
     </div>
     <div class="columnaDerecha">
-      <Qalendar class="calendario" :config="configuracion" @interval-was-clicked="clickEnIntervalo" :events="eventos">
+      <Qalendar class="calendario" :config="configuracion" @interval-was-clicked="clickEnIntervalo" :events="eventos" :key="refrescar">
         <template #dayCell="{ dayData }">
           <div class="celdaDia">
             <div> {{ dayData.dateTimeString.substring(8, 10) }}</div>
@@ -60,7 +59,6 @@ import { useProfesoresStore } from '../store/profesoresStore';
 import { useReservasStore } from '../store/reservasStore';
 import { useAsignaturasStore } from '../store/asignaturasStore';
 import { useGruposStore } from '../store/gruposStore';
-import axios from 'axios';
 
 export default {
   components: { Qalendar },
@@ -85,7 +83,8 @@ export default {
         .toISOString()
         .substr(0, 10),
       menu: false,
-      fechaSeleccionada: ""
+      fechaSeleccionada: "",
+      refrescar:false //esta variable es solamente para refrescar la vista de qalendar de eventos
     }
   },
   computed: {
@@ -135,23 +134,10 @@ export default {
         this.resetReserva();
       }
     },
-    addEvento(){
-      let evento = {
-        id: 20,
-        title: "Clase",
-        time: {
-          start: "2024-04-15 13:00",
-          end: "2024-04-15 14:00"
-        },
-        description: "prueba",
-        isEditable: true,
-        disableDnD: ["month", "week", "day"],
-        disableResize: ["month", "week", "day"],
-      };
-      this.eventos.push(evento);
-      console.log(this.eventos);
-    }
-    ,
+    /**
+     * Función que añade a los eventos los del grupo seleccionado para que los profesores puedan ver
+     * cuando el grupo no está disponible. 
+     */
     async cargarGrupo(){
       let eventosGrupo = [];
       await this.cargarReservasGrupo(this.grupoSeleccionado)
@@ -163,15 +149,9 @@ export default {
       .catch(error => console.log(error));
       console.log(eventosGrupo);
       eventosGrupo = eventosGrupo.filter(eventoGrupo => !this.eventos.some(evento => evento.id == eventoGrupo.id));
-      console.log(eventosGrupo);
-      // console.log(eventosGrupo);
       this.agregarEventos(eventosGrupo);
-      console.log(this.eventos);
-      
-      //traer todas las reservas de un grupo
-      //mapear reservas a eventos
-      //filtrar todos los eventos que no estén reflejados
-      //añadir eventos no reflejados a eventos
+      this.refrescar =!this.refrescar;
+      //TODO cuando cambie de grupo quitar las reservas del grupo previamente seleccionado
     }
   },
   watch: {
