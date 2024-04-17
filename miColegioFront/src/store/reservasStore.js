@@ -83,39 +83,34 @@ export const useReservasStore = defineStore("reservas", {
       return evento;
     },
     /**
-     *
+     * Función que permite la selección automática de lugar entre los lugares disponibles para una
+     * asignatura y se la asigna a la reserva.
+     * @param asignaturaId parametro de id de la asignatura sobre la que seleccionar el lugar.
      */
-    escogerLugarDisponible(asignaturaId) {
+    async escogerLugarDisponible(asignaturaId) {
       let asignatura = useAsignaturasStore().getAsignaturaPorId(asignaturaId);
       let lugaresId = asignatura.lugares;
       let lugares = [];
+      let disponible = false;
       lugaresId.forEach(id => {
         lugares.push(useLugaresStore().getLugarPorId(id))
       });
       lugares.sort((a,b) => b.capacidad - a.capacidad);
-      // TODO hacer el flujo adecuado para que se coordine todo
-      for (let lugar in lugares) {
-        let disponible = false;
-        this.reservasService.isLugarDisponible(lugar,this.reserva.fecha, this.reserva.hora)
+      for (let lugar of lugares) {
+        await this.reservasService.isLugarDisponible(lugar.id,this.reserva.fecha, this.reserva.hora)
         .then(response => {
           if (response.data == true){
-            console.log(response.data);
+            this.reserva.lugar = lugar.id
             disponible = true;
           }
         }).catch(error => console.log(error.code));
-        console.log(disponible);
         if (disponible){
           break;
         }
       }
-      console.log(this.reserva.fecha);
-      console.log(this.reserva.hora);
-      console.log(lugares);
-      //pasar asignatura
-      //ver lugares de la asignatura
-      //ordenar de mayor a menor
-      //si está disponible, escoger
+      return disponible;
     },
+
     guardarReserva() {
       this.reservasService
         .create(this.reserva)
@@ -123,25 +118,22 @@ export const useReservasStore = defineStore("reservas", {
           this.cargarReservas();
         })
         .catch((error) => {
-          console.log(error);
+          if (error.response.status == 409){
+            alert('El grupo ya tiene asignada esa franja horaria')
+          }
         });
     },
 
     resetReserva() {
-      this.reserva.profesor = null;
-      this.reserva.asignatura = null;
-      this.reserva.grupo = null;
-      this.reserva.lugar = null;
-      this.reserva.fecha = null;
-      this.reserva.hora = null;
-      // for (propiedad in this.reserva) {
-      //   this.reserva[propiedad] = null;
-      // }
+      for (let propiedad in this.reserva) {
+        this.reserva[propiedad] = null;
+      }
     },
 
-    /*
-     *
-     *
+    /**
+     * Función que permite dar la vuelta a una fecha para guardarla en la API
+     * @param fecha la fecha en formato dd-MM-yyyy
+     * @returns la fecha en formato yyyy-MM-dd
      */
     formatarFechaParaAPI(fecha) {
       let fechaPartida = fecha.split("-");

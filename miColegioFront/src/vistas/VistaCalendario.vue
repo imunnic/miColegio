@@ -114,17 +114,26 @@ export default {
           + evento.intervalStart.substr(11, 2) + "-" + evento.intervalEnd.substr(11, 2);
       }
     },
-    reservar(){
-      this.reserva.profesor = this.profesorSeleccionado.id;
-      this.reserva.asignatura = this.asignaturaSeleccionada;
-      this.reserva.grupo = this.grupoSeleccionado;
-      this.reserva.lugar = 3;
+
+    /**
+     * Función que realiza comprueba si hay lugares disponibles, si lo hay asigna uno y 
+     * después realiza la reserva. Si no lo hay informa al usuario.
+     */
+    async reservar(){
       this.reserva.fecha = this.formatarFechaParaAPI(this.fechaSeleccionada.split(" ")[0]);
       this.reserva.hora = parseInt(this.fechaSeleccionada.split(" ")[1].split("-")[0]);
-      // this.guardarReserva();
-      this.escogerLugarDisponible(this.asignaturaSeleccionada);
-      this.resetReserva();
-      // this.cargarReservas();
+      let posible = await this.escogerLugarDisponible(this.asignaturaSeleccionada);
+      if (posible){
+        this.reserva.profesor = this.profesorSeleccionado.id;
+        this.reserva.asignatura = this.asignaturaSeleccionada;
+        this.reserva.grupo = this.grupoSeleccionado;
+        this.guardarReserva();
+        this.resetReserva();
+        this.cargarReservas();
+      } else{
+        alert('No hay lugares disponibles para esa franja horaria, elija otra franja');
+        this.resetReserva();
+      }
     }
   },
   watch: {

@@ -22,12 +22,4 @@ public class ReservaDAOImpl implements ReservaDAOCustom{
     return (reservaDAO.findByLugarAndFechaAndHora(lugar, fecha, hora).size() == 0);
   }
 
-  @Override
-  public List<Integer> getLugaresReservas(LocalDate fecha, int hora) {
-    List<Reserva> reservas = reservaDAO.findByFechaAndHora(fecha, hora);
-    List<Integer> lugaresReservados = new ArrayList<Integer>();
-    reservas.forEach(r -> lugaresReservados.add(r.getLugar()));
-    return lugaresReservados;
-  }
-
 }

@@ -1,6 +1,7 @@
 package es.mde.miColegio.rest;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.rest.webmvc.PersistentEntityResource;
@@ -12,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import es.mde.miColegio.entidades.Reserva;
 import es.mde.miColegio.repositorios.ReservaDAO;
 
 @RepositoryRestController
@@ -31,20 +33,5 @@ public class ReservaController {
     Boolean retorno = reservaDAO.isLugarDisponible(lugar, fecha, hora);
     return new ResponseEntity<Boolean>(retorno, HttpStatus.OK);
   }
-
-  @GetMapping("/reservas/search/lugares-no-disponibles")
-  @ResponseBody
-  public List<Integer> getLugaresReserva(@RequestParam("fecha") LocalDate fecha,
-      @RequestParam("hora") int hora) {
-    return reservaDAO.getLugaresReservas(fecha, hora);
-  }
-  // @ResponseBody
-  // public CollectionModel<PersistentEntityResource> getLugaresReserva(
-  // @RequestParam("fecha") LocalDate fecha, @RequestParam("hora") int hora,
-  // PersistentEntityResourceAssembler assembler) {
-  // return assembler.toCollectionModel(reservaDAO.getLugaresReservas(fecha, hora));
-  // }
-
-
 
 }
