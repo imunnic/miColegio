@@ -10,6 +10,7 @@ import java.time.LocalDate;
 @RepositoryRestResource(path="reservas", itemResourceRel = "reserva", collectionResourceRel = "reservas")
 public interface ReservaDAO extends JpaRepository<Reserva, Long>, ReservaDAOCustom{
   List<Reserva> findByProfesor(int profesor);
+  List<Reserva> findByGrupo(int grupo);
   List<Reserva> findByLugar(int lugar);
   List<Reserva> findByFechaAndHora(LocalDate fecha, int hora);
   List<Reserva> findByGrupoAndFechaAndHora(int grupo, LocalDate fecha, int hora);

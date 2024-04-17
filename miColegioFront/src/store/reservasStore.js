@@ -44,6 +44,22 @@ export const useReservasStore = defineStore("reservas", {
         this.eventos = [];
       }
     },
+    agregarEventos(eventos){
+      eventos.forEach(evento => {
+        this.eventos.push(evento);
+      });
+    },
+    /**
+     * 
+     * @param grupoId id del grupo del que se ven todas las reservas
+     */
+    async cargarReservasGrupo(grupoId){
+      let reservasGrupo = [];
+      await this.reservasService.getReservasGrupo(grupoId)
+      .then(response => reservasGrupo = response.data._embedded.reservas)
+      .catch(error => console.log(error));
+      return reservasGrupo;
+    },
     /**
      * Función que mapea una reserva en un evento de la librería "Qalendar"
      * @param reserva la reserva como se recibe de la API

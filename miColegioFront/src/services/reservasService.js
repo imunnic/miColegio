@@ -17,6 +17,12 @@ export default class reservasService {
     );
   }
 
+  getReservasGrupo(href) {
+    return axios.get(
+      host + reservasEndPoint + search + "/findByGrupo?grupo=" + href
+    );
+  }
+
   isLugarDisponible(lugarId, fecha, hora) {
     return axios.get(
       host +
