@@ -59,7 +59,7 @@ periodo nuevo. -->
         :events="eventos" 
         :key="refrescar"
         @interval-was-clicked="clickEnIntervalo"
-        @updated-period="actualizarCalendario">
+        @updated-period="actualizarCalendarioPorPeriodo">
         <template #dayCell="{ dayData }">
           <div class="celdaDia">
             <div> {{ dayData.dateTimeString.substring(8, 10) }}</div>
@@ -154,7 +154,6 @@ export default {
       this.reserva.fecha = this.formatarFechaParaAPI(this.fechaSeleccionada.split(" ")[0]);
       this.reserva.hora = parseInt(this.fechaSeleccionada.split(" ")[1].split("-")[0]);
       let lugar = await this.escogerLugarDisponible(this.asignaturaSeleccionada);
-      console.log(lugar);
       if (lugar != null) {
         this.reserva.profesor = this.profesorSeleccionado.id;
         this.reserva.asignatura = this.asignaturaSeleccionada;
@@ -162,7 +161,8 @@ export default {
         this.reserva.lugar = lugar;
         this.guardarReserva();
         this.resetReserva();
-        this.actualizarCalendario(this.periodoSeleccionado);
+        this.cargarReservas(this.periodoSeleccionado);
+        this.fechaSeleccionada = null;
       } else {
         alert('No hay lugares disponibles para esa franja horaria, elija otra franja');
         this.resetReserva();
@@ -171,7 +171,8 @@ export default {
 
     /**
      * Función que añade a los eventos los del grupo seleccionado para que los profesores puedan ver
-     * cuando el grupo no está disponible. 
+     * cuando el grupo no está disponible.
+     * TODO cambiar el color de los eventos del grupo para hacerlo un poco más amigable
      */
     async cargarGrupo() {
       this.quitarUltimosEventosAdded(this.ultimosIdGrupoCargados);
@@ -189,12 +190,11 @@ export default {
       this.refrescar = !this.refrescar;
     },
     
-    actualizarCalendario(evento){
+    actualizarCalendarioPorPeriodo(periodo){
       this.periodoSeleccionado = {
-      inicio: evento.start.toISOString().split('T')[0],
-      fin: evento.end.toISOString().split('T')[0],
+      start: periodo.start.toISOString().split('T')[0],
+      end: periodo.end.toISOString().split('T')[0],
       };
-      console.log(this.periodoSeleccionado);
       this.cargarReservas(this.periodoSeleccionado);
     },
   },
@@ -226,10 +226,9 @@ export default {
     let fechaFin = new Date(this.$refs.calendarRef.period.end);
     fechaFin.setDate(fechaFin.getDate() + 1);
     this.periodoSeleccionado ={
-      inicio: this.$refs.calendarRef.period.start.toISOString().split('T')[0],
-      fin: fechaFin.toISOString().split('T')[0]
+      start: this.$refs.calendarRef.period.start.toISOString().split('T')[0],
+      end: fechaFin.toISOString().split('T')[0]
     }
-    console.log(this.periodoSeleccionado);
   }
 }
 </script>

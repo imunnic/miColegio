@@ -25,11 +25,11 @@ export const useReservasStore = defineStore("reservas", {
      * de la librería "Qalendar" siempre que se seleccione un profesor. Modifica
      * this.reservas y this.eventos.
      */
-    cargarReservas(periodo) {
+    async cargarReservas(periodo) {
       let profesores = useProfesoresStore();
       if (profesores.profesorSeleccionado != null) {
-        this.reservasService
-          .getReservasProfesorEntre(profesores.profesorSeleccionado.id, periodo.inicio, periodo.fin)
+        await this.reservasService
+          .getReservasProfesorEntre(profesores.profesorSeleccionado.id, periodo.start, periodo.end)
           .then((response) => {
             // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/keys
             if(Object.keys(response.data).length == 0){
