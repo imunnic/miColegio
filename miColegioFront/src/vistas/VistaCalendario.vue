@@ -40,7 +40,11 @@
       </div>
     </div>
     <div class="columnaDerecha">
-      <Qalendar class="calendario" :config="configuracion" @interval-was-clicked="clickEnIntervalo" :events="eventos" :key="refrescar">
+      <Qalendar class="calendario" 
+      :config="configuracion" 
+      :events="eventos" 
+      :key="refrescar" 
+      @interval-was-clicked="clickEnIntervalo">
         <template #dayCell="{ dayData }">
           <div class="celdaDia">
             <div> {{ dayData.dateTimeString.substring(8, 10) }}</div>
@@ -84,7 +88,11 @@ export default {
         .substr(0, 10),
       menu: false,
       fechaSeleccionada: "",
-      refrescar:false //esta variable es solamente para refrescar la vista de qalendar de eventos
+      ultimosIdGrupoCargados:0, //TODO controlar que se quede a 0 al cambiar profesor
+      refrescar:false /** esta variable es solamente para refrescar la vista de qalendar de eventos.
+      * Canal Discord Qalendar, comentario de Kuzy de 22 de junio de 2023.[en línea][fecha de consulta: 17 de abril de 2024]. 
+      * Disponible en: https://discord.com/channels/1084178906036314152/1084923455604006965/1121374754671169639
+      */
     }
   },
   computed: {
@@ -94,7 +102,7 @@ export default {
   methods: {
     ...mapActions(useReservasStore, ['cargarReservas', 'guardarReserva', 'resetReserva', 
     'formatarFechaParaAPI', 'escogerLugarDisponible', 'cargarReservasGrupo', 
-    'mapReservaToEvento', 'agregarEventos']),
+    'mapReservaToEvento', 'agregarEventos', 'quitarUltimosEventosAdded']),
     ...mapActions(useAsignaturasStore, ['getAsignaturaPorId']),
     ...mapActions(useGruposStore, ['getGrupoPorId']),
     /**
@@ -139,6 +147,7 @@ export default {
      * cuando el grupo no está disponible. 
      */
     async cargarGrupo(){
+      this.quitarUltimosEventosAdded(this.ultimosIdGrupoCargados);
       let eventosGrupo = [];
       await this.cargarReservasGrupo(this.grupoSeleccionado)
       .then(reservasGrupo => {
@@ -147,11 +156,10 @@ export default {
           });
       })
       .catch(error => console.log(error));
-      console.log(eventosGrupo);
       eventosGrupo = eventosGrupo.filter(eventoGrupo => !this.eventos.some(evento => evento.id == eventoGrupo.id));
+      this.ultimosIdGrupoCargados = eventosGrupo.length;
       this.agregarEventos(eventosGrupo);
       this.refrescar =!this.refrescar;
-      //TODO cuando cambie de grupo quitar las reservas del grupo previamente seleccionado
     }
   },
   watch: {

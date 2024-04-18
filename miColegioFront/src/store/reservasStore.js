@@ -49,6 +49,11 @@ export const useReservasStore = defineStore("reservas", {
         this.eventos.push(evento);
       });
     },
+    quitarUltimosEventosAdded(numEventos){
+      for (let index = 0; index < numEventos; index++) {
+        this.eventos.pop();
+      }
+    },
     /**
      * 
      * @param grupoId id del grupo del que se ven todas las reservas

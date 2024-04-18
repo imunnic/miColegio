@@ -6,11 +6,6 @@ const routes = [
         path:'/',
         name:'home',
         component: () => import('../vistas/VistaCalendario.vue')
-    },
-    {
-        path:'/qalendar',
-        name:'qalendar',
-        component: () => import('../vistas/VistaQalendar.vue')
     }
 ]
 
