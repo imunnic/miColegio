@@ -25,11 +25,11 @@ export const useReservasStore = defineStore("reservas", {
      * de la librería "Qalendar" siempre que se seleccione un profesor. Modifica
      * this.reservas y this.eventos.
      */
-    cargarReservas() {
+    cargarReservas(periodo) {
       let profesores = useProfesoresStore();
       if (profesores.profesorSeleccionado != null) {
         this.reservasService
-          .getReservasProfesor(profesores.profesorSeleccionado.id)
+          .getReservasProfesorEntre(profesores.profesorSeleccionado.id, periodo.inicio, periodo.fin)
           .then((response) => {
             this.reservas = response.data._embedded.reservas;
             this.eventos = this.reservas.map((reserva) => {
@@ -55,8 +55,9 @@ export const useReservasStore = defineStore("reservas", {
       }
     },
     /**
-     * 
+     * Función que devuelve las reservas de un grupo
      * @param grupoId id del grupo del que se ven todas las reservas
+     * @returns todas las reservas de un grupo concreto
      */
     async cargarReservasGrupo(grupoId){
       let reservasGrupo = [];
@@ -103,35 +104,7 @@ export const useReservasStore = defineStore("reservas", {
 
       return evento;
     },
-    /**
-     * Función que permite la selección automática de lugar entre los lugares disponibles para una
-     * asignatura y se la asigna a la reserva.
-     * @param asignaturaId parametro de id de la asignatura sobre la que seleccionar el lugar.
-     */
-    async escogerLugarDisponible(asignaturaId) {
-      let asignatura = useAsignaturasStore().getAsignaturaPorId(asignaturaId);
-      let lugaresId = asignatura.lugares;
-      let lugares = [];
-      let disponible = false;
-      lugaresId.forEach(id => {
-        lugares.push(useLugaresStore().getLugarPorId(id))
-      });
-      lugares.sort((a,b) => b.capacidad - a.capacidad);
-      for (let lugar of lugares) {
-        await this.reservasService.isLugarDisponible(lugar.id,this.reserva.fecha, this.reserva.hora)
-        .then(response => {
-          if (response.data == true){
-            this.reserva.lugar = lugar.id
-            disponible = true;
-          }
-        }).catch(error => console.log(error.code));
-        if (disponible){
-          break;
-        }
-      }
-      return disponible;
-    },
-
+    
     guardarReserva() {
       this.reservasService
         .create(this.reserva)

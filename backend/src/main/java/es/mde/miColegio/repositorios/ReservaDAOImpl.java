@@ -3,6 +3,8 @@ package es.mde.miColegio.repositorios;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import es.mde.miColegio.entidades.Reserva;
@@ -20,6 +22,23 @@ public class ReservaDAOImpl implements ReservaDAOCustom{
   @Override
   public boolean isLugarDisponible(int lugar, LocalDate fecha, int hora) {
     return (reservaDAO.findByLugarAndFechaAndHora(lugar, fecha, hora).size() == 0);
+  }
+
+  @Override
+  public List<Reserva> getReservasDeProfesorEntreFechas(int profesor, LocalDate fechaInicio,
+      LocalDate fechaFin) {
+    List<Reserva> reservas = new ArrayList<Reserva>();
+    reservas = reservaDAO.findByProfesor(profesor)
+                         .stream()
+                         .filter(p -> {
+                           return p.getFecha().isAfter(fechaInicio) ||
+                                  p.getFecha().isEqual(fechaInicio);
+                         })
+                         .filter(p -> {
+                           return p.getFecha().isBefore(fechaFin);
+                         })
+                         .collect(Collectors.toList());
+    return reservas;
   }
 
 }

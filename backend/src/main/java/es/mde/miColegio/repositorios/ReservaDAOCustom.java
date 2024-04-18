@@ -13,4 +13,6 @@ public interface ReservaDAOCustom {
    * @param hora es la hora a la que empieza
    * */
   boolean isLugarDisponible(int lugar, LocalDate fecha, int hora);
+  
+  public List<Reserva> getReservasDeProfesorEntreFechas(int profesor, LocalDate fechaInicio, LocalDate fechaFin);
 }

@@ -5,7 +5,6 @@ const reservasEndPoint = "/reservas";
 const search = "/search";
 
 export default class reservasService {
-  //TODO método que devuelva solo las reservas de un profesor
 
   getAll() {
     return axios.get(host + reservasEndPoint);
@@ -23,29 +22,25 @@ export default class reservasService {
     );
   }
 
+  getReservasProfesorEntre(href, fechaInicio, fechaFin) {
+    return axios.get(
+      host + reservasEndPoint + search + "/reservas-profesor-fecha?profesorId=" + href 
+      + "&fechaInicio=" + fechaInicio 
+      + "&fechaFin=" + fechaFin
+    );
+  }
+
   isLugarDisponible(lugarId, fecha, hora) {
     return axios.get(
       host +
       reservasEndPoint +
       search +
-      "/lugar-disponible?lugar=" +
+      "/lugar-disponible?lugarId=" +
       lugarId +
       "&fecha=" +
       fecha +
       "&hora=" +
       hora
-    );
-  }
-
-  getLugaresNoDisponibles(fecha, hora) {
-    return axios.get(
-      host +
-        reservasEndPoint +
-        search +
-        "/lugares-no-disponibles?fecha=" +
-        fecha +
-        "&hora=" +
-        hora
     );
   }
 

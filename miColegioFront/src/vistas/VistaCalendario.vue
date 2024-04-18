@@ -9,7 +9,9 @@
         <div v-if="profesorSeleccionado != null">
           {{ profesorSeleccionado.nombre }} {{ profesorSeleccionado.apellido }}
 
-          <v-select v-model="asignaturaSeleccionada" label="Asignaturas" :items="profesorSeleccionado.asignaturas">
+          <v-select v-model="asignaturaSeleccionada" 
+            label="Asignaturas" 
+            :items="profesorSeleccionado.asignaturas">
             <template v-slot:selection="{ item, index }">
               {{ getAsignaturaPorId(item.props.value).nombre }}
             </template>
@@ -18,17 +20,23 @@
             </template>
           </v-select>
 
-          <v-select v-model="grupoSeleccionado" label="Grupo" :items="getAsignaturaPorId(asignaturaSeleccionada).grupos"
+          <v-select v-model="grupoSeleccionado" 
+            label="Grupo" 
+            :items="getAsignaturaPorId(asignaturaSeleccionada).grupos"
             @update:modelValue="cargarGrupo()">
             <template v-slot:selection="{ item, index }">
               {{ getGrupoPorId(item.props.value).nombre }}
             </template>
             <template v-slot:item="{ props, item }">
-              <v-list-item v-bind="props" :title="getGrupoPorId(item.props.value).nombre"></v-list-item>
+              <v-list-item v-bind="props" 
+                :title="getGrupoPorId(item.props.value).nombre"></v-list-item>
             </template>
           </v-select>
 
-          <v-text-field class="fecha" prepend-icon="mdi-calendar" v-model="fechaSeleccionada" :disabled="true">
+          <v-text-field class="fecha" 
+            prepend-icon="mdi-calendar" 
+            v-model="fechaSeleccionada" 
+            :disabled="true">
           </v-text-field>
 
           <v-btn @click="reservar">Reservar</v-btn>
@@ -40,11 +48,12 @@
       </div>
     </div>
     <div class="columnaDerecha">
-      <Qalendar class="calendario" 
-      :config="configuracion" 
-      :events="eventos" 
-      :key="refrescar" 
-      @interval-was-clicked="clickEnIntervalo">
+      <Qalendar class="calendario"
+        ref="calendarRef" 
+        :config="configuracion" 
+        :events="eventos" 
+        :key="refrescar"
+        @interval-was-clicked="clickEnIntervalo">
         <template #dayCell="{ dayData }">
           <div class="celdaDia">
             <div> {{ dayData.dateTimeString.substring(8, 10) }}</div>
@@ -56,6 +65,7 @@
     </div>
   </div>
 </template>
+
 <script>
 import { Qalendar } from '../../node_modules/qalendar';
 import { mapState, mapActions } from 'pinia';
@@ -63,9 +73,11 @@ import { useProfesoresStore } from '../store/profesoresStore';
 import { useReservasStore } from '../store/reservasStore';
 import { useAsignaturasStore } from '../store/asignaturasStore';
 import { useGruposStore } from '../store/gruposStore';
+import { useLugaresStore } from '../store/lugaresStores';
 
 export default {
   components: { Qalendar },
+
   data() {
     return {
       configuracion: {
@@ -87,24 +99,30 @@ export default {
         .toISOString()
         .substr(0, 10),
       menu: false,
+      periodoSeleccionado:null,
       fechaSeleccionada: "",
-      ultimosIdGrupoCargados:0, //TODO controlar que se quede a 0 al cambiar profesor
-      refrescar:false /** esta variable es solamente para refrescar la vista de qalendar de eventos.
-      * Canal Discord Qalendar, comentario de Kuzy de 22 de junio de 2023.[en línea][fecha de consulta: 17 de abril de 2024]. 
-      * Disponible en: https://discord.com/channels/1084178906036314152/1084923455604006965/1121374754671169639
+      ultimosIdGrupoCargados: 0, //TODO controlar que se quede a 0 al cambiar profesor
+      refrescar: false /** esta variable es solamente para refrescar la vista de qalendar de eventos.
+      * Canal Discord Qalendar, comentario de Kuzy de 22 de junio de 2023.
+      * [en línea][fecha de consulta: 17 de abril de 2024]. Disponible en: 
+      * https://discord.com/channels/1084178906036314152/1084923455604006965/1121374754671169639
       */
     }
   },
+
   computed: {
     ...mapState(useProfesoresStore, ['profesorSeleccionado']),
     ...mapState(useReservasStore, ['reservas', 'eventos', 'reserva'])
   },
+
   methods: {
-    ...mapActions(useReservasStore, ['cargarReservas', 'guardarReserva', 'resetReserva', 
-    'formatarFechaParaAPI', 'escogerLugarDisponible', 'cargarReservasGrupo', 
-    'mapReservaToEvento', 'agregarEventos', 'quitarUltimosEventosAdded']),
+    ...mapActions(useReservasStore, ['cargarReservas', 'guardarReserva', 'resetReserva',
+      'formatarFechaParaAPI', 'cargarReservasGrupo',
+      'mapReservaToEvento', 'agregarEventos', 'quitarUltimosEventosAdded']),
     ...mapActions(useAsignaturasStore, ['getAsignaturaPorId']),
     ...mapActions(useGruposStore, ['getGrupoPorId']),
+    ...mapActions(useLugaresStore, ['escogerLugarDisponible']),
+
     /**
      * Función para controlar los click en los intervalos del calendario. Coge la franja 
      * horaria y la fecha sobre la que se ha realizado click y la guarda en 
@@ -129,39 +147,42 @@ export default {
     async reservar() {
       this.reserva.fecha = this.formatarFechaParaAPI(this.fechaSeleccionada.split(" ")[0]);
       this.reserva.hora = parseInt(this.fechaSeleccionada.split(" ")[1].split("-")[0]);
-      let posible = await this.escogerLugarDisponible(this.asignaturaSeleccionada);
-      if (posible) {
+      let lugar = await this.escogerLugarDisponible(this.asignaturaSeleccionada);
+      if (lugar != null) {
         this.reserva.profesor = this.profesorSeleccionado.id;
         this.reserva.asignatura = this.asignaturaSeleccionada;
         this.reserva.grupo = this.grupoSeleccionado;
+        this.reserva.lugar = lugar;
         this.guardarReserva();
         this.resetReserva();
-        this.cargarReservas();
+        this.cargarReservas(this.periodoSeleccionado);
       } else {
         alert('No hay lugares disponibles para esa franja horaria, elija otra franja');
         this.resetReserva();
       }
     },
+
     /**
      * Función que añade a los eventos los del grupo seleccionado para que los profesores puedan ver
      * cuando el grupo no está disponible. 
      */
-    async cargarGrupo(){
+    async cargarGrupo() {
       this.quitarUltimosEventosAdded(this.ultimosIdGrupoCargados);
       let eventosGrupo = [];
       await this.cargarReservasGrupo(this.grupoSeleccionado)
-      .then(reservasGrupo => {
+        .then(reservasGrupo => {
           reservasGrupo.forEach(reserva => {
             eventosGrupo.push(this.mapReservaToEvento(reserva))
           });
-      })
-      .catch(error => console.log(error));
+        })
+        .catch(error => console.log(error));
       eventosGrupo = eventosGrupo.filter(eventoGrupo => !this.eventos.some(evento => evento.id == eventoGrupo.id));
       this.ultimosIdGrupoCargados = eventosGrupo.length;
       this.agregarEventos(eventosGrupo);
-      this.refrescar =!this.refrescar;
+      this.refrescar = !this.refrescar;
     }
   },
+
   watch: {
     /**
      * Observador que permite controlar el cambio de un profesor a otro y cambiar los parámetros
@@ -172,7 +193,10 @@ export default {
       handler(nuevoProfesor) {
         if (nuevoProfesor !== null) {
           this.asignaturaSeleccionada = nuevoProfesor.asignaturas[0];
-          this.cargarReservas();
+          this.quitarUltimosEventosAdded();
+          this.ultimosIdGrupoCargados = 0;
+          this.grupoSeleccionado = null;
+          this.cargarReservas(this.periodoSeleccionado);
         } else {
           this.asignaturaSeleccionada = null;
         }
@@ -180,11 +204,17 @@ export default {
       immediate: true
     }
   },
+
   mounted() {
-    this.cargarReservas();
+    this.periodoSeleccionado = {
+      inicio: this.$refs.calendarRef.period.start.toISOString().split('T')[0],
+      fin: this.$refs.calendarRef.period.end.toISOString().split('T')[0],
+    }
+    this.cargarReservas(this.periodoSeleccionado);
   }
 }
 </script>
+
 <style scoped>
 .formularioReserva {
   display: flex;
