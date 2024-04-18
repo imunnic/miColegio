@@ -31,11 +31,11 @@ public class ReservaDAOImpl implements ReservaDAOCustom{
     reservas = reservaDAO.findByProfesor(profesor)
                          .stream()
                          .filter(p -> {
-                           return p.getFecha().isAfter(fechaInicio) ||
-                                  p.getFecha().isEqual(fechaInicio);
+                           return p.getFecha().isAfter(fechaInicio);
                          })
                          .filter(p -> {
-                           return p.getFecha().isBefore(fechaFin);
+                           return p.getFecha().isBefore(fechaFin) ||
+                               p.getFecha().isEqual(fechaFin);
                          })
                          .collect(Collectors.toList());
     return reservas;
@@ -48,11 +48,11 @@ public class ReservaDAOImpl implements ReservaDAOCustom{
     reservas = reservaDAO.findByGrupo(grupo)
                          .stream()
                          .filter(p -> {
-                           return p.getFecha().isAfter(fechaInicio) ||
-                                  p.getFecha().isEqual(fechaInicio);
+                           return p.getFecha().isAfter(fechaInicio) ;
                          })
                          .filter(p -> {
-                           return p.getFecha().isBefore(fechaFin);
+                           return p.getFecha().isBefore(fechaFin)||
+                               p.getFecha().isEqual(fechaInicio);
                          })
                          .collect(Collectors.toList());
     return reservas;

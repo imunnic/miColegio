@@ -222,9 +222,11 @@ export default {
   },
 
   mounted() {
+    let fechaFin = new Date(this.$refs.calendarRef.period.end);
+    fechaFin.setDate(fechaFin.getDate() + 1);
     this.periodoSeleccionado ={
       inicio: this.$refs.calendarRef.period.start.toISOString().split('T')[0],
-      fin: this.$refs.calendarRef.period.end.toISOString().split('T')[0],
+      fin: fechaFin.toISOString().split('T')[0]
     }
     console.log(this.periodoSeleccionado);
   }
