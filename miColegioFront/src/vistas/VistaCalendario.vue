@@ -6,7 +6,7 @@
 posible solución cambiar el periodo del calendario-->
 <!-- TODO error de  actualización de reservas. Al actualizar las reservas no se muestran-->
 <!-- TODO error de carga de grupos, al saltar de periodo no se cargan los grupos para el
-periodo nuevo -->
+periodo nuevo. -->
 <template>
   <div class="contenedorColumnas">
     <div class="columnaIzquierda">
