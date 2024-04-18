@@ -31,10 +31,17 @@ export const useReservasStore = defineStore("reservas", {
         this.reservasService
           .getReservasProfesorEntre(profesores.profesorSeleccionado.id, periodo.inicio, periodo.fin)
           .then((response) => {
-            this.reservas = response.data._embedded.reservas;
-            this.eventos = this.reservas.map((reserva) => {
-              return this.mapReservaToEvento(reserva);
-            });
+            // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/keys
+            if(Object.keys(response.data).length == 0){
+              this.eventos=[];
+              let evento = {};
+              return evento;
+            } else {
+              this.reservas = response.data._embedded.reservas;
+              this.eventos = this.reservas.map((reserva) => {
+                return this.mapReservaToEvento(reserva);
+              });
+            }
           })
           .catch((error) => {
             console.log(error.code);

@@ -215,6 +215,7 @@ export default {
           this.cargarReservas(this.periodoSeleccionado);
         } else {
           this.asignaturaSeleccionada = null;
+          this.cargarReservas(this.periodoSeleccionado);
         }
       },
       immediate: true
