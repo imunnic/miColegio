@@ -42,4 +42,12 @@ public class ReservaController {
     return assembler.toCollectionModel(reservas);
   }
 
+  @GetMapping("/reservas/search/reservas-grupo-fecha")
+  @ResponseBody
+  public CollectionModel<PersistentEntityResource> getReservasDeGrupoEntreFechas(
+      @RequestParam("grupoId") int grupo, @RequestParam("fechaInicio") LocalDate inicio,
+      @RequestParam("fechaFin") LocalDate fin, PersistentEntityResourceAssembler assembler) {
+    List<Reserva> reservas = reservaDAO.getReservasDeGrupoEntreFechas(grupo, inicio, fin);
+    return assembler.toCollectionModel(reservas);
+  }
 }

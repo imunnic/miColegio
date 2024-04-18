@@ -108,9 +108,6 @@ export const useReservasStore = defineStore("reservas", {
     guardarReserva() {
       this.reservasService
         .create(this.reserva)
-        .then(() => {
-          this.cargarReservas();
-        })
         .catch((error) => {
           if (error.response.status == 409){
             alert('El grupo ya tiene asignada esa franja horaria. Puede elejir otra.')

@@ -15,4 +15,7 @@ public interface ReservaDAOCustom {
   boolean isLugarDisponible(int lugar, LocalDate fecha, int hora);
   
   public List<Reserva> getReservasDeProfesorEntreFechas(int profesor, LocalDate fechaInicio, LocalDate fechaFin);
+  
+  public List<Reserva> getReservasDeGrupoEntreFechas(int grupo, LocalDate fechaInicio, LocalDate fechaFin);
+  
 }

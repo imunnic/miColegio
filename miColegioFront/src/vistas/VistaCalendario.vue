@@ -2,6 +2,11 @@
   Vista que permite la visualización de las reservas de un profesor y permite reservar
   franjas horarias para una asignatura, grupo y lugar. 
 -->
+<!-- TODO error seleccion grupo y saldo de periodo. Se debe la refresh del key
+posible solución cambiar el periodo del calendario-->
+<!-- TODO error de  actualización de reservas. Al actualizar las reservas no se muestran-->
+<!-- TODO error de carga de grupos, al saltar de periodo no se cargan los grupos para el
+periodo nuevo -->
 <template>
   <div class="contenedorColumnas">
     <div class="columnaIzquierda">
@@ -53,7 +58,8 @@
         :config="configuracion" 
         :events="eventos" 
         :key="refrescar"
-        @interval-was-clicked="clickEnIntervalo">
+        @interval-was-clicked="clickEnIntervalo"
+        @updated-period="actualizarCalendario">
         <template #dayCell="{ dayData }">
           <div class="celdaDia">
             <div> {{ dayData.dateTimeString.substring(8, 10) }}</div>
@@ -148,6 +154,7 @@ export default {
       this.reserva.fecha = this.formatarFechaParaAPI(this.fechaSeleccionada.split(" ")[0]);
       this.reserva.hora = parseInt(this.fechaSeleccionada.split(" ")[1].split("-")[0]);
       let lugar = await this.escogerLugarDisponible(this.asignaturaSeleccionada);
+      console.log(lugar);
       if (lugar != null) {
         this.reserva.profesor = this.profesorSeleccionado.id;
         this.reserva.asignatura = this.asignaturaSeleccionada;
@@ -155,7 +162,7 @@ export default {
         this.reserva.lugar = lugar;
         this.guardarReserva();
         this.resetReserva();
-        this.cargarReservas(this.periodoSeleccionado);
+        this.actualizarCalendario(this.periodoSeleccionado);
       } else {
         alert('No hay lugares disponibles para esa franja horaria, elija otra franja');
         this.resetReserva();
@@ -180,7 +187,16 @@ export default {
       this.ultimosIdGrupoCargados = eventosGrupo.length;
       this.agregarEventos(eventosGrupo);
       this.refrescar = !this.refrescar;
-    }
+    },
+    
+    actualizarCalendario(evento){
+      this.periodoSeleccionado = {
+      inicio: evento.start.toISOString().split('T')[0],
+      fin: evento.end.toISOString().split('T')[0],
+      };
+      console.log(this.periodoSeleccionado);
+      this.cargarReservas(this.periodoSeleccionado);
+    },
   },
 
   watch: {
@@ -206,11 +222,11 @@ export default {
   },
 
   mounted() {
-    this.periodoSeleccionado = {
+    this.periodoSeleccionado ={
       inicio: this.$refs.calendarRef.period.start.toISOString().split('T')[0],
       fin: this.$refs.calendarRef.period.end.toISOString().split('T')[0],
     }
-    this.cargarReservas(this.periodoSeleccionado);
+    console.log(this.periodoSeleccionado);
   }
 }
 </script>

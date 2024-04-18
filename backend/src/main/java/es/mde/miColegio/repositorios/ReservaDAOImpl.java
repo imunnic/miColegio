@@ -41,4 +41,21 @@ public class ReservaDAOImpl implements ReservaDAOCustom{
     return reservas;
   }
 
+  @Override
+  public List<Reserva> getReservasDeGrupoEntreFechas(int grupo, LocalDate fechaInicio,
+      LocalDate fechaFin) {
+    List<Reserva> reservas = new ArrayList<Reserva>();
+    reservas = reservaDAO.findByGrupo(grupo)
+                         .stream()
+                         .filter(p -> {
+                           return p.getFecha().isAfter(fechaInicio) ||
+                                  p.getFecha().isEqual(fechaInicio);
+                         })
+                         .filter(p -> {
+                           return p.getFecha().isBefore(fechaFin);
+                         })
+                         .collect(Collectors.toList());
+    return reservas;
+  }
+
 }
