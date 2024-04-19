@@ -134,11 +134,15 @@ export default {
      */
     clickEnIntervalo(evento) {
       if (this.profesorSeleccionado !== null) {
-        let fecha = evento.intervalStart.substr(0, 10);
-        let partes = fecha.split("-");
-        fecha = partes[2] + "-" + partes[1] + "-" + partes[0];
-        this.fechaSeleccionada = fecha + " "
-          + evento.intervalStart.substr(11, 2) + "-" + evento.intervalEnd.substr(11, 2);
+        if (this.grupoSeleccionado != null){
+          let fecha = evento.intervalStart.substr(0, 10);
+          let partes = fecha.split("-");
+          fecha = partes[2] + "-" + partes[1] + "-" + partes[0];
+          this.fechaSeleccionada = fecha + " "
+            + evento.intervalStart.substr(11, 2) + "-" + evento.intervalEnd.substr(11, 2);
+        } else {
+          alert('Por favor, seleccione un grupo antes de elegir franja horaria');
+        }
       }
     },
 
@@ -220,6 +224,7 @@ export default {
           this.quitarUltimosEventosAdded();
           this.ultimosIdGrupoCargados = 0;
           this.grupoSeleccionado = null;
+          this.fechaSeleccionada = null;
           this.cargarReservas(this.convertirPeriodToPeriodo(this.periodoSeleccionado));
         } else {
           this.asignaturaSeleccionada = null;
