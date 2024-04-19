@@ -28,8 +28,8 @@ periodo nuevo. -->
 
           <v-select v-model="grupoSeleccionado" 
             label="Grupo" 
-            :items="getAsignaturaPorId(asignaturaSeleccionada).grupos">
-            <!-- @update:modelValue="cargarGrupo()"> -->
+            :items="getAsignaturaPorId(asignaturaSeleccionada).grupos"
+            @update:modelValue="cargarGrupo()">
             <template v-slot:selection="{ item, index }">
               {{ getGrupoPorId(item.props.value).nombre }}
             </template>
@@ -55,8 +55,7 @@ periodo nuevo. -->
     </div>
     <div class="columnaDerecha">
       <Qalendar class="calendario"
-        ref="calendarRef" 
-        :key="refrescar"
+        ref="calendarRef"
         :config="configuracion" 
         :events="eventos"
         @interval-was-clicked="clickEnIntervalo"
@@ -108,7 +107,6 @@ export default {
       menu: false,
       periodoSeleccionado:null,
       fechaSeleccionada: "",
-      refrescar:false,
       ultimosIdGrupoCargados: 0, //TODO controlar que se quede a 0 al cambiar profesor
     }
   },
@@ -159,6 +157,7 @@ export default {
         this.reserva.lugar = lugar;
         await this.guardarReserva();
         this.fechaSeleccionada = null;
+        this.grupoSeleccionado = null;
         await this.refrescarCalendario();
       } else {
         alert('No hay lugares disponibles para esa franja horaria, elija otra franja');
@@ -171,21 +170,20 @@ export default {
      * cuando el grupo no está disponible.
      * TODO cambiar el color de los eventos del grupo para hacerlo un poco más amigable
      */
-    // async cargarGrupo() {
-    //   this.quitarUltimosEventosAdded(this.ultimosIdGrupoCargados);
-    //   let eventosGrupo = [];
-    //   await this.cargarReservasGrupo(this.grupoSeleccionado, this.periodoSeleccionado)
-    //   .then(reservasGrupo => {
-    //     reservasGrupo.forEach(reserva => {
-    //       eventosGrupo.push(this.mapReservaToEvento(reserva))
-    //     });
-    //   })
-    //   .catch(error => console.log(error));
-    //   eventosGrupo = eventosGrupo.filter(eventoGrupo => !this.eventos.some(evento => evento.id == eventoGrupo.id));
-    //   this.ultimosIdGrupoCargados = eventosGrupo.length;
-    //   this.agregarEventos(eventosGrupo);
-    //   this.refrescarCalendario();
-    // },
+    async cargarGrupo() {
+      this.quitarUltimosEventosAdded(this.ultimosIdGrupoCargados);
+      let eventosGrupo = [];
+      await this.cargarReservasGrupo(this.grupoSeleccionado, this.periodoSeleccionado)
+      .then(reservasGrupo => {
+        console.log(reservasGrupo)
+        eventosGrupo = reservasGrupo.map((reserva) => {return this.mapReservaToEvento(reserva)})
+        eventosGrupo = eventosGrupo.filter(eventoGrupo => !this.eventos.some(evento => evento.id === eventoGrupo.id));
+        // console.log(eventosGrupo);
+        this.ultimosIdGrupoCargados = eventosGrupo.length;
+        this.agregarEventos(eventosGrupo);
+      })
+      .catch(error => console.log(error));
+    },
 
     /**
      * Funcion que sirve para refrescar la vista del calendario y actualizar sus props.
@@ -203,6 +201,9 @@ export default {
       this.periodoSeleccionado = periodo;
       let aux = this.convertirPeriodToPeriodo(this.periodoSeleccionado);
       await this.cargarReservas(aux);
+      if(this.grupoSeleccionado != null){
+        await this.cargarGrupo();
+      }
     },
   },
 

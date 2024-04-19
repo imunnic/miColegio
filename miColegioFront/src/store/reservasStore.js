@@ -52,9 +52,7 @@ export const useReservasStore = defineStore("reservas", {
       }
     },
     agregarEventos(eventos){
-      eventos.forEach(evento => {
-        this.eventos.push(evento);
-      });
+        this.eventos = [...this.eventos, ...eventos];
     },
     quitarUltimosEventosAdded(numEventos){
       for (let index = 0; index < numEventos; index++) {
