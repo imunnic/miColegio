@@ -2,7 +2,7 @@
   Vista que permite la visualización de las reservas de un profesor y permite reservar
   franjas horarias para una asignatura, grupo y lugar. 
 -->
-<!-- TODO error seleccion grupo y saldo de periodo. Se debe la refresh del key
+<!-- TODO error seleccion grupo y salto de periodo al actual. Se debe la refresh del key
 posible solución cambiar el periodo del calendario-->
 <!-- TODO error de  actualización de reservas. Al actualizar las reservas no se muestran-->
 <!-- TODO error de carga de grupos, al saltar de periodo no se cargan los grupos para el
@@ -21,14 +21,15 @@ periodo nuevo. -->
               {{ getAsignaturaPorId(item.props.value).nombre }}
             </template>
             <template v-slot:item="{ props, item }">
-              <v-list-item v-bind="props" :title="getAsignaturaPorId(item.props.value).nombre"></v-list-item>
+              <v-list-item v-bind="props" 
+              :title="getAsignaturaPorId(item.props.value).nombre"></v-list-item>
             </template>
           </v-select>
 
           <v-select v-model="grupoSeleccionado" 
             label="Grupo" 
-            :items="getAsignaturaPorId(asignaturaSeleccionada).grupos"
-            @update:modelValue="cargarGrupo()">
+            :items="getAsignaturaPorId(asignaturaSeleccionada).grupos">
+            <!-- @update:modelValue="cargarGrupo()"> -->
             <template v-slot:selection="{ item, index }">
               {{ getGrupoPorId(item.props.value).nombre }}
             </template>
@@ -55,9 +56,9 @@ periodo nuevo. -->
     <div class="columnaDerecha">
       <Qalendar class="calendario"
         ref="calendarRef" 
-        :config="configuracion" 
-        :events="eventos" 
         :key="refrescar"
+        :config="configuracion" 
+        :events="eventos"
         @interval-was-clicked="clickEnIntervalo"
         @updated-period="actualizarCalendarioPorPeriodo">
         <template #dayCell="{ dayData }">
@@ -107,12 +108,8 @@ export default {
       menu: false,
       periodoSeleccionado:null,
       fechaSeleccionada: "",
+      refrescar:false,
       ultimosIdGrupoCargados: 0, //TODO controlar que se quede a 0 al cambiar profesor
-      refrescar: false /** esta variable es solamente para refrescar la vista de qalendar de eventos.
-      * Canal Discord Qalendar, comentario de Kuzy de 22 de junio de 2023.
-      * [en línea][fecha de consulta: 17 de abril de 2024]. Disponible en: 
-      * https://discord.com/channels/1084178906036314152/1084923455604006965/1121374754671169639
-      */
     }
   },
 
@@ -123,8 +120,9 @@ export default {
 
   methods: {
     ...mapActions(useReservasStore, ['cargarReservas', 'guardarReserva', 'resetReserva',
-      'formatarFechaParaAPI', 'cargarReservasGrupo',
-      'mapReservaToEvento', 'agregarEventos', 'quitarUltimosEventosAdded']),
+      'formatearFechaParaAPI', 'cargarReservasGrupo',
+      'mapReservaToEvento', 'agregarEventos', 'quitarUltimosEventosAdded',
+      'convertirPeriodToPeriodo']),
     ...mapActions(useAsignaturasStore, ['getAsignaturaPorId']),
     ...mapActions(useGruposStore, ['getGrupoPorId']),
     ...mapActions(useLugaresStore, ['escogerLugarDisponible']),
@@ -151,7 +149,7 @@ export default {
      * después realiza la reserva. Si no lo hay informa al usuario.
      */
     async reservar() {
-      this.reserva.fecha = this.formatarFechaParaAPI(this.fechaSeleccionada.split(" ")[0]);
+      this.reserva.fecha = this.formatearFechaParaAPI(this.fechaSeleccionada.split(" ")[0]);
       this.reserva.hora = parseInt(this.fechaSeleccionada.split(" ")[1].split("-")[0]);
       let lugar = await this.escogerLugarDisponible(this.asignaturaSeleccionada);
       if (lugar != null) {
@@ -159,43 +157,59 @@ export default {
         this.reserva.asignatura = this.asignaturaSeleccionada;
         this.reserva.grupo = this.grupoSeleccionado;
         this.reserva.lugar = lugar;
-        this.guardarReserva();
-        this.resetReserva();
-        this.cargarReservas(this.periodoSeleccionado);
+        await this.guardarReserva();
         this.fechaSeleccionada = null;
+        await this.cargarReservas(this.convertirPeriodToPeriodo(this.periodoSeleccionado));
       } else {
         alert('No hay lugares disponibles para esa franja horaria, elija otra franja');
         this.resetReserva();
       }
     },
+      
+    //   /**
+    //    * Función que añade a los eventos los del grupo seleccionado para que los profesores puedan ver
+    //    * cuando el grupo no está disponible.
+    //    * TODO cambiar el color de los eventos del grupo para hacerlo un poco más amigable
+    //    */
+    // async cargarGrupo() {
+    //   this.quitarUltimosEventosAdded(this.ultimosIdGrupoCargados);
+    //   let eventosGrupo = [];
+    //   await this.cargarReservasGrupo(this.grupoSeleccionado, this.periodoSeleccionado)
+    //   .then(reservasGrupo => {
+    //     reservasGrupo.forEach(reserva => {
+    //       eventosGrupo.push(this.mapReservaToEvento(reserva))
+    //     });
+    //   })
+    //   .catch(error => console.log(error));
+    //   eventosGrupo = eventosGrupo.filter(eventoGrupo => !this.eventos.some(evento => evento.id == eventoGrupo.id));
+    //   this.ultimosIdGrupoCargados = eventosGrupo.length;
+    //   this.agregarEventos(eventosGrupo);
+    //   this.refrescarCalendario();
+    // },
+      
+    actualizarPorReserva(){
+      this.refrescarCalendario();
+    },
 
     /**
-     * Función que añade a los eventos los del grupo seleccionado para que los profesores puedan ver
-     * cuando el grupo no está disponible.
-     * TODO cambiar el color de los eventos del grupo para hacerlo un poco más amigable
+     * Funcion que sirve para refrescar la vista del calendario y actualizar sus props.
+     * Si se quiere volver al día actual se debe añadir la prop :key y utilizar una variable
+     * dummy para que al cambiarla se refresque la vista y devuelva a la fecha actual.
+     * Hay que tener en cuenta que la carga de reservas sería la del periodo dado por lo que
+     * habría que cargar de nuevo las reservas para el periodo de la fecha actual antes de
+     * mostrarlo.
      */
-    async cargarGrupo() {
-      this.quitarUltimosEventosAdded(this.ultimosIdGrupoCargados);
-      let eventosGrupo = [];
-      await this.cargarReservasGrupo(this.grupoSeleccionado)
-        .then(reservasGrupo => {
-          reservasGrupo.forEach(reserva => {
-            eventosGrupo.push(this.mapReservaToEvento(reserva))
-          });
-        })
-        .catch(error => console.log(error));
-      eventosGrupo = eventosGrupo.filter(eventoGrupo => !this.eventos.some(evento => evento.id == eventoGrupo.id));
-      this.ultimosIdGrupoCargados = eventosGrupo.length;
-      this.agregarEventos(eventosGrupo);
-      this.refrescar = !this.refrescar;
+    refrescarCalendario(){
+      this.cargarReservas(this.convertirPeriodToPeriodo(this.periodoSeleccionado));
+      this.$refs.calendarRef.goToPeriod('previous');
+      this.$refs.calendarRef.goToPeriod('next');
+
     },
     
     actualizarCalendarioPorPeriodo(periodo){
-      this.periodoSeleccionado = {
-      start: periodo.start.toISOString().split('T')[0],
-      end: periodo.end.toISOString().split('T')[0],
-      };
-      this.cargarReservas(this.periodoSeleccionado);
+      this.periodoSeleccionado = periodo;
+      let aux = this.convertirPeriodToPeriodo(this.periodoSeleccionado);
+      this.cargarReservas(aux);
     },
   },
 
@@ -212,10 +226,9 @@ export default {
           this.quitarUltimosEventosAdded();
           this.ultimosIdGrupoCargados = 0;
           this.grupoSeleccionado = null;
-          this.cargarReservas(this.periodoSeleccionado);
+          this.cargarReservas(this.convertirPeriodToPeriodo(this.periodoSeleccionado));
         } else {
           this.asignaturaSeleccionada = null;
-          this.cargarReservas(this.periodoSeleccionado);
         }
       },
       immediate: true
@@ -226,8 +239,8 @@ export default {
     let fechaFin = new Date(this.$refs.calendarRef.period.end);
     fechaFin.setDate(fechaFin.getDate() + 1);
     this.periodoSeleccionado ={
-      start: this.$refs.calendarRef.period.start.toISOString().split('T')[0],
-      end: fechaFin.toISOString().split('T')[0]
+      start: this.$refs.calendarRef.period.start,
+      end: fechaFin
     }
   }
 }

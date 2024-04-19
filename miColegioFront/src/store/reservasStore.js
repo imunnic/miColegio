@@ -28,7 +28,7 @@ export const useReservasStore = defineStore("reservas", {
     async cargarReservas(periodo) {
       let profesores = useProfesoresStore();
       if (profesores.profesorSeleccionado != null) {
-        await this.reservasService
+          await this.reservasService
           .getReservasProfesorEntre(profesores.profesorSeleccionado.id, periodo.start, periodo.end)
           .then((response) => {
             // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/keys
@@ -62,13 +62,14 @@ export const useReservasStore = defineStore("reservas", {
       }
     },
     /**
-     * Función que devuelve las reservas de un grupo
+     * Función que devuelve las reservas de un grupo entre las fechas dadas
      * @param grupoId id del grupo del que se ven todas las reservas
      * @returns todas las reservas de un grupo concreto
      */
-    async cargarReservasGrupo(grupoId){
+    async cargarReservasGrupo(grupoId, period){
+      let periodo = this.convertirPeriodToPeriodo(period);
       let reservasGrupo = [];
-      await this.reservasService.getReservasGrupo(grupoId)
+      await this.reservasService.getReservasGrupoEntre(grupoId, periodo.start, periodo.end)
       .then(response => reservasGrupo = response.data._embedded.reservas)
       .catch(error => console.log(error));
       return reservasGrupo;
@@ -112,8 +113,8 @@ export const useReservasStore = defineStore("reservas", {
       return evento;
     },
     
-    guardarReserva() {
-      this.reservasService
+    async guardarReserva() {
+      await this.reservasService
         .create(this.reserva)
         .catch((error) => {
           if (error.response.status == 409){
@@ -133,11 +134,19 @@ export const useReservasStore = defineStore("reservas", {
      * @param fecha la fecha en formato dd-MM-yyyy
      * @returns la fecha en formato yyyy-MM-dd
      */
-    formatarFechaParaAPI(fecha) {
+    formatearFechaParaAPI(fecha) {
       let fechaPartida = fecha.split("-");
       let fechaNueva =
         fechaPartida[2] + "-" + fechaPartida[1] + "-" + fechaPartida[0];
       return fechaNueva;
     },
+
+    convertirPeriodToPeriodo(period){
+      let periodo = {
+        start: period.start.toISOString().split('T')[0],
+        end: period.end.toISOString().split('T')[0]
+      }
+      return periodo
+    }
   },
 });

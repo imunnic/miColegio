@@ -30,6 +30,14 @@ export default class reservasService {
     );
   }
 
+  getReservasGrupoEntre(href, fechaInicio, fechaFin) {
+    return axios.get(
+      host + reservasEndPoint + search + "/reservas-grupo-fecha?grupoId=" + href 
+      + "&fechaInicio=" + fechaInicio 
+      + "&fechaFin=" + fechaFin
+    );
+  }
+
   isLugarDisponible(lugarId, fecha, hora) {
     return axios.get(
       host +
