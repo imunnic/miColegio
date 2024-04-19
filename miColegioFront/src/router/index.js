@@ -6,6 +6,11 @@ const routes = [
         path:'/',
         name:'home',
         component: () => import('../vistas/VistaCalendario.vue')
+    },
+    {
+        path:'/grupos',
+        name:'grupos',
+        component: () => import('../vistas/VistaCalendarioGrupo.vue')
     }
 ]
 

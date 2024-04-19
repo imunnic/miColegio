@@ -159,18 +159,18 @@ export default {
         this.reserva.lugar = lugar;
         await this.guardarReserva();
         this.fechaSeleccionada = null;
-        await this.cargarReservas(this.convertirPeriodToPeriodo(this.periodoSeleccionado));
+        await this.refrescarCalendario();
       } else {
         alert('No hay lugares disponibles para esa franja horaria, elija otra franja');
         this.resetReserva();
       }
     },
       
-    //   /**
-    //    * Función que añade a los eventos los del grupo seleccionado para que los profesores puedan ver
-    //    * cuando el grupo no está disponible.
-    //    * TODO cambiar el color de los eventos del grupo para hacerlo un poco más amigable
-    //    */
+    /**
+     * Función que añade a los eventos los del grupo seleccionado para que los profesores puedan ver
+     * cuando el grupo no está disponible.
+     * TODO cambiar el color de los eventos del grupo para hacerlo un poco más amigable
+     */
     // async cargarGrupo() {
     //   this.quitarUltimosEventosAdded(this.ultimosIdGrupoCargados);
     //   let eventosGrupo = [];
@@ -186,10 +186,6 @@ export default {
     //   this.agregarEventos(eventosGrupo);
     //   this.refrescarCalendario();
     // },
-      
-    actualizarPorReserva(){
-      this.refrescarCalendario();
-    },
 
     /**
      * Funcion que sirve para refrescar la vista del calendario y actualizar sus props.
@@ -199,17 +195,14 @@ export default {
      * habría que cargar de nuevo las reservas para el periodo de la fecha actual antes de
      * mostrarlo.
      */
-    refrescarCalendario(){
-      this.cargarReservas(this.convertirPeriodToPeriodo(this.periodoSeleccionado));
-      this.$refs.calendarRef.goToPeriod('previous');
-      this.$refs.calendarRef.goToPeriod('next');
-
+    async refrescarCalendario(){
+      await this.cargarReservas(this.convertirPeriodToPeriodo(this.periodoSeleccionado));
     },
     
-    actualizarCalendarioPorPeriodo(periodo){
+    async actualizarCalendarioPorPeriodo(periodo){
       this.periodoSeleccionado = periodo;
       let aux = this.convertirPeriodToPeriodo(this.periodoSeleccionado);
-      this.cargarReservas(aux);
+      await this.cargarReservas(aux);
     },
   },
 

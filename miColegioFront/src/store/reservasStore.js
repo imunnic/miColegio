@@ -70,7 +70,11 @@ export const useReservasStore = defineStore("reservas", {
       let periodo = this.convertirPeriodToPeriodo(period);
       let reservasGrupo = [];
       await this.reservasService.getReservasGrupoEntre(grupoId, periodo.start, periodo.end)
-      .then(response => reservasGrupo = response.data._embedded.reservas)
+      .then(response => { 
+        if(Object.keys(response.data).length != 0){
+          reservasGrupo = response.data._embedded.reservas;
+        }
+      })
       .catch(error => console.log(error));
       return reservasGrupo;
     },
