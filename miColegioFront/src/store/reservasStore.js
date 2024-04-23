@@ -25,16 +25,23 @@ export const useReservasStore = defineStore("reservas", {
      * de la librería "Qalendar" siempre que se seleccione un profesor. Modifica
      * this.reservas y this.eventos.
      */
-    cargarReservas() {
+    async cargarReservas(periodo) {
       let profesores = useProfesoresStore();
       if (profesores.profesorSeleccionado != null) {
-        this.reservasService
-          .getReservasProfesor(profesores.profesorSeleccionado.id)
+          await this.reservasService
+          .getReservasProfesorEntre(profesores.profesorSeleccionado.id, periodo.start, periodo.end)
           .then((response) => {
-            this.reservas = response.data._embedded.reservas;
-            this.eventos = this.reservas.map((reserva) => {
-              return this.mapReservaToEvento(reserva);
-            });
+            // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/keys
+            if(Object.keys(response.data).length == 0){
+              this.eventos=[];
+              let evento = {};
+              return evento;
+            } else {
+              this.reservas = response.data._embedded.reservas;
+              this.eventos = this.reservas.map((reserva) => {
+                return this.mapReservaToEvento(reserva);
+              });
+            }
           })
           .catch((error) => {
             console.log(error.code);
@@ -43,6 +50,31 @@ export const useReservasStore = defineStore("reservas", {
         this.reservas = [];
         this.eventos = [];
       }
+    },
+    agregarEventos(eventos){
+        this.eventos = [...this.eventos, ...eventos];
+    },
+    quitarUltimosEventosAdded(numEventos){
+      for (let index = 0; index < numEventos; index++) {
+        this.eventos.pop();
+      }
+    },
+    /**
+     * Función que devuelve las reservas de un grupo entre las fechas dadas
+     * @param grupoId id del grupo del que se ven todas las reservas
+     * @returns todas las reservas de un grupo concreto
+     */
+    async cargarReservasGrupo(grupoId, period){
+      let periodo = this.convertirPeriodToPeriodo(period);
+      let reservasGrupo = [];
+      await this.reservasService.getReservasGrupoEntre(grupoId, periodo.start, periodo.end)
+      .then(response => { 
+        if(Object.keys(response.data).length != 0){
+          reservasGrupo = response.data._embedded.reservas;
+        }
+      })
+      .catch(error => console.log(error));
+      return reservasGrupo;
     },
     /**
      * Función que mapea una reserva en un evento de la librería "Qalendar"
@@ -82,41 +114,10 @@ export const useReservasStore = defineStore("reservas", {
 
       return evento;
     },
-    /**
-     * Función que permite la selección automática de lugar entre los lugares disponibles para una
-     * asignatura y se la asigna a la reserva.
-     * @param asignaturaId parametro de id de la asignatura sobre la que seleccionar el lugar.
-     */
-    async escogerLugarDisponible(asignaturaId) {
-      let asignatura = useAsignaturasStore().getAsignaturaPorId(asignaturaId);
-      let lugaresId = asignatura.lugares;
-      let lugares = [];
-      let disponible = false;
-      lugaresId.forEach(id => {
-        lugares.push(useLugaresStore().getLugarPorId(id))
-      });
-      lugares.sort((a,b) => b.capacidad - a.capacidad);
-      for (let lugar of lugares) {
-        await this.reservasService.isLugarDisponible(lugar.id,this.reserva.fecha, this.reserva.hora)
-        .then(response => {
-          if (response.data == true){
-            this.reserva.lugar = lugar.id
-            disponible = true;
-          }
-        }).catch(error => console.log(error.code));
-        if (disponible){
-          break;
-        }
-      }
-      return disponible;
-    },
-
-    guardarReserva() {
-      this.reservasService
+    
+    async guardarReserva() {
+      await this.reservasService
         .create(this.reserva)
-        .then(() => {
-          this.cargarReservas();
-        })
         .catch((error) => {
           if (error.response.status == 409){
             alert('El grupo ya tiene asignada esa franja horaria. Puede elejir otra.')
@@ -135,11 +136,19 @@ export const useReservasStore = defineStore("reservas", {
      * @param fecha la fecha en formato dd-MM-yyyy
      * @returns la fecha en formato yyyy-MM-dd
      */
-    formatarFechaParaAPI(fecha) {
+    formatearFechaParaAPI(fecha) {
       let fechaPartida = fecha.split("-");
       let fechaNueva =
         fechaPartida[2] + "-" + fechaPartida[1] + "-" + fechaPartida[0];
       return fechaNueva;
     },
+
+    convertirPeriodToPeriodo(period){
+      let periodo = {
+        start: period.start.toISOString().split('T')[0],
+        end: period.end.toISOString().split('T')[0]
+      }
+      return periodo
+    }
   },
 });
