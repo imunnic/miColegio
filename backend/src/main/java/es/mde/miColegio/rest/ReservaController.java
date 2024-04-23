@@ -2,6 +2,7 @@ package es.mde.miColegio.rest;
 
 import java.time.LocalDate;
 import java.util.List;
+
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.rest.webmvc.PersistentEntityResource;
 import org.springframework.data.rest.webmvc.PersistentEntityResourceAssembler;

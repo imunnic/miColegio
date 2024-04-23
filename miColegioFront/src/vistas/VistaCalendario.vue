@@ -2,11 +2,6 @@
   Vista que permite la visualización de las reservas de un profesor y permite reservar
   franjas horarias para una asignatura, grupo y lugar. 
 -->
-<!-- TODO error seleccion grupo y salto de periodo al actual. Se debe la refresh del key
-posible solución cambiar el periodo del calendario-->
-<!-- TODO error de  actualización de reservas. Al actualizar las reservas no se muestran-->
-<!-- TODO error de carga de grupos, al saltar de periodo no se cargan los grupos para el
-periodo nuevo. -->
 <template>
   <div class="contenedorColumnas">
     <div class="columnaIzquierda">
@@ -107,7 +102,7 @@ export default {
       menu: false,
       periodoSeleccionado:null,
       fechaSeleccionada: "",
-      ultimosIdGrupoCargados: 0, //TODO controlar que se quede a 0 al cambiar profesor
+      ultimosIdGrupoCargados: 0
     }
   },
 
@@ -233,7 +228,11 @@ export default {
       immediate: true
     }
   },
-
+  /**
+   * Al montar a la fecha de fin del periodo seleccionado del calendario hay que sumar 1 porque 
+   * si no da un día por detrás. Después de eso hay que almacenar el periodo seleccionado de forma
+   * correcta
+   */
   mounted() {
     let fechaFin = new Date(this.$refs.calendarRef.period.end);
     fechaFin.setDate(fechaFin.getDate() + 1);
