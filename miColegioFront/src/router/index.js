@@ -11,6 +11,11 @@ const routes = [
         path:'/grupos',
         name:'grupos',
         component: () => import('../vistas/VistaCalendarioGrupo.vue')
+    },
+    {
+        path:'/login',
+        name:'login',
+        component: () => import('../vistas/VistaLogin.vue')
     }
 ]
 
