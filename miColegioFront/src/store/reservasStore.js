@@ -8,7 +8,7 @@ import { useProfesoresStore } from "./profesoresStore";
 export const useReservasStore = defineStore("reservas", {
   state: () => ({
     reservas: [],
-    reservasService: new ReservasService(),
+    reservasService: null,
     eventos: [],
     reserva: {
       profesor: null,
@@ -149,6 +149,10 @@ export const useReservasStore = defineStore("reservas", {
         end: period.end.toISOString().split('T')[0]
       }
       return periodo
+    },
+
+    arrancarServicio(token){
+      this.reservasService = new ReservasService(token);
     }
   },
 });

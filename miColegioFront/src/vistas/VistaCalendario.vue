@@ -75,6 +75,7 @@ import { useReservasStore } from '../store/reservasStore';
 import { useAsignaturasStore } from '../store/asignaturasStore';
 import { useGruposStore } from '../store/gruposStore';
 import { useLugaresStore } from '../store/lugaresStores';
+import { useUsuariosStore } from '../store/usuarioStore';
 
 export default {
   components: { Qalendar },
@@ -115,7 +116,7 @@ export default {
     ...mapActions(useReservasStore, ['cargarReservas', 'guardarReserva', 'resetReserva',
       'formatearFechaParaAPI', 'cargarReservasGrupo',
       'mapReservaToEvento', 'agregarEventos', 'quitarUltimosEventosAdded',
-      'convertirPeriodToPeriodo']),
+      'convertirPeriodToPeriodo','arrancarServicio']),
     ...mapActions(useAsignaturasStore, ['getAsignaturaPorId']),
     ...mapActions(useGruposStore, ['getGrupoPorId']),
     ...mapActions(useLugaresStore, ['escogerLugarDisponible']),
@@ -220,7 +221,6 @@ export default {
           this.ultimosIdGrupoCargados = 0;
           this.grupoSeleccionado = null;
           this.fechaSeleccionada = null;
-          this.cargarReservas(this.convertirPeriodToPeriodo(this.periodoSeleccionado));
         } else {
           this.asignaturaSeleccionada = null;
         }
@@ -240,6 +240,10 @@ export default {
       start: this.$refs.calendarRef.period.start,
       end: fechaFin
     }
+    if (useReservasStore().reservasService == null){
+      this.arrancarServicio(useUsuariosStore().token);
+    }
+    this.cargarReservas(this.convertirPeriodToPeriodo(this.periodoSeleccionado));
   }
 }
 </script>

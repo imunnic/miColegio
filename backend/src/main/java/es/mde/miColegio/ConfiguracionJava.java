@@ -5,6 +5,9 @@ import java.util.Arrays;
 import java.util.Properties;
 import javax.sql.DataSource;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import es.mde.miColegio.rest.MixIns;
+import es.mde.miColegio.seguridad.usuarios.Usuario;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -32,12 +35,15 @@ import jakarta.persistence.EntityManagerFactory;
 @PropertySource(
     {"classpath:configuracion/rest.properties", "classpath:configuracion/jackson.properties"})
 @EnableTransactionManagement
-@EnableJpaRepositories("${misRepositorios}")
-@ComponentScan("es.mde.miColegio.rest")
+@EnableJpaRepositories({"${misRepositorios}","es.mde.miColegio.seguridad.usuarios"})
+@ComponentScan({"es.mde.miColegio.rest", "es.mde.miColegio.seguridad"})
 @Import(ConfiguracionRest.class)
 public class ConfiguracionJava {
   @Value("${misEntidades}")
   String entidades;
+  @Value("${entidadSecurity}")
+  String entidadSecurity;
+
 
   /**
    * Entity manager que sustituye al jpa-config.xml
@@ -55,7 +61,7 @@ public class ConfiguracionJava {
     em.setDataSource(dataSource);
     em.setJpaVendorAdapter(vendorAdapter);
 
-    em.setPackagesToScan(entidades);
+    em.setPackagesToScan(entidades, entidadSecurity);
 
     Properties jpaProperties = new Properties();
     Arrays.asList("dialect", "show_sql", "hbm2ddl.auto", "enable_lazy_load_no_trans").stream()
@@ -75,5 +81,12 @@ public class ConfiguracionJava {
     System.err.println("----------------------------------");
 
     return emf.createEntityManager();
+  }
+
+  @Bean
+  public ObjectMapper getObjectMapper(){
+    ObjectMapper mapper = new ObjectMapper();
+    mapper.addMixIn(Usuario.class, MixIns.Usuarios.class);
+    return mapper;
   }
 }
