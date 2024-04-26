@@ -55,6 +55,24 @@ export const useReservasStore = defineStore("reservas", {
     agregarEventos(eventos){
         this.eventos = [...this.eventos, ...eventos];
     },
+    modificarEvento(idAsignaturaNueva, idEvento){
+      let eventoEdicion = this.eventos.filter(e => e.id = idEvento)[0];
+      let lugar = useLugaresStore().escogerLugarDisponible(idAsignaturaNueva);
+      //se le está pasando fecha y hora nula por lo que no se ejecuta, la función las coge
+      //automáticamente de reservasStore y no es correcto, hay que pasarlas por parámetro
+      if (lugar == null){
+        /*logica si no se encuentra lugar disponible*/
+      } else {
+        let modificacion = {
+          "asignatura":idAsignaturaNueva,
+          "lugar":lugar 
+        }
+        this.reservasService.update(idEvento, lugar)
+      }
+      eventoEdicion.topic = 
+      useAsignaturasStore().getAsignaturaPorId(idAsignaturaNueva).nombre;
+      eventoEdicion.location = lugar;
+    },
     quitarUltimosEventosAdded(numEventos){
       for (let index = 0; index < numEventos; index++) {
         this.eventos.pop();

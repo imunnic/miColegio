@@ -90,7 +90,7 @@ export default class reservasService {
     return axios.delete(host + reservasEndPoint + "/" + href, config);
   }
 
-  update(id, lugarData) {
-    return axios.put(host + reservasEndPoint + "/" + id, lugarData, config);
+  update(id, data) {
+    return axios.patch(host + reservasEndPoint + "/" + id, data, config);
   }
 }

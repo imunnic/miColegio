@@ -3,6 +3,8 @@
   franjas horarias para una asignatura, grupo y lugar. 
 -->
 <template>
+    <ComponentEdicionEvento v-model="editando" @finEdicion="terminarEdicion" :asignaturas="profesorSeleccionado.asignaturas">
+    </ComponentEdicionEvento>
   <div class="contenedorColumnas">
     <div class="columnaIzquierda">
       <div class="formularioReserva">
@@ -42,7 +44,8 @@
     <div class="columnaDerecha">
       <Qalendar class="calendario" ref="calendarRef" :config="configuracion" :events="eventos"
         @interval-was-clicked="clickEnIntervalo" @updated-period="actualizarCalendarioPorPeriodo"
-        @updated-mode="actualizarCalendarioPorPeriodo" @delete-event="borrarEvento">
+        @updated-mode="actualizarCalendarioPorPeriodo" @delete-event="borrarEvento" 
+        @edit-event="editarEvento">
         <template #dayCell="{ dayData }">
           <div class="celdaDia">
             <div> {{ dayData.dateTimeString.substring(8, 10) }}</div>
@@ -50,7 +53,6 @@
           </div>
         </template>
       </Qalendar>
-
     </div>
   </div>
 </template>
@@ -64,9 +66,10 @@ import { useAsignaturasStore } from '../store/asignaturasStore';
 import { useGruposStore } from '../store/gruposStore';
 import { useLugaresStore } from '../store/lugaresStores';
 import { useUsuariosStore } from '../store/usuarioStore';
+import ComponentEdicionEvento from '../componentes/ComponentEdicionEvento.vue';
 
 export default {
-  components: { Qalendar },
+  components: { Qalendar, ComponentEdicionEvento },
 
   data() {
     return {
@@ -91,7 +94,9 @@ export default {
       menu: false,
       periodoSeleccionado: null,
       fechaSeleccionada: "",
-      ultimosIdGrupoCargados: 0
+      ultimosIdGrupoCargados: 0,
+      idEventoEdicion: 0,
+      editando:false
     }
   },
 
@@ -104,7 +109,7 @@ export default {
     ...mapActions(useReservasStore, ['cargarReservas', 'guardarReserva', 'resetReserva',
       'formatearFechaParaAPI', 'cargarReservasGrupo',
       'mapReservaToEvento', 'agregarEventos', 'quitarUltimosEventosAdded',
-      'convertirPeriodToPeriodo', 'arrancarServicio', 'eliminarReserva']),
+      'convertirPeriodToPeriodo', 'arrancarServicio', 'eliminarReserva', 'modificarEvento']),
     ...mapActions(useAsignaturasStore, ['getAsignaturaPorId']),
     ...mapActions(useGruposStore, ['getGrupoPorId']),
     ...mapActions(useLugaresStore, ['escogerLugarDisponible']),
@@ -190,6 +195,17 @@ export default {
       if (this.grupoSeleccionado != null) {
         await this.cargarGrupo();
       }
+    },
+
+    editarEvento(evento){
+      this.editando = true;
+      this.idEventoEdicion = evento
+    },
+
+    terminarEdicion(evento){
+      this.editando = false;
+      this.modificarEvento(evento, this.idEventoEdicion);
+      this.idEventoEdicion = 0;
     },
 
     async borrarEvento(evento) {
