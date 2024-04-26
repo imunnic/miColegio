@@ -1,22 +1,21 @@
 import axios from "axios";
-import {useUsuariosStore} from '../store/usuarioStore';
+import { useUsuariosStore } from "../store/usuarioStore";
 
 const host = "http://localhost:8080/api";
 const reservasEndPoint = "/reservas";
 const search = "/search";
 let config = {
   headers: {
-      Authorization:'Bearer '
-  }
-}
+    Authorization: "Bearer ",
+  },
+};
 
 export default class reservasService {
-
-  constructor(token){
+  constructor(token) {
     this.actualizarCabecera(token);
   }
 
-  actualizarCabecera(token){
+  actualizarCabecera(token) {
     config.headers.Authorization = config.headers.Authorization + token;
   }
 
@@ -26,29 +25,44 @@ export default class reservasService {
 
   getReservasProfesor(href) {
     return axios.get(
-      host + reservasEndPoint + search + "/findByProfesor?profesor=" + href, config
+      host + reservasEndPoint + search + "/findByProfesor?profesor=" + href,
+      config
     );
   }
 
   getReservasGrupo(href) {
     return axios.get(
-      host + reservasEndPoint + search + "/findByGrupo?grupo=" + href, config
+      host + reservasEndPoint + search + "/findByGrupo?grupo=" + href,
+      config
     );
   }
 
   async getReservasProfesorEntre(href, fechaInicio, fechaFin) {
     return await axios.get(
-      host + reservasEndPoint + search + "/reservas-profesor-fecha?profesorId=" + href 
-      + "&fechaInicio=" + fechaInicio 
-      + "&fechaFin=" + fechaFin
+      host +
+        reservasEndPoint +
+        search +
+        "/reservas-profesor-fecha?profesorId=" +
+        href +
+        "&fechaInicio=" +
+        fechaInicio +
+        "&fechaFin=" +
+        fechaFin,
+      config
     );
   }
 
   getReservasGrupoEntre(href, fechaInicio, fechaFin) {
     return axios.get(
-      host + reservasEndPoint + search + "/reservas-grupo-fecha?grupoId=" + href 
-      + "&fechaInicio=" + fechaInicio 
-      + "&fechaFin=" + fechaFin,
+      host +
+        reservasEndPoint +
+        search +
+        "/reservas-grupo-fecha?grupoId=" +
+        href +
+        "&fechaInicio=" +
+        fechaInicio +
+        "&fechaFin=" +
+        fechaFin,
       config
     );
   }
@@ -56,14 +70,14 @@ export default class reservasService {
   isLugarDisponible(lugarId, fecha, hora) {
     return axios.get(
       host +
-      reservasEndPoint +
-      search +
-      "/lugar-disponible?lugarId=" +
-      lugarId +
-      "&fecha=" +
-      fecha +
-      "&hora=" +
-      hora,
+        reservasEndPoint +
+        search +
+        "/lugar-disponible?lugarId=" +
+        lugarId +
+        "&fecha=" +
+        fecha +
+        "&hora=" +
+        hora,
       config
     );
   }
@@ -73,7 +87,7 @@ export default class reservasService {
   }
 
   delete(href) {
-    return axios.delete(host + reservasEndPoint + '/' + href, config);
+    return axios.delete(host + reservasEndPoint + "/" + href, config);
   }
 
   update(id, lugarData) {

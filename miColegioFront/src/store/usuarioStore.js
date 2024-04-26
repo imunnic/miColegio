@@ -35,7 +35,6 @@ export const useUsuariosStore = defineStore("usuarios", {
           let profesoresStore = useProfesoresStore();
           let profesor = profesoresStore.getProfesorPorId(this.profesorId);
           profesoresStore.seleccionarProfesor(profesor);
-          console.log(profesoresStore.profesorSeleccionado);
         })
         .catch((error) => console.log(error));
     },
