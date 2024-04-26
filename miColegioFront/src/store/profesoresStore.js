@@ -4,7 +4,10 @@ import profesores from "../assets/profesores.json"
 export const useProfesoresStore = defineStore('profesorado', {
   state: () => ({
     profesorado: profesores.profesores,
-    profesorSeleccionado: null
+    profesorSeleccionado: {
+      nombre:"",
+      apellidos:""
+    }
   }),
   actions: {
     seleccionarProfesor(profesor) {

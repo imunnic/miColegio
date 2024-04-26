@@ -7,18 +7,18 @@ const register = "/register";
 const usuarios = "/usuarios/search";
 const find = "/findByUsername?username=";
 let config = {
-    headers: {
-        Authorization:''
-    }
-}
+  headers: {
+    Authorization: "",
+  },
+};
 
 export default class UsuariosService {
-    login(login){
-        return axios.post(host + autenticacion + loginurl, login);
-    }
+  login(login) {
+    return axios.post(host + autenticacion + loginurl, login);
+  }
 
-    getIdUsuario(username, token){
-        config.headers.Authorization = 'Bearer ' + token;
-        return axios.get(host + usuarios + find + username, config)
-    }
+  getIdUsuario(username, token) {
+    config.headers.Authorization = "Bearer " + token;
+    return axios.get(host + usuarios + find + username, config);
+  }
 }

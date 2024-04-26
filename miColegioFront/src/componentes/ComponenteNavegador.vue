@@ -3,7 +3,7 @@
  -->
 <template>
   <v-layout>
-    <v-navigation-drawer 
+    <v-navigation-drawer v-if="isLogged"
       v-model="drawer" 
       :rail="rail"
       permanent
@@ -11,12 +11,11 @@
       @click="rail = false">
       <v-list>
         <v-list-item
-          v-for="profesor in profesorado" 
           class="profesor"  
-          :key="profesor.nombre" 
-          :title="profesor.nombre + ' ' + profesor.apellido"
+          :key="profesorSeleccionado.nombre" 
+          :title="profesorSeleccionado.nombre + ' ' + profesorSeleccionado.apellido"
           prepend-icon="mdi-account" 
-        @click.stop="cambiarProfesor(profesor)">
+        @click.stop="navegarAHome(profesor)">
         </v-list-item>
         <v-list-item
           prepend-icon="mdi-account-group"
@@ -34,6 +33,7 @@
 <script>
 import { mapActions, mapState } from 'pinia';
 import {useProfesoresStore} from '../store/profesoresStore'
+import { useUsuariosStore } from '../store/usuarioStore';
 
 export default {
   data() {
@@ -43,13 +43,17 @@ export default {
     }
   },
   computed: {
-    ...mapState(useProfesoresStore,['profesorado', 'profesorSeleccionado'])
+    ...mapState(useProfesoresStore,['profesorado', 'profesorSeleccionado']),
+    ...mapState(useUsuariosStore,['isLogged'])
   },
   methods: {
     ...mapActions(useProfesoresStore,['seleccionarProfesor']),
     cambiarProfesor(profesor) {
       this.rail = true;
       this.seleccionarProfesor(profesor);
+    },
+    navegarAHome(){
+      this.$router.push('/home')
     },
     navegarAGrupo(){
       this.$router.push('/grupos')

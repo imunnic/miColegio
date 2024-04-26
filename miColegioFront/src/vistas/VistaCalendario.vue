@@ -240,7 +240,9 @@ export default {
       start: this.$refs.calendarRef.period.start,
       end: fechaFin
     }
-    this.arrancarServicio(useUsuariosStore().token);
+    if (useReservasStore().reservasService == null){
+      this.arrancarServicio(useUsuariosStore().token);
+    }
     this.cargarReservas(this.convertirPeriodToPeriodo(this.periodoSeleccionado));
   }
 }
