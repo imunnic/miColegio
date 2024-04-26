@@ -12,6 +12,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+/**
+ * @author JOSE LUIS PUENTES ALAMOS
+ * Sobre el código inicial se ha añadido la asociación del profesor con el usuario
+ */
 @Service
 public class AuthService {
   private final UsuarioDAO USUARIODAO;
@@ -40,6 +44,7 @@ public class AuthService {
     usuario.setPassword(ENCODER.encode(request.getPassword()));
     usuario.setNombre(request.getNombre());
     usuario.setApellido(request.getApellido());
+    usuario.setProfesor(request.getProfesor());
     usuario.setRol(Rol.PROFESOR);
     this.USUARIODAO.save(usuario);
 

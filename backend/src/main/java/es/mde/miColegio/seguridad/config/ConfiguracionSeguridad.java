@@ -10,6 +10,9 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+/**
+ * @author JOSE LUIS PUENTES ALAMOS
+ */
 @Configuration
 @EnableWebSecurity
 public class ConfiguracionSeguridad {

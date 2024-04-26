@@ -1,5 +1,8 @@
 package es.mde.miColegio.seguridad.auth;
 
+/**
+ * @author JOSE LUIS PUENTES ALAMOS
+ */
 public class LoginRequest {
   private String username;
   private String password;

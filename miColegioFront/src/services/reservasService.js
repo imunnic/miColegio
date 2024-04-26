@@ -73,7 +73,7 @@ export default class reservasService {
   }
 
   delete(href) {
-    return axios.delete(href, config);
+    return axios.delete(host + reservasEndPoint + '/' + href, config);
   }
 
   update(id, lugarData) {

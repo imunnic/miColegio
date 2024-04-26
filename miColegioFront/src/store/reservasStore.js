@@ -131,6 +131,9 @@ export const useReservasStore = defineStore("reservas", {
       }
     },
 
+    async eliminarReserva(href){
+      await this.reservasService.delete(href).catch(error => console.log(error));
+    },
     /**
      * Función que permite dar la vuelta a una fecha para guardarla en la API
      * @param fecha la fecha en formato dd-MM-yyyy

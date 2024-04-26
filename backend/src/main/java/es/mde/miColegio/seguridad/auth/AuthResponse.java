@@ -1,5 +1,8 @@
 package es.mde.miColegio.seguridad.auth;
 
+ /**
+  * @author JOSE LUIS PUENTES ALAMOS
+  */
 public class AuthResponse {
   private String token;
   private String username;

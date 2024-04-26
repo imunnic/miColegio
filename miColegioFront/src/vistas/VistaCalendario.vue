@@ -54,7 +54,8 @@
         :config="configuracion" 
         :events="eventos"
         @interval-was-clicked="clickEnIntervalo"
-        @updated-period="actualizarCalendarioPorPeriodo">
+        @updated-period="actualizarCalendarioPorPeriodo"
+        @delete-event="borrarEvento">
         <template #dayCell="{ dayData }">
           <div class="celdaDia">
             <div> {{ dayData.dateTimeString.substring(8, 10) }}</div>
@@ -116,7 +117,7 @@ export default {
     ...mapActions(useReservasStore, ['cargarReservas', 'guardarReserva', 'resetReserva',
       'formatearFechaParaAPI', 'cargarReservasGrupo',
       'mapReservaToEvento', 'agregarEventos', 'quitarUltimosEventosAdded',
-      'convertirPeriodToPeriodo','arrancarServicio']),
+      'convertirPeriodToPeriodo','arrancarServicio', 'eliminarReserva']),
     ...mapActions(useAsignaturasStore, ['getAsignaturaPorId']),
     ...mapActions(useGruposStore, ['getGrupoPorId']),
     ...mapActions(useLugaresStore, ['escogerLugarDisponible']),
@@ -205,7 +206,12 @@ export default {
         await this.cargarGrupo();
       }
     },
-  },
+
+    async borrarEvento(evento){
+      await this.eliminarReserva(evento);
+      await this.refrescarCalendario();//devuelve el id, hay que buscar el evento por id
+    }
+  },  
 
   watch: {
     /**

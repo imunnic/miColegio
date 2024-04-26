@@ -10,6 +10,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * @author JOSE LUIS PUENTES ALAMOS
+ */
 @RestController
 public class AuthController {
   private final AuthService AUTHSERVICE;
