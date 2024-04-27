@@ -1,9 +1,10 @@
 import axios from "axios";
-import { useUsuariosStore } from "../store/usuarioStore";
 
 const host = "http://localhost:8080/api";
 const reservasEndPoint = "/reservas";
 const search = "/search";
+const reservas = host + reservasEndPoint;
+const reservasSearch = reservas + search;
 let config = {
   headers: {
     Authorization: "Bearer ",
@@ -18,30 +19,39 @@ export default class reservasService {
   actualizarCabecera(token) {
     config.headers.Authorization = config.headers.Authorization + token;
   }
-
+  /**
+   * Función que devuelve todas las reservas
+   */
   getAll() {
     return axios.get(host + reservasEndPoint, config);
   }
 
+  /**
+   * Función que devuelve todas las reservas de un profesor
+   */
   getReservasProfesor(href) {
     return axios.get(
-      host + reservasEndPoint + search + "/findByProfesor?profesor=" + href,
+      reservasSearch + "/findByProfesor?profesor=" + href,
       config
     );
   }
 
+  /**
+   * Función que devuelve todas las reservas de un grupo
+   */
   getReservasGrupo(href) {
     return axios.get(
-      host + reservasEndPoint + search + "/findByGrupo?grupo=" + href,
+      reservasSearch + "/findByGrupo?grupo=" + href,
       config
     );
   }
 
+  /**
+   * Función que devuelve todas las reservas de un profesor entre dos fechas
+   */
   getReservasProfesorEntre(href, periodo) {
     return axios.get(
-      host +
-        reservasEndPoint +
-        search +
+      reservasSearch +
         "/reservas-profesor-fecha?profesorId=" +
         href +
         "&fechaInicio=" +
@@ -52,11 +62,12 @@ export default class reservasService {
     );
   }
 
+  /**
+   * Función que devuelve todas las reservas de un grupo entre dos fechas
+   */
   getReservasGrupoEntre(href, periodo) {
     return axios.get(
-      host +
-        reservasEndPoint +
-        search +
+      reservasSearch +
         "/reservas-grupo-fecha?grupoId=" +
         href +
         "&fechaInicio=" +
@@ -67,11 +78,12 @@ export default class reservasService {
     );
   }
 
+  /**
+   * Función que dice si un lugar está disponible o no
+   */
   isLugarDisponible(lugarId, franjaHoraria) {
     return axios.get(
-      host +
-        reservasEndPoint +
-        search +
+      reservasSearch +
         "/lugar-disponible?lugarId=" +
         lugarId +
         "&fecha=" +
@@ -83,14 +95,14 @@ export default class reservasService {
   }
 
   create(reserva) {
-    return axios.post(host + reservasEndPoint, reserva, config);
+    return axios.post(reservas, reserva, config);
   }
 
   delete(href) {
-    return axios.delete(host + reservasEndPoint + "/" + href, config);
+    return axios.delete(reservas + "/" + href, config);
   }
 
   update(id, data) {
-    return axios.patch(host + reservasEndPoint + "/" + id, data, config);
+    return axios.patch(reservas + "/" + id, data, config);
   }
 }

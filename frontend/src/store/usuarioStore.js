@@ -26,6 +26,10 @@ export const useUsuariosStore = defineStore("usuarios", {
       }
     },
 
+    /**
+     * Función que obtiene la id del profesor que se ha logeado y guarda el profesor
+     * correspondiente en la store de profesor
+     */
     async obtenerIdProfesor() {
       try {
         let response = await this.usuarioService.getIdUsuario(this.username, this.token);

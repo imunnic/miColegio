@@ -28,65 +28,57 @@ export const useReservasStore = defineStore("reservas", {
     async cargarReservas(periodo) {
       let profesores = useProfesoresStore();
       if (profesores.profesorSeleccionado != null) {
-        try{
-        let response = await this.reservasService
-        .getReservasProfesorEntre(profesores.profesorSeleccionado.id, periodo);
-         // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/keys
-         if(Object.keys(response.data).length == 0){
-          this.eventos=[];
-          let evento = {};
-          return evento;
-        } else {
-          this.reservas = response.data._embedded.reservas;
-          this.eventos = this.reservas.map((reserva) => {
-            return this.mapReservaToEvento(reserva);
-          });
+        try {
+          let response = await this.reservasService.getReservasProfesorEntre(
+            profesores.profesorSeleccionado.id,
+            periodo
+          );
+          // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/keys
+          if (Object.keys(response.data).length == 0) {
+            this.eventos = [];
+            let evento = {};
+            return evento;
+          } else {
+            this.reservas = response.data._embedded.reservas;
+            this.eventos = this.reservas.map((reserva) => {
+              return this.mapReservaToEvento(reserva);
+            });
+          }
+        } catch (error) {
+          console.log(error);
         }
-      } catch(error) {
-        console.log(error);
-      }
       } else {
         this.reservas = [];
         this.eventos = [];
       }
     },
-    agregarEventos(eventos){
-        this.eventos = [...this.eventos, ...eventos];
-    },
-
+    
     /**
      * Función que permite modificar la asignatura de una reserva y además el lugar automáticamente
-     * @param idAsignaturaNueva es el id de la asignatura que se va a poner 
-     * @param idEvento es el id del evento de qalendar que se corresponde con el id de la reserva 
+     * @param idAsignaturaNueva es el id de la asignatura que se va a poner
+     * @param idEvento es el id del evento de qalendar que se corresponde con el id de la reserva
      */
-    async modificarReserva(idAsignaturaNueva, idEvento){
-      let eventoEdicion = this.eventos.filter(e => e.id = idEvento)[0];
+    async modificarReserva(idAsignaturaNueva, idEvento) {
+      let eventoEdicion = this.eventos.filter((e) => (e.id = idEvento))[0];
       let periodo = {
-        "fecha":eventoEdicion.time.start.split(' ')[0],
-        "hora": eventoEdicion.time.start.split(' ')[1].split(':')[0]
-      }
-      try{
-        let lugar = await useLugaresStore().escogerLugarDisponible(idAsignaturaNueva, periodo);
-        if (lugar == null){
+        fecha: eventoEdicion.time.start.split(" ")[0],
+        hora: eventoEdicion.time.start.split(" ")[1].split(":")[0],
+      };
+      try {
+        let lugar = await useLugaresStore().escogerLugarDisponible(
+          idAsignaturaNueva,
+          periodo
+        );
+        if (lugar == null) {
         } else {
           let modificacion = {
-            "asignatura":idAsignaturaNueva,
-            "lugar":lugar 
-          }
-          await this.reservasService.update(idEvento, modificacion)
+            asignatura: idAsignaturaNueva,
+            lugar: lugar,
+          };
+          await this.reservasService.update(idEvento, modificacion);
         }
-      }catch(error){
+      } catch (error) {
         console.log(error);
-      }
-    },
-
-    /**
-     * Función que permite eliminar de la vista los eventos de grupo añadidos al calendario
-     * @param numEventos es el número de eventos que se había añadido previamente
-     */
-    quitarUltimosEventosAdded(numEventos){
-      for (let index = 0; index < numEventos; index++) {
-        this.eventos.pop();
       }
     },
 
@@ -95,16 +87,19 @@ export const useReservasStore = defineStore("reservas", {
      * @param grupoId id del grupo del que se ven todas las reservas
      * @returns todas las reservas de un grupo concreto
      */
-    async cargarReservasGrupo(grupoId, period){
+    async cargarReservasGrupo(grupoId, period) {
       let periodo = this.convertirPeriodToPeriodo(period);
       let reservasGrupo = [];
-      try{
-        let response = await this.reservasService.getReservasGrupoEntre(grupoId, periodo);
-        if(Object.keys(response.data).length != 0){
+      try {
+        let response = await this.reservasService.getReservasGrupoEntre(
+          grupoId,
+          periodo
+        );
+        if (Object.keys(response.data).length != 0) {
           reservasGrupo = response.data._embedded.reservas;
         }
-      } catch(error){
-        console.log(error); 
+      } catch (error) {
+        console.log(error);
       }
       return reservasGrupo;
     },
@@ -147,15 +142,15 @@ export const useReservasStore = defineStore("reservas", {
 
       return evento;
     },
-    
+
     async guardarReserva() {
       try {
-        await this.reservasService
-          .create(this.reserva)
-
-      } catch(error){
-        if (error.response.status == 409){
-          alert('El grupo ya tiene asignada esa franja horaria. Puede elejir otra.')
+        await this.reservasService.create(this.reserva);
+      } catch (error) {
+        if (error.response.status == 409) {
+          alert(
+            "El grupo ya tiene asignada esa franja horaria. Puede elejir otra."
+          );
         }
       }
     },
@@ -166,13 +161,28 @@ export const useReservasStore = defineStore("reservas", {
       }
     },
 
-    async eliminarReserva(href){
+    async eliminarReserva(href) {
       try {
-        await this.reservasService.delete(href)
-      } catch(error){
+        await this.reservasService.delete(href);
+      } catch (error) {
         console.log(error);
       }
     },
+    
+    agregarEventos(eventos) {
+      this.eventos = [...this.eventos, ...eventos];
+    },
+
+    /**
+     * Función que permite eliminar de la vista los eventos de grupo añadidos al calendario
+     * @param numEventos es el número de eventos que se había añadido previamente
+     */
+    quitarUltimosEventosAdded(numEventos) {
+      for (let index = 0; index < numEventos; index++) {
+        this.eventos.pop();
+      }
+    },
+
 
     /**
      * Función que permite dar la vuelta a una fecha para guardarla en la API
@@ -191,16 +201,16 @@ export const useReservasStore = defineStore("reservas", {
      * @param {*} period periodo de Qalendar
      * @returns el periodo en el formato que puede manejar la API
      */
-    convertirPeriodToPeriodo(period){
+    convertirPeriodToPeriodo(period) {
       let periodo = {
-        start: period.start.toISOString().split('T')[0],
-        end: period.end.toISOString().split('T')[0]
-      }
-      return periodo
+        start: period.start.toISOString().split("T")[0],
+        end: period.end.toISOString().split("T")[0],
+      };
+      return periodo;
     },
 
-    arrancarServicio(token){
+    arrancarServicio(token) {
       this.reservasService = new ReservasService(token);
-    }
+    },
   },
 });

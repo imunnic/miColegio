@@ -1,25 +1,38 @@
+<!-- Componente para el formulario de edición de la reserva -->
 <template>
   <v-dialog title="Edición de reserva">
     <div class="contenedor">
       <v-card class="contenido">
         Modificar Reserva
-        <v-form ref="formularioEdicion">
-          <v-select v-model="asignatura" label="Asignatura" :items=asignaturas :rules="[v => !!v || 'Seleccione una asignatura']">
+        
+        <v-form ref="formularioEdicion"> 
+          <v-select 
+            v-model="asignatura" 
+            label="Asignatura" 
+            :items=asignaturas :rules="[v => !!v || 'Seleccione una asignatura']">
             <template v-slot:selection="{ item, index }">
               {{ getAsignaturaPorId(item.props.value).nombre }}
             </template>
             <template v-slot:item="{ props, item }">
-              <v-list-item v-bind="props" :title="getAsignaturaPorId(item.props.value).nombre"></v-list-item>
+              <v-list-item 
+                v-bind="props" 
+                :title="getAsignaturaPorId(item.props.value).nombre"></v-list-item>
             </template>
           </v-select>
+          
           <div class="botonesFormulario">
-            <v-btn :prepend-icon="'mdi-check-circle'" @click="emitirEdicion()">
+            <v-btn 
+              :prepend-icon="'mdi-check-circle'" 
+              @click="emitirEdicion()">
               <template v-slot:prepend>
                 <v-icon color="success"></v-icon>
               </template>
               Modificar
             </v-btn>
-            <v-btn :prepend-icon="'mdi-close-circle'" @click="this.$emit('cancelar')">
+            
+            <v-btn 
+              :prepend-icon="'mdi-close-circle'" 
+              @click="this.$emit('cancelar')">
               <template v-slot:prepend>
                 <v-icon color="error"></v-icon>
               </template>

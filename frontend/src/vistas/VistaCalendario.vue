@@ -3,38 +3,67 @@
   franjas horarias para una asignatura, grupo y lugar. 
 -->
 <template>
-    <ComponentEdicionEvento v-model="editando" @finEdicion="terminarEdicion" @cancelar="cancelarEdicion" :asignaturas="profesorSeleccionado.asignaturas">
-    </ComponentEdicionEvento>
+  <ComponentEdicionEvento 
+    v-model="editando" 
+    @finEdicion="terminarEdicion" 
+    @cancelar="cancelarEdicion"
+    :asignaturas="profesorSeleccionado.asignaturas">
+  </ComponentEdicionEvento>
   <div class="contenedorColumnas">
     <div class="columnaIzquierda">
       <div class="formularioReserva">
         <v-form ref="form" v-if="profesorSeleccionado != null">
           {{ profesorSeleccionado.nombre }} {{ profesorSeleccionado.apellido }}
 
-          <v-select v-model="asignaturaSeleccionada" label="Asignaturas" :items="profesorSeleccionado.asignaturas">
-            <template v-slot:selection="{ item, index }" required>
+          <v-select 
+            v-model="asignaturaSeleccionada" 
+            label="Asignaturas" 
+            :items="profesorSeleccionado.asignaturas">
+            <template 
+              v-slot:selection="{ item, index }" 
+              required>
               {{ getAsignaturaPorId(item.props.value).nombre }}
             </template>
             <template v-slot:item="{ props, item }">
-              <v-list-item v-bind="props" :title="getAsignaturaPorId(item.props.value).nombre"></v-list-item>
+              <v-list-item 
+                v-bind="props" 
+                :title="getAsignaturaPorId(item.props.value).nombre">
+              </v-list-item>
             </template>
           </v-select>
 
-          <v-select v-model="grupoSeleccionado" label="Grupo" :items="getAsignaturaPorId(asignaturaSeleccionada).grupos"
-            @update:modelValue="cargarGrupo()" :rules="[v => !!v || 'Seleccione un grupo']" required>
+          <v-select 
+            v-model="grupoSeleccionado" 
+            label="Grupo" 
+            :items="getAsignaturaPorId(asignaturaSeleccionada).grupos"
+            @update:modelValue="cargarGrupo()" 
+            :rules="[v => !!v || 'Seleccione un grupo']" 
+            required>
             <template v-slot:selection="{ item, index }">
               {{ getGrupoPorId(item.props.value).nombre }}
             </template>
             <template v-slot:item="{ props, item }">
-              <v-list-item v-bind="props" :title="getGrupoPorId(item.props.value).nombre"></v-list-item>
+              <v-list-item 
+                v-bind="props" 
+                :title="getGrupoPorId(item.props.value).nombre">
+              </v-list-item>
             </template>
           </v-select>
 
-          <v-text-field class="fecha" prepend-icon="mdi-calendar" v-model="fechaSeleccionada" :disabled="true" required
-          :rules="[v => !!v || 'Seleccione una fecha']">
+          <v-text-field 
+            class="fecha" 
+            prepend-icon="mdi-calendar" 
+            v-model="fechaSeleccionada" 
+            :disabled="true" 
+            required
+            :rules="[v => !!v || 'Seleccione una fecha']">
           </v-text-field>
 
-          <v-btn @click="reservar" block>Reservar</v-btn>
+          <v-btn 
+            @click="reservar" 
+            block>
+            Reservar
+          </v-btn>
 
         </v-form>
         <div v-else>
@@ -43,9 +72,15 @@
       </div>
     </div>
     <div class="columnaDerecha">
-      <Qalendar class="calendario" ref="calendarRef" :config="configuracion" :events="eventos"
-        @interval-was-clicked="clickEnIntervalo" @updated-period="actualizarCalendarioPorPeriodo"
-        @updated-mode="actualizarCalendarioPorModo" @delete-event="borrarEvento" 
+      <Qalendar 
+        class="calendario" 
+        ref="calendarRef" 
+        :config="configuracion" 
+        :events="eventos"
+        @interval-was-clicked="clickEnIntervalo" 
+        @updated-period="actualizarCalendarioPorPeriodo"
+        @updated-mode="actualizarCalendarioPorModo" 
+        @delete-event="borrarEvento" 
         @edit-event="editarEvento">
         <template #dayCell="{ dayData }">
           <div class="celdaDia">
@@ -97,7 +132,7 @@ export default {
       fechaSeleccionada: "",
       ultimosEventosGrupoCargados: 0,
       idEventoEdicion: 0,
-      editando:false
+      editando: false
     }
   },
 
@@ -142,7 +177,7 @@ export default {
      */
     async reservar() {
       const { valid } = await this.$refs.form.validate();
-      if (valid){
+      if (valid) {
         this.reserva.fecha = this.formatearFechaParaAPI(this.fechaSeleccionada.split(" ")[0]);
         this.reserva.hora = parseInt(this.fechaSeleccionada.split(" ")[1].split("-")[0]);
         let periodo = {
@@ -175,13 +210,13 @@ export default {
       this.quitarUltimosEventosAdded(this.ultimosEventosGrupoCargados);
       let eventosGrupo = [];
       try {
-        let reservasGrupo = await this.cargarReservasGrupo(this.grupoSeleccionado, 
-        this.periodoSeleccionado);
+        let reservasGrupo = await this.cargarReservasGrupo(this.grupoSeleccionado,
+          this.periodoSeleccionado);
         eventosGrupo = reservasGrupo.map((reserva) => { return this.mapReservaToEvento(reserva) })
-          eventosGrupo = eventosGrupo.filter(eventoGrupo => !this.eventos.some(evento => evento.id === eventoGrupo.id));
-          this.ultimosEventosGrupoCargados = eventosGrupo.length;
-          this.agregarEventos(eventosGrupo);
-      } catch(error){
+        eventosGrupo = eventosGrupo.filter(eventoGrupo => !this.eventos.some(evento => evento.id === eventoGrupo.id));
+        this.ultimosEventosGrupoCargados = eventosGrupo.length;
+        this.agregarEventos(eventosGrupo);
+      } catch (error) {
         console.log(error);
       }
     },
@@ -199,7 +234,7 @@ export default {
       this.ultimosEventosGrupoCargados = 0;
     },
 
-    async actualizarCalendarioPorModo(modo){
+    async actualizarCalendarioPorModo(modo) {
       await this.actualizarCalendarioPorPeriodo(modo.period)
     },
 
@@ -212,18 +247,18 @@ export default {
       }
     },
 
-    editarEvento(evento){
+    editarEvento(evento) {
       this.editando = true;
       this.idEventoEdicion = evento
     },
 
-    cancelarEdicion(){
+    cancelarEdicion() {
       this.idEventoEdicion = 0;
       console.log(this.idEventoEdicion)
       this.editando = false;
     },
 
-    async terminarEdicion(idAsignatura){
+    async terminarEdicion(idAsignatura) {
       this.editando = false;
       await this.modificarReserva(idAsignatura, this.idEventoEdicion);
       this.refrescarCalendario()
@@ -260,7 +295,7 @@ export default {
   /**
    * Al montar a la fecha de fin del periodo seleccionado del calendario hay que sumar 1 porque 
    * si no da un día por detrás. Después de eso hay que almacenar el periodo seleccionado de forma
-   * correcta
+   * correcta. El problema viene de la librería.
    */
   mounted() {
     let fechaFin = new Date(this.$refs.calendarRef.period.end);
