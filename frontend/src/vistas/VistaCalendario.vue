@@ -45,7 +45,7 @@
     <div class="columnaDerecha">
       <Qalendar class="calendario" ref="calendarRef" :config="configuracion" :events="eventos"
         @interval-was-clicked="clickEnIntervalo" @updated-period="actualizarCalendarioPorPeriodo"
-        @updated-mode="actualizarCalendarioPorPeriodo" @delete-event="borrarEvento" 
+        @updated-mode="actualizarCalendarioPorModo" @delete-event="borrarEvento" 
         @edit-event="editarEvento">
         <template #dayCell="{ dayData }">
           <div class="celdaDia">
@@ -95,7 +95,7 @@ export default {
       menu: false,
       periodoSeleccionado: null,
       fechaSeleccionada: "",
-      ultimosIdGrupoCargados: 0,
+      ultimosEventosGrupoCargados: 0,
       idEventoEdicion: 0,
       editando:false
     }
@@ -110,7 +110,7 @@ export default {
     ...mapActions(useReservasStore, ['cargarReservas', 'guardarReserva', 'resetReserva',
       'formatearFechaParaAPI', 'cargarReservasGrupo',
       'mapReservaToEvento', 'agregarEventos', 'quitarUltimosEventosAdded',
-      'convertirPeriodToPeriodo', 'arrancarServicio', 'eliminarReserva', 'modificarEvento']),
+      'convertirPeriodToPeriodo', 'arrancarServicio', 'eliminarReserva', 'modificarReserva']),
     ...mapActions(useAsignaturasStore, ['getAsignaturaPorId']),
     ...mapActions(useGruposStore, ['getGrupoPorId']),
     ...mapActions(useLugaresStore, ['escogerLugarDisponible']),
@@ -172,16 +172,19 @@ export default {
      * TODO cambiar el color de los eventos del grupo para hacerlo un poco más amigable
      */
     async cargarGrupo() {
-      this.quitarUltimosEventosAdded(this.ultimosIdGrupoCargados);
+      console.log(this.ultimosEventosGrupoCargados)
+      this.quitarUltimosEventosAdded(this.ultimosEventosGrupoCargados);
       let eventosGrupo = [];
       await this.cargarReservasGrupo(this.grupoSeleccionado, this.periodoSeleccionado)
         .then(reservasGrupo => {
           eventosGrupo = reservasGrupo.map((reserva) => { return this.mapReservaToEvento(reserva) })
           eventosGrupo = eventosGrupo.filter(eventoGrupo => !this.eventos.some(evento => evento.id === eventoGrupo.id));
-          this.ultimosIdGrupoCargados = eventosGrupo.length;
+          console.log(eventosGrupo);
+          this.ultimosEventosGrupoCargados = eventosGrupo.length;
           this.agregarEventos(eventosGrupo);
         })
         .catch(error => console.log(error));
+        console.log(this.ultimosEventosGrupoCargados)
     },
 
     /**
@@ -194,6 +197,11 @@ export default {
      */
     async refrescarCalendario() {
       await this.cargarReservas(this.convertirPeriodToPeriodo(this.periodoSeleccionado));
+      this.ultimosEventosGrupoCargados = 0;
+    },
+
+    async actualizarCalendarioPorModo(modo){
+      await this.actualizarCalendarioPorPeriodo(modo.period)
     },
 
     async actualizarCalendarioPorPeriodo(periodo) {
@@ -212,12 +220,14 @@ export default {
 
     cancelarEdicion(){
       this.idEventoEdicion = 0;
+      console.log(this.idEventoEdicion)
       this.editando = false;
     },
 
     async terminarEdicion(idAsignatura){
       this.editando = false;
       await this.modificarReserva(idAsignatura, this.idEventoEdicion);
+      this.refrescarCalendario()
       this.idEventoEdicion = 0;
     },
 
@@ -238,7 +248,7 @@ export default {
         if (nuevoProfesor !== null) {
           this.asignaturaSeleccionada = nuevoProfesor.asignaturas[0];
           this.quitarUltimosEventosAdded();
-          this.ultimosIdGrupoCargados = 0;
+          this.ultimosEventosGrupoCargados = 0;
           this.grupoSeleccionado = null;
           this.fechaSeleccionada = null;
         } else {

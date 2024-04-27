@@ -4,7 +4,6 @@ import { useAsignaturasStore } from "./asignaturasStore";
 import { useGruposStore } from "./gruposStore";
 import { useLugaresStore } from "./lugaresStores";
 import { useProfesoresStore } from "./profesoresStore";
-import { useUsuariosStore } from "./usuarioStore";
 
 export const useReservasStore = defineStore("reservas", {
   state: () => ({
@@ -55,13 +54,18 @@ export const useReservasStore = defineStore("reservas", {
     agregarEventos(eventos){
         this.eventos = [...this.eventos, ...eventos];
     },
+
+    /**
+     * Función que permite modificar la asignatura de una reserva y además el lugar automáticamente
+     * @param idAsignaturaNueva es el id de la asignatura que se va a poner 
+     * @param idEvento es el id del evento de qalendar que se corresponde con el id de la reserva 
+     */
     async modificarReserva(idAsignaturaNueva, idEvento){
       let eventoEdicion = this.eventos.filter(e => e.id = idEvento)[0];
       let periodo = {
         "fecha":eventoEdicion.time.start.split(' ')[0],
         "hora": eventoEdicion.time.start.split(' ')[1].split(':')[0]
       }
-      console.log(periodo)
       let lugar = await useLugaresStore().escogerLugarDisponible(idAsignaturaNueva, periodo);
       if (lugar == null){
       } else {
@@ -69,18 +73,20 @@ export const useReservasStore = defineStore("reservas", {
           "asignatura":idAsignaturaNueva,
           "lugar":lugar 
         }
-        console.log(lugar);
         await this.reservasService.update(idEvento, modificacion)
       }
-      eventoEdicion.topic = 
-      useAsignaturasStore().getAsignaturaPorId(idAsignaturaNueva).nombre;
-      eventoEdicion.location = useLugaresStore().getLugarPorId(lugar).nombre;
     },
+
+    /**
+     * Función que permite eliminar de la vista los eventos de grupo añadidos al calendario
+     * @param numEventos es el número de eventos que se había añadido previamente
+     */
     quitarUltimosEventosAdded(numEventos){
       for (let index = 0; index < numEventos; index++) {
         this.eventos.pop();
       }
     },
+
     /**
      * Función que devuelve las reservas de un grupo entre las fechas dadas
      * @param grupoId id del grupo del que se ven todas las reservas
@@ -98,6 +104,7 @@ export const useReservasStore = defineStore("reservas", {
       .catch(error => console.log(error));
       return reservasGrupo;
     },
+
     /**
      * Función que mapea una reserva en un evento de la librería "Qalendar"
      * @param reserva la reserva como se recibe de la API
@@ -169,6 +176,11 @@ export const useReservasStore = defineStore("reservas", {
       return fechaNueva;
     },
 
+    /**
+     * Función que convierte el periodo que devuelve calendar en un periodo manejable por la API
+     * @param {*} period periodo de Qalendar
+     * @returns el periodo en el formato que puede manejar la API
+     */
     convertirPeriodToPeriodo(period){
       let periodo = {
         start: period.start.toISOString().split('T')[0],
