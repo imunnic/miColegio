@@ -12,6 +12,7 @@
             </template>
           </v-select>
           <v-btn @click="emitirEdicion()">Cerrar</v-btn>
+          <v-btn @click="this.$emit('cancelar')">Cerrar</v-btn>
         </v-card>
       </div>
     </v-dialog>

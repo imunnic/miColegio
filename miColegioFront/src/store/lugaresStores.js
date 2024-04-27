@@ -23,7 +23,7 @@ export const useLugaresStore = defineStore('lugares', {
     * @param asignaturaId parametro de id de la asignatura sobre la que seleccionar el lugar.
     * @returns el lugar seleccionado para la clase
     */
-    async escogerLugarDisponible(asignaturaId) {
+    async escogerLugarDisponible(asignaturaId, periodo) {
       let asignatura = useAsignaturasStore().getAsignaturaPorId(asignaturaId);
       let lugaresId = asignatura.lugares;
       let lugares = [];
@@ -35,7 +35,7 @@ export const useLugaresStore = defineStore('lugares', {
       lugares.sort((a, b) => b.capacidad - a.capacidad);
       for (let lugar of lugares) {
         await useReservasStore().reservasService.isLugarDisponible(lugar.id, 
-          useReservasStore().reserva.fecha, useReservasStore().reserva.hora)
+          periodo)
           .then(response => {
             if (response.data == true) {
               lugarSeleccionado = lugar.id

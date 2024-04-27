@@ -37,7 +37,7 @@ export default class reservasService {
     );
   }
 
-  async getReservasProfesorEntre(href, fechaInicio, fechaFin) {
+  async getReservasProfesorEntre(href, periodo) {
     return await axios.get(
       host +
         reservasEndPoint +
@@ -45,14 +45,14 @@ export default class reservasService {
         "/reservas-profesor-fecha?profesorId=" +
         href +
         "&fechaInicio=" +
-        fechaInicio +
+        periodo.start +
         "&fechaFin=" +
-        fechaFin,
+        periodo.end,
       config
     );
   }
 
-  getReservasGrupoEntre(href, fechaInicio, fechaFin) {
+  getReservasGrupoEntre(href, periodo) {
     return axios.get(
       host +
         reservasEndPoint +
@@ -60,14 +60,14 @@ export default class reservasService {
         "/reservas-grupo-fecha?grupoId=" +
         href +
         "&fechaInicio=" +
-        fechaInicio +
+        periodo.start +
         "&fechaFin=" +
-        fechaFin,
+        periodo.end,
       config
     );
   }
 
-  isLugarDisponible(lugarId, fecha, hora) {
+  isLugarDisponible(lugarId, franjaHoraria) {
     return axios.get(
       host +
         reservasEndPoint +
@@ -75,9 +75,9 @@ export default class reservasService {
         "/lugar-disponible?lugarId=" +
         lugarId +
         "&fecha=" +
-        fecha +
+        franjaHoraria.fecha +
         "&hora=" +
-        hora,
+        franjaHoraria.hora,
       config
     );
   }

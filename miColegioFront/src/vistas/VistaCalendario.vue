@@ -3,7 +3,7 @@
   franjas horarias para una asignatura, grupo y lugar. 
 -->
 <template>
-    <ComponentEdicionEvento v-model="editando" @finEdicion="terminarEdicion" :asignaturas="profesorSeleccionado.asignaturas">
+    <ComponentEdicionEvento v-model="editando" @finEdicion="terminarEdicion" @cancelar="cancelarEdicion" :asignaturas="profesorSeleccionado.asignaturas">
     </ComponentEdicionEvento>
   <div class="contenedorColumnas">
     <div class="columnaIzquierda">
@@ -142,7 +142,11 @@ export default {
     async reservar() {
       this.reserva.fecha = this.formatearFechaParaAPI(this.fechaSeleccionada.split(" ")[0]);
       this.reserva.hora = parseInt(this.fechaSeleccionada.split(" ")[1].split("-")[0]);
-      let lugar = await this.escogerLugarDisponible(this.asignaturaSeleccionada);
+      let periodo = {
+        "fecha": this.reserva.fecha,
+        "hora": this.reserva.hora
+      };
+      let lugar = await this.escogerLugarDisponible(this.asignaturaSeleccionada, periodo);
       if (lugar != null) {
         this.reserva.profesor = this.profesorSeleccionado.id;
         this.reserva.asignatura = this.asignaturaSeleccionada;
@@ -202,9 +206,14 @@ export default {
       this.idEventoEdicion = evento
     },
 
-    terminarEdicion(evento){
+    cancelarEdicion(){
+      this.idEventoEdicion = 0;
       this.editando = false;
-      this.modificarEvento(evento, this.idEventoEdicion);
+    },
+
+    async terminarEdicion(idAsignatura){
+      this.editando = false;
+      await this.modificarReserva(idAsignatura, this.idEventoEdicion);
       this.idEventoEdicion = 0;
     },
 
