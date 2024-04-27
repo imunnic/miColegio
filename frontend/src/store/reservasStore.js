@@ -28,24 +28,23 @@ export const useReservasStore = defineStore("reservas", {
     async cargarReservas(periodo) {
       let profesores = useProfesoresStore();
       if (profesores.profesorSeleccionado != null) {
-          await this.reservasService
-          .getReservasProfesorEntre(profesores.profesorSeleccionado.id, periodo)
-          .then((response) => {
-            // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/keys
-            if(Object.keys(response.data).length == 0){
-              this.eventos=[];
-              let evento = {};
-              return evento;
-            } else {
-              this.reservas = response.data._embedded.reservas;
-              this.eventos = this.reservas.map((reserva) => {
-                return this.mapReservaToEvento(reserva);
-              });
-            }
-          })
-          .catch((error) => {
-            console.log(error.code);
+        try{
+        let response = await this.reservasService
+        .getReservasProfesorEntre(profesores.profesorSeleccionado.id, periodo);
+         // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/keys
+         if(Object.keys(response.data).length == 0){
+          this.eventos=[];
+          let evento = {};
+          return evento;
+        } else {
+          this.reservas = response.data._embedded.reservas;
+          this.eventos = this.reservas.map((reserva) => {
+            return this.mapReservaToEvento(reserva);
           });
+        }
+      } catch(error) {
+        console.log(error);
+      }
       } else {
         this.reservas = [];
         this.eventos = [];
@@ -66,14 +65,18 @@ export const useReservasStore = defineStore("reservas", {
         "fecha":eventoEdicion.time.start.split(' ')[0],
         "hora": eventoEdicion.time.start.split(' ')[1].split(':')[0]
       }
-      let lugar = await useLugaresStore().escogerLugarDisponible(idAsignaturaNueva, periodo);
-      if (lugar == null){
-      } else {
-        let modificacion = {
-          "asignatura":idAsignaturaNueva,
-          "lugar":lugar 
+      try{
+        let lugar = await useLugaresStore().escogerLugarDisponible(idAsignaturaNueva, periodo);
+        if (lugar == null){
+        } else {
+          let modificacion = {
+            "asignatura":idAsignaturaNueva,
+            "lugar":lugar 
+          }
+          await this.reservasService.update(idEvento, modificacion)
         }
-        await this.reservasService.update(idEvento, modificacion)
+      }catch(error){
+        console.log(error);
       }
     },
 
@@ -95,13 +98,14 @@ export const useReservasStore = defineStore("reservas", {
     async cargarReservasGrupo(grupoId, period){
       let periodo = this.convertirPeriodToPeriodo(period);
       let reservasGrupo = [];
-      await this.reservasService.getReservasGrupoEntre(grupoId, periodo)
-      .then(response => { 
+      try{
+        let response = await this.reservasService.getReservasGrupoEntre(grupoId, periodo);
         if(Object.keys(response.data).length != 0){
           reservasGrupo = response.data._embedded.reservas;
         }
-      })
-      .catch(error => console.log(error));
+      } catch(error){
+        console.log(error); 
+      }
       return reservasGrupo;
     },
 
@@ -145,13 +149,15 @@ export const useReservasStore = defineStore("reservas", {
     },
     
     async guardarReserva() {
-      await this.reservasService
-        .create(this.reserva)
-        .catch((error) => {
-          if (error.response.status == 409){
-            alert('El grupo ya tiene asignada esa franja horaria. Puede elejir otra.')
-          }
-        });
+      try {
+        await this.reservasService
+          .create(this.reserva)
+
+      } catch(error){
+        if (error.response.status == 409){
+          alert('El grupo ya tiene asignada esa franja horaria. Puede elejir otra.')
+        }
+      }
     },
 
     resetReserva() {
@@ -161,7 +167,11 @@ export const useReservasStore = defineStore("reservas", {
     },
 
     async eliminarReserva(href){
-      await this.reservasService.delete(href).catch(error => console.log(error));
+      try {
+        await this.reservasService.delete(href)
+      } catch(error){
+        console.log(error);
+      }
     },
 
     /**

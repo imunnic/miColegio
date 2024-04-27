@@ -172,19 +172,18 @@ export default {
      * TODO cambiar el color de los eventos del grupo para hacerlo un poco más amigable
      */
     async cargarGrupo() {
-      console.log(this.ultimosEventosGrupoCargados)
       this.quitarUltimosEventosAdded(this.ultimosEventosGrupoCargados);
       let eventosGrupo = [];
-      await this.cargarReservasGrupo(this.grupoSeleccionado, this.periodoSeleccionado)
-        .then(reservasGrupo => {
-          eventosGrupo = reservasGrupo.map((reserva) => { return this.mapReservaToEvento(reserva) })
+      try {
+        let reservasGrupo = await this.cargarReservasGrupo(this.grupoSeleccionado, 
+        this.periodoSeleccionado);
+        eventosGrupo = reservasGrupo.map((reserva) => { return this.mapReservaToEvento(reserva) })
           eventosGrupo = eventosGrupo.filter(eventoGrupo => !this.eventos.some(evento => evento.id === eventoGrupo.id));
-          console.log(eventosGrupo);
           this.ultimosEventosGrupoCargados = eventosGrupo.length;
           this.agregarEventos(eventosGrupo);
-        })
-        .catch(error => console.log(error));
-        console.log(this.ultimosEventosGrupoCargados)
+      } catch(error){
+        console.log(error);
+      }
     },
 
     /**

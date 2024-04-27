@@ -37,8 +37,8 @@ export default class reservasService {
     );
   }
 
-  async getReservasProfesorEntre(href, periodo) {
-    return await axios.get(
+  getReservasProfesorEntre(href, periodo) {
+    return axios.get(
       host +
         reservasEndPoint +
         search +
