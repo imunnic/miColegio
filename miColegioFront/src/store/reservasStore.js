@@ -4,6 +4,7 @@ import { useAsignaturasStore } from "./asignaturasStore";
 import { useGruposStore } from "./gruposStore";
 import { useLugaresStore } from "./lugaresStores";
 import { useProfesoresStore } from "./profesoresStore";
+import { useUsuariosStore } from "./usuarioStore";
 
 export const useReservasStore = defineStore("reservas", {
   state: () => ({
@@ -29,7 +30,7 @@ export const useReservasStore = defineStore("reservas", {
       let profesores = useProfesoresStore();
       if (profesores.profesorSeleccionado != null) {
           await this.reservasService
-          .getReservasProfesorEntre(profesores.profesorSeleccionado.id, periodo.start, periodo.end)
+          .getReservasProfesorEntre(profesores.profesorSeleccionado.id, periodo)
           .then((response) => {
             // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/keys
             if(Object.keys(response.data).length == 0){
@@ -54,6 +55,27 @@ export const useReservasStore = defineStore("reservas", {
     agregarEventos(eventos){
         this.eventos = [...this.eventos, ...eventos];
     },
+    async modificarReserva(idAsignaturaNueva, idEvento){
+      let eventoEdicion = this.eventos.filter(e => e.id = idEvento)[0];
+      let periodo = {
+        "fecha":eventoEdicion.time.start.split(' ')[0],
+        "hora": eventoEdicion.time.start.split(' ')[1].split(':')[0]
+      }
+      console.log(periodo)
+      let lugar = await useLugaresStore().escogerLugarDisponible(idAsignaturaNueva, periodo);
+      if (lugar == null){
+      } else {
+        let modificacion = {
+          "asignatura":idAsignaturaNueva,
+          "lugar":lugar 
+        }
+        console.log(lugar);
+        await this.reservasService.update(idEvento, modificacion)
+      }
+      eventoEdicion.topic = 
+      useAsignaturasStore().getAsignaturaPorId(idAsignaturaNueva).nombre;
+      eventoEdicion.location = useLugaresStore().getLugarPorId(lugar).nombre;
+    },
     quitarUltimosEventosAdded(numEventos){
       for (let index = 0; index < numEventos; index++) {
         this.eventos.pop();
@@ -67,7 +89,7 @@ export const useReservasStore = defineStore("reservas", {
     async cargarReservasGrupo(grupoId, period){
       let periodo = this.convertirPeriodToPeriodo(period);
       let reservasGrupo = [];
-      await this.reservasService.getReservasGrupoEntre(grupoId, periodo.start, periodo.end)
+      await this.reservasService.getReservasGrupoEntre(grupoId, periodo)
       .then(response => { 
         if(Object.keys(response.data).length != 0){
           reservasGrupo = response.data._embedded.reservas;
@@ -129,6 +151,10 @@ export const useReservasStore = defineStore("reservas", {
       for (let propiedad in this.reserva) {
         this.reserva[propiedad] = null;
       }
+    },
+
+    async eliminarReserva(href){
+      await this.reservasService.delete(href).catch(error => console.log(error));
     },
 
     /**

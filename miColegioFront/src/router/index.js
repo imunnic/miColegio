@@ -1,4 +1,5 @@
 import { createRouter, createWebHashHistory } from "vue-router";
+import { useUsuariosStore } from "../store/usuarioStore";
 
 const routes = [
   {

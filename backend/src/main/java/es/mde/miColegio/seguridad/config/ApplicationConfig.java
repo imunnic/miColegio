@@ -12,6 +12,9 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+/**
+ * @author JOSE LUIS PUENTES ALAMOS
+ */
 @Configuration
 public class ApplicationConfig {
   private final UsuarioDAO USUARIODAO;

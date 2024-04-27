@@ -3,41 +3,34 @@
   franjas horarias para una asignatura, grupo y lugar. 
 -->
 <template>
+    <ComponentEdicionEvento v-model="editando" @finEdicion="terminarEdicion" @cancelar="cancelarEdicion" :asignaturas="profesorSeleccionado.asignaturas">
+    </ComponentEdicionEvento>
   <div class="contenedorColumnas">
     <div class="columnaIzquierda">
       <div class="formularioReserva">
         <div v-if="profesorSeleccionado != null">
           {{ profesorSeleccionado.nombre }} {{ profesorSeleccionado.apellido }}
 
-          <v-select v-model="asignaturaSeleccionada" 
-            label="Asignaturas" 
-            :items="profesorSeleccionado.asignaturas">
+          <v-select v-model="asignaturaSeleccionada" label="Asignaturas" :items="profesorSeleccionado.asignaturas">
             <template v-slot:selection="{ item, index }">
               {{ getAsignaturaPorId(item.props.value).nombre }}
             </template>
             <template v-slot:item="{ props, item }">
-              <v-list-item v-bind="props" 
-              :title="getAsignaturaPorId(item.props.value).nombre"></v-list-item>
+              <v-list-item v-bind="props" :title="getAsignaturaPorId(item.props.value).nombre"></v-list-item>
             </template>
           </v-select>
 
-          <v-select v-model="grupoSeleccionado" 
-            label="Grupo" 
-            :items="getAsignaturaPorId(asignaturaSeleccionada).grupos"
+          <v-select v-model="grupoSeleccionado" label="Grupo" :items="getAsignaturaPorId(asignaturaSeleccionada).grupos"
             @update:modelValue="cargarGrupo()">
             <template v-slot:selection="{ item, index }">
               {{ getGrupoPorId(item.props.value).nombre }}
             </template>
             <template v-slot:item="{ props, item }">
-              <v-list-item v-bind="props" 
-                :title="getGrupoPorId(item.props.value).nombre"></v-list-item>
+              <v-list-item v-bind="props" :title="getGrupoPorId(item.props.value).nombre"></v-list-item>
             </template>
           </v-select>
 
-          <v-text-field class="fecha" 
-            prepend-icon="mdi-calendar" 
-            v-model="fechaSeleccionada" 
-            :disabled="true">
+          <v-text-field class="fecha" prepend-icon="mdi-calendar" v-model="fechaSeleccionada" :disabled="true">
           </v-text-field>
 
           <v-btn @click="reservar">Reservar</v-btn>
@@ -49,12 +42,10 @@
       </div>
     </div>
     <div class="columnaDerecha">
-      <Qalendar class="calendario"
-        ref="calendarRef"
-        :config="configuracion" 
-        :events="eventos"
-        @interval-was-clicked="clickEnIntervalo"
-        @updated-period="actualizarCalendarioPorPeriodo">
+      <Qalendar class="calendario" ref="calendarRef" :config="configuracion" :events="eventos"
+        @interval-was-clicked="clickEnIntervalo" @updated-period="actualizarCalendarioPorPeriodo"
+        @updated-mode="actualizarCalendarioPorPeriodo" @delete-event="borrarEvento" 
+        @edit-event="editarEvento">
         <template #dayCell="{ dayData }">
           <div class="celdaDia">
             <div> {{ dayData.dateTimeString.substring(8, 10) }}</div>
@@ -62,7 +53,6 @@
           </div>
         </template>
       </Qalendar>
-
     </div>
   </div>
 </template>
@@ -76,9 +66,10 @@ import { useAsignaturasStore } from '../store/asignaturasStore';
 import { useGruposStore } from '../store/gruposStore';
 import { useLugaresStore } from '../store/lugaresStores';
 import { useUsuariosStore } from '../store/usuarioStore';
+import ComponentEdicionEvento from '../componentes/ComponentEdicionEvento.vue';
 
 export default {
-  components: { Qalendar },
+  components: { Qalendar, ComponentEdicionEvento },
 
   data() {
     return {
@@ -101,9 +92,11 @@ export default {
         .toISOString()
         .substr(0, 10),
       menu: false,
-      periodoSeleccionado:null,
+      periodoSeleccionado: null,
       fechaSeleccionada: "",
-      ultimosIdGrupoCargados: 0
+      ultimosIdGrupoCargados: 0,
+      idEventoEdicion: 0,
+      editando:false
     }
   },
 
@@ -116,7 +109,7 @@ export default {
     ...mapActions(useReservasStore, ['cargarReservas', 'guardarReserva', 'resetReserva',
       'formatearFechaParaAPI', 'cargarReservasGrupo',
       'mapReservaToEvento', 'agregarEventos', 'quitarUltimosEventosAdded',
-      'convertirPeriodToPeriodo','arrancarServicio']),
+      'convertirPeriodToPeriodo', 'arrancarServicio', 'eliminarReserva', 'modificarEvento']),
     ...mapActions(useAsignaturasStore, ['getAsignaturaPorId']),
     ...mapActions(useGruposStore, ['getGrupoPorId']),
     ...mapActions(useLugaresStore, ['escogerLugarDisponible']),
@@ -130,7 +123,7 @@ export default {
      */
     clickEnIntervalo(evento) {
       if (this.profesorSeleccionado !== null) {
-        if (this.grupoSeleccionado != null){
+        if (this.grupoSeleccionado != null) {
           let fecha = evento.intervalStart.substr(0, 10);
           let partes = fecha.split("-");
           fecha = partes[2] + "-" + partes[1] + "-" + partes[0];
@@ -149,7 +142,11 @@ export default {
     async reservar() {
       this.reserva.fecha = this.formatearFechaParaAPI(this.fechaSeleccionada.split(" ")[0]);
       this.reserva.hora = parseInt(this.fechaSeleccionada.split(" ")[1].split("-")[0]);
-      let lugar = await this.escogerLugarDisponible(this.asignaturaSeleccionada);
+      let periodo = {
+        "fecha": this.reserva.fecha,
+        "hora": this.reserva.hora
+      };
+      let lugar = await this.escogerLugarDisponible(this.asignaturaSeleccionada, periodo);
       if (lugar != null) {
         this.reserva.profesor = this.profesorSeleccionado.id;
         this.reserva.asignatura = this.asignaturaSeleccionada;
@@ -164,7 +161,7 @@ export default {
         this.resetReserva();
       }
     },
-      
+
     /**
      * Función que añade a los eventos los del grupo seleccionado para que los profesores puedan ver
      * cuando el grupo no está disponible.
@@ -174,15 +171,13 @@ export default {
       this.quitarUltimosEventosAdded(this.ultimosIdGrupoCargados);
       let eventosGrupo = [];
       await this.cargarReservasGrupo(this.grupoSeleccionado, this.periodoSeleccionado)
-      .then(reservasGrupo => {
-        console.log(reservasGrupo)
-        eventosGrupo = reservasGrupo.map((reserva) => {return this.mapReservaToEvento(reserva)})
-        eventosGrupo = eventosGrupo.filter(eventoGrupo => !this.eventos.some(evento => evento.id === eventoGrupo.id));
-        // console.log(eventosGrupo);
-        this.ultimosIdGrupoCargados = eventosGrupo.length;
-        this.agregarEventos(eventosGrupo);
-      })
-      .catch(error => console.log(error));
+        .then(reservasGrupo => {
+          eventosGrupo = reservasGrupo.map((reserva) => { return this.mapReservaToEvento(reserva) })
+          eventosGrupo = eventosGrupo.filter(eventoGrupo => !this.eventos.some(evento => evento.id === eventoGrupo.id));
+          this.ultimosIdGrupoCargados = eventosGrupo.length;
+          this.agregarEventos(eventosGrupo);
+        })
+        .catch(error => console.log(error));
     },
 
     /**
@@ -193,21 +188,42 @@ export default {
      * habría que cargar de nuevo las reservas para el periodo de la fecha actual antes de
      * mostrarlo.
      */
-    async refrescarCalendario(){
+    async refrescarCalendario() {
       await this.cargarReservas(this.convertirPeriodToPeriodo(this.periodoSeleccionado));
     },
-    
-    async actualizarCalendarioPorPeriodo(periodo){
+
+    async actualizarCalendarioPorPeriodo(periodo) {
       this.periodoSeleccionado = periodo;
       let aux = this.convertirPeriodToPeriodo(this.periodoSeleccionado);
       await this.cargarReservas(aux);
-      if(this.grupoSeleccionado != null){
+      if (this.grupoSeleccionado != null) {
         await this.cargarGrupo();
       }
     },
+
+    editarEvento(evento){
+      this.editando = true;
+      this.idEventoEdicion = evento
+    },
+
+    cancelarEdicion(){
+      this.idEventoEdicion = 0;
+      this.editando = false;
+    },
+
+    async terminarEdicion(idAsignatura){
+      this.editando = false;
+      await this.modificarReserva(idAsignatura, this.idEventoEdicion);
+      this.idEventoEdicion = 0;
+    },
+
+    async borrarEvento(evento) {
+      await this.eliminarReserva(evento);
+      await this.refrescarCalendario();//devuelve el id, hay que buscar el evento por id
+    }
   },
 
-  watch: {
+  watch: { //Si no hay watch al salir y entrar de la sesión da error
     /**
      * Observador que permite controlar el cambio de un profesor a otro y cambiar los parámetros
      * relacionados con cada uno, que en este caso afectan al formulario (asignaturas y grupos)
@@ -236,14 +252,15 @@ export default {
   mounted() {
     let fechaFin = new Date(this.$refs.calendarRef.period.end);
     fechaFin.setDate(fechaFin.getDate() + 1);
-    this.periodoSeleccionado ={
+    this.periodoSeleccionado = {
       start: this.$refs.calendarRef.period.start,
       end: fechaFin
     }
-    if (useReservasStore().reservasService == null){
+    if (useReservasStore().reservasService == null) {
       this.arrancarServicio(useUsuariosStore().token);
     }
     this.cargarReservas(this.convertirPeriodToPeriodo(this.periodoSeleccionado));
+
   }
 }
 </script>

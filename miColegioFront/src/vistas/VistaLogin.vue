@@ -64,11 +64,13 @@ export default {
   .card {
     width: 55%;
   }
+
 }
 
 @media (max-width: 550px) {
   .card {
     width: 90%;
   }
+
 }
 </style>

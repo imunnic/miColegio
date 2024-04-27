@@ -1,10 +1,15 @@
 package es.mde.miColegio.seguridad.auth;
 
+/**
+ * @author JOSE LUIS PUENTES ALAMOS
+ * Sobre el código inicial se ha añadido a la request la asociación con el profesor.
+ */
 public class RegisterRequest {
   private String username;
   private String password;
   private String nombre;
   private String apellido;
+  private int profesor;
 
   public String getUsername() {
     return username;
@@ -38,12 +43,21 @@ public class RegisterRequest {
     this.apellido = apellido;
   }
 
+  public int getProfesor() {
+    return profesor;
+  }
+
+  public void setProfesor(int profesor) {
+    this.profesor = profesor;
+  }
+
   public RegisterRequest(){}
 
-  public RegisterRequest(String username, String password, String nombre, String apellido) {
+  public RegisterRequest(String username, String password, String nombre, String apellido, int profesor) {
     this.username = username;
     this.password = password;
     this.nombre = nombre;
     this.apellido = apellido;
+    this.profesor = profesor;
   }
 }

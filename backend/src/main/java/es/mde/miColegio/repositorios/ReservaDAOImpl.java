@@ -65,7 +65,7 @@ public class ReservaDAOImpl implements ReservaDAOCustom {
                          .stream()
                          .filter(p -> p.getFecha().isAfter(fechaInicio))
                          .filter(p -> p.getFecha().isBefore(fechaFin) ||
-                             p.getFecha().isEqual(fechaInicio))
+                             p.getFecha().isEqual(fechaFin))
                          .collect(Collectors.toList());
     return reservas;
   }

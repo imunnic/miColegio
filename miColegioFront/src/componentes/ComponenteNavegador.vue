@@ -26,7 +26,9 @@
       </v-list>
     </v-navigation-drawer>
     <v-main>
-      <router-view class="contenido"></router-view>
+      <div class="contenido">
+        <router-view></router-view>
+      </div>
     </v-main>
   </v-layout>
 </template>
