@@ -3,11 +3,16 @@
     <v-card elevation="3" class="card">
       Registro de entrada
       <v-form class="formulario">
-        <v-text-field v-model="login.username" label="Nombre de usuario">
+        <v-text-field v-model="login.username" variant="outlined" :rules="[rules.required]" label="Nombre de usuario">
         </v-text-field>
 
-        <v-text-field v-model="login.password" :append-icon="show1 ? 'mdi-eye' : 'mdi-eye-off'" label="Contraseña"
-          :type="show1 ? 'text' : 'password'" @click:append="show1 = !show1">
+        <v-text-field v-model="login.password" variant="outlined"
+          :rules="[rules.required]" :append-inner-icon="show1 ? 'mdi-eye' : 'mdi-eye-off'"
+          label="Contraseña" :type="show1 ? 'text' : 'password'" @click:append-inner="show1 = !show1">
+          <template v-if="intentos > 0" #details>
+            <v-spacer />
+            <p class="intentoFallido">Contraseña o usuario incorrectos</p>
+          </template>
         </v-text-field>
 
         <v-btn class="mt-2" @click="intentarLogin()">Entrar</v-btn>
@@ -22,11 +27,15 @@ import { mapState, mapActions } from 'pinia';
 export default {
   data() {
     return {
+      rules: {
+        required: value => !!value || 'Campo requerido'
+      },
       show1: false,
       login: {
-        username: "alejandro",
-        password: "alejandro"
-      }
+        username: "",
+        password: ""
+      },
+      intentos: 0
     }
   },
   computed: {
@@ -38,6 +47,8 @@ export default {
       await this.peticionLogin(this.login);
       if (this.isLogged) {
         this.$router.push('/home');
+      } else {
+        this.intentos++;
       }
     }
   }
@@ -45,14 +56,27 @@ export default {
 </script>
 
 <style scoped>
+.intentoFallido{
+  color: red;
+}
+
 .formulario {
+  display: flex;
+  flex-flow: column;
+  align-items: center;
+  min-width: 300px;
+  width: 75%;
   padding: 10px;
 }
 
 .card {
   display: flex;
-  justify-content: center;
-  width: 45%;
+  align-items: center;
+  width: 33%;
+}
+
+.v-text-field{
+  width: 75%;
 }
 
 .contenedor {

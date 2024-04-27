@@ -17,12 +17,12 @@
           prepend-icon="mdi-account" 
         @click.stop="navegarAHome(profesor)">
         </v-list-item>
-        <v-list-item
+        <!-- <v-list-item
           prepend-icon="mdi-account-group"
           :title="'Grupo'"
           @click.stop="navegarAGrupo"
         >
-        </v-list-item>
+        </v-list-item> -->
       </v-list>
     </v-navigation-drawer>
     <v-main>

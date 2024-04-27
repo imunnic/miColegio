@@ -8,11 +8,11 @@
   <div class="contenedorColumnas">
     <div class="columnaIzquierda">
       <div class="formularioReserva">
-        <div v-if="profesorSeleccionado != null">
+        <v-form ref="form" v-if="profesorSeleccionado != null">
           {{ profesorSeleccionado.nombre }} {{ profesorSeleccionado.apellido }}
 
           <v-select v-model="asignaturaSeleccionada" label="Asignaturas" :items="profesorSeleccionado.asignaturas">
-            <template v-slot:selection="{ item, index }">
+            <template v-slot:selection="{ item, index }" required>
               {{ getAsignaturaPorId(item.props.value).nombre }}
             </template>
             <template v-slot:item="{ props, item }">
@@ -21,7 +21,7 @@
           </v-select>
 
           <v-select v-model="grupoSeleccionado" label="Grupo" :items="getAsignaturaPorId(asignaturaSeleccionada).grupos"
-            @update:modelValue="cargarGrupo()">
+            @update:modelValue="cargarGrupo()" :rules="[v => !!v || 'Seleccione un grupo']" required>
             <template v-slot:selection="{ item, index }">
               {{ getGrupoPorId(item.props.value).nombre }}
             </template>
@@ -30,12 +30,13 @@
             </template>
           </v-select>
 
-          <v-text-field class="fecha" prepend-icon="mdi-calendar" v-model="fechaSeleccionada" :disabled="true">
+          <v-text-field class="fecha" prepend-icon="mdi-calendar" v-model="fechaSeleccionada" :disabled="true" required
+          :rules="[v => !!v || 'Seleccione una fecha']">
           </v-text-field>
 
-          <v-btn @click="reservar">Reservar</v-btn>
+          <v-btn @click="reservar" block>Reservar</v-btn>
 
-        </div>
+        </v-form>
         <div v-else>
           No hay profesor seleccionado
         </div>
@@ -140,25 +141,28 @@ export default {
      * después realiza la reserva. Si no lo hay informa al usuario.
      */
     async reservar() {
-      this.reserva.fecha = this.formatearFechaParaAPI(this.fechaSeleccionada.split(" ")[0]);
-      this.reserva.hora = parseInt(this.fechaSeleccionada.split(" ")[1].split("-")[0]);
-      let periodo = {
-        "fecha": this.reserva.fecha,
-        "hora": this.reserva.hora
-      };
-      let lugar = await this.escogerLugarDisponible(this.asignaturaSeleccionada, periodo);
-      if (lugar != null) {
-        this.reserva.profesor = this.profesorSeleccionado.id;
-        this.reserva.asignatura = this.asignaturaSeleccionada;
-        this.reserva.grupo = this.grupoSeleccionado;
-        this.reserva.lugar = lugar;
-        await this.guardarReserva();
-        this.fechaSeleccionada = null;
-        this.grupoSeleccionado = null;
-        await this.refrescarCalendario();
-      } else {
-        alert('No hay lugares disponibles para esa franja horaria, elija otra franja');
-        this.resetReserva();
+      const { valid } = await this.$refs.form.validate();
+      if (valid){
+        this.reserva.fecha = this.formatearFechaParaAPI(this.fechaSeleccionada.split(" ")[0]);
+        this.reserva.hora = parseInt(this.fechaSeleccionada.split(" ")[1].split("-")[0]);
+        let periodo = {
+          "fecha": this.reserva.fecha,
+          "hora": this.reserva.hora
+        };
+        let lugar = await this.escogerLugarDisponible(this.asignaturaSeleccionada, periodo);
+        if (lugar != null) {
+          this.reserva.profesor = this.profesorSeleccionado.id;
+          this.reserva.asignatura = this.asignaturaSeleccionada;
+          this.reserva.grupo = this.grupoSeleccionado;
+          this.reserva.lugar = lugar;
+          await this.guardarReserva();
+          this.fechaSeleccionada = null;
+          this.grupoSeleccionado = null;
+          await this.refrescarCalendario();
+        } else {
+          alert('No hay lugares disponibles para esa franja horaria, elija otra franja');
+          this.resetReserva();
+        }
       }
     },
 
