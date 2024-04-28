@@ -20,7 +20,7 @@ export const useUsuariosStore = defineStore("usuarios", {
           this.username = response.data.username;
           this.isLogged = true;
         }
-        this.obtenerIdProfesor()
+        await this.obtenerIdProfesor()
       } catch(error){
         console.log(error);
       }
@@ -36,7 +36,7 @@ export const useUsuariosStore = defineStore("usuarios", {
         this.profesorId = response.data.profesor;
           let profesoresStore = useProfesoresStore();
           let profesor = profesoresStore.getProfesorPorId(this.profesorId);
-          profesoresStore.seleccionarProfesor(profesor);
+          await profesoresStore.seleccionarProfesor(profesor);
       } catch(error){
         console.log(error);
       }

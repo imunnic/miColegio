@@ -271,26 +271,10 @@ export default {
     }
   },
 
-  watch: { //Si no hay watch al salir y entrar de la sesión da error
-    /**
-     * Observador que permite controlar el cambio de un profesor a otro y cambiar los parámetros
-     * relacionados con cada uno, que en este caso afectan al formulario (asignaturas y grupos)
-     * y al calendario, con las reservas (eventos de Qalendar) de cada uno.
-     */
-    profesorSeleccionado: {
-      handler(nuevoProfesor) {
-        if (nuevoProfesor !== null) {
-          this.asignaturaSeleccionada = nuevoProfesor.asignaturas[0];
-          this.quitarUltimosEventosAdded();
-          this.ultimosEventosGrupoCargados = 0;
-          this.grupoSeleccionado = null;
-          this.fechaSeleccionada = null;
-        } else {
-          this.asignaturaSeleccionada = null;
-        }
-      },
-      immediate: true
-    }
+  created() {
+    //Si no hay asignatura seleccionada dará error, por eso debe ser al crear
+    this.asignaturaSeleccionada = this.profesorSeleccionado.asignaturas[0];
+
   },
   /**
    * Al montar a la fecha de fin del periodo seleccionado del calendario hay que sumar 1 porque 
@@ -308,7 +292,6 @@ export default {
       this.arrancarServicio(useUsuariosStore().token);
     }
     this.cargarReservas(this.convertirPeriodToPeriodo(this.periodoSeleccionado));
-
   }
 }
 </script>

@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const host = "http://localhost:8080/api";
+const host = "https://micolegio-c6e07df12596.herokuapp.com/api";
 const reservasEndPoint = "/reservas";
 const search = "/search";
 const reservas = host + reservasEndPoint;
