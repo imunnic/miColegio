@@ -33,7 +33,9 @@ import jakarta.persistence.EntityManagerFactory;
 
 @Configuration
 @PropertySource(
-    {"classpath:configuracion/rest.properties", "classpath:configuracion/jackson.properties"})
+    {"classpath:configuracion/rest.properties", "classpath:configuracion/jackson.properties"
+    ,"classpath:configuracion/gestionDB.properties"
+    })
 @EnableTransactionManagement
 @EnableJpaRepositories({"${misRepositorios}","es.mde.miColegio.seguridad.usuarios"})
 @ComponentScan({"es.mde.miColegio.rest", "es.mde.miColegio.seguridad"})
