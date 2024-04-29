@@ -1,3 +1,4 @@
+<!-- Accesible en  micolegio.netlify.app-->
 <script>
 import ComponenteHeader from './componentes/ComponenteHeader.vue'
 import ComponenteNavegador from './componentes/ComponenteNavegador.vue'

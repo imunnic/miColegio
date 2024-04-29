@@ -143,7 +143,7 @@ export default {
 
   methods: {
     ...mapActions(useReservasStore, ['cargarReservas', 'guardarReserva', 'resetReserva',
-      'formatearFechaParaAPI', 'cargarReservasGrupo',
+      'formatearFechaParaAPI', 'cargarReservasGrupo','mapReservaToEventoAjeno',
       'mapReservaToEvento', 'agregarEventos', 'quitarUltimosEventosAdded',
       'convertirPeriodToPeriodo', 'arrancarServicio', 'eliminarReserva', 'modificarReserva']),
     ...mapActions(useAsignaturasStore, ['getAsignaturaPorId']),
@@ -212,7 +212,7 @@ export default {
       try {
         let reservasGrupo = await this.cargarReservasGrupo(this.grupoSeleccionado,
           this.periodoSeleccionado);
-        eventosGrupo = reservasGrupo.map((reserva) => { return this.mapReservaToEvento(reserva) })
+        eventosGrupo = reservasGrupo.map((reserva) => { return this.mapReservaToEventoAjeno(reserva) })
         eventosGrupo = eventosGrupo.filter(eventoGrupo => !this.eventos.some(evento => evento.id === eventoGrupo.id));
         this.ultimosEventosGrupoCargados = eventosGrupo.length;
         this.agregarEventos(eventosGrupo);

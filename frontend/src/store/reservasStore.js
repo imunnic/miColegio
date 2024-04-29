@@ -143,6 +143,18 @@ export const useReservasStore = defineStore("reservas", {
       return evento;
     },
 
+    /**
+     * Función que mapea una reserva en un evento de la librería "Qalendar" para que no se 
+     * pueda editar
+     * @param reserva la reserva como se recibe de la API
+     * @returns el evento en el formato de la librería "Qalendar" no editable
+     */
+    mapReservaToEventoAjeno(reserva) {
+      let evento = this.mapReservaToEvento(reserva);
+      evento.isEditable = false;
+      return evento;
+    },
+
     async guardarReserva() {
       try {
         await this.reservasService.create(this.reserva);
