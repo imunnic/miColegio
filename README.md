@@ -18,8 +18,8 @@ La aplicación mostrará las reservas efectuadas por cada profesor permitiendo a
    1. Repositorio proyecto: https://git.institutomilitar.com/RodrigoDG23/MiColegio
    2. Librería: TBD
 7. **Despliegue** en Internet:
-   1. API: TBD
-   2. Web: TBD
+   1. API: https://micolegio-c6e07df12596.herokuapp.com/api/
+   2. Web: https://micolegio.netlify.app/#/login
 
 ## Interfaz de usuario
 Figura 1: Listado de reservas
