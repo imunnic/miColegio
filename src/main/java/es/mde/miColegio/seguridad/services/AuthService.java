@@ -13,8 +13,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 /**
- * @author JOSE LUIS PUENTES ALAMOS
- * Sobre el código inicial se ha añadido la asociación del profesor con el usuario
+ * @author JOSE LUIS PUENTES ALAMOS Sobre el código inicial se ha añadido la asociación del profesor
+ * con el usuario
  */
 @Service
 public class AuthService {
@@ -31,14 +31,17 @@ public class AuthService {
     this.MANAGER = MANAGER;
   }
 
-  public AuthResponse login(LoginRequest request){
-    this.MANAGER.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(),request.getPassword()));
-    UserDetails user = this.USUARIODAO.findByUsername(request.getUsername()).orElseThrow();
+  public AuthResponse login(LoginRequest request) {
+    this.MANAGER.authenticate(
+        new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
+    Usuario usuario = this.USUARIODAO.findByUsername(request.getUsername()).orElseThrow();
+    UserDetails user = usuario;
+    Rol rol = usuario.getRol();
     String token = this.JWTSERVICE.getToken(user);
-    return new AuthResponse(token, request.getUsername());
+    return new AuthResponse(token, request.getUsername(), usuario.getRol());
   }
 
-  public AuthResponse register(RegisterRequest request){
+  public AuthResponse register(RegisterRequest request) {
     Usuario usuario = new Usuario();
     usuario.setUsername(request.getUsername());
     usuario.setPassword(ENCODER.encode(request.getPassword()));
@@ -47,8 +50,9 @@ public class AuthService {
     usuario.setProfesor(request.getProfesor());
     usuario.setRol(Rol.PROFESOR);
     this.USUARIODAO.save(usuario);
-
-    return new AuthResponse(this.JWTSERVICE.getToken(usuario), usuario.getUsername());
+    
+    return new AuthResponse(this.JWTSERVICE.getToken(usuario), usuario.getUsername(),
+        usuario.getRol());
 
   }
 }
