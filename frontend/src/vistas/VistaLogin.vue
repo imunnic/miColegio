@@ -52,14 +52,16 @@ export default {
     }
   },
   computed: {
-    ...mapState(useUsuariosStore, ['isLogged'])
+    ...mapState(useUsuariosStore, ['isLogged', 'perfil'])
   },
   methods: {
     ...mapActions(useUsuariosStore, ['peticionLogin']),
     async intentarLogin() {
       await this.peticionLogin(this.login);
-      if (this.isLogged) {
+      if (this.isLogged && this.perfil!= 'GESTOR') {
         this.$router.push('/home');
+      } else if(this.isLogged && this.perfil == 'GESTOR') {
+        this.$router.push('/dashboard');
       } else {
         this.intentos++;
       }

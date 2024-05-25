@@ -23,6 +23,12 @@ const routes = [
     name: "login",
     component: () => import("../vistas/VistaLogin.vue"),
   },
+  {
+    path: "/dashboard",
+    name: "panel_control",
+    component: () => import("../vistas/VistaPanelControl.vue"),
+    meta: {requiresAuth:true, requiresPerfil:'GESTOR'}
+  }
 ];
 
 const router = createRouter({
@@ -31,12 +37,14 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from, next) => {
-  if (to.matched.some((record) => record.meta.requiresAuth)) {
-    if (!useUsuariosStore().isLogged) {
-      next("/login");
-    } else {
-      next();
-    }
+  const usuariosStore = useUsuariosStore();
+  const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
+  const requiresPerfil = to.matched.some(record => record.meta.requiresPerfil);
+
+  if (requiresAuth && !usuariosStore.isLogged) {
+    next("/login");
+  } else if (requiresPerfil && usuariosStore.perfil !== to.meta.requiresPerfil) {
+    next("/home");
   } else {
     next();
   }

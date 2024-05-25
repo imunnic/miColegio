@@ -6,6 +6,7 @@ export const useUsuariosStore = defineStore("usuarios", {
   state: () => ({
     username: "",
     token: "",
+    perfil:"",
     isLogged: false,
     profesorId: null,
     usuarioService: new UsuariosService(),
@@ -18,7 +19,9 @@ export const useUsuariosStore = defineStore("usuarios", {
         if (response.status == 200) {
           this.token = response.data.token;
           this.username = response.data.username;
+          this.perfil = response.data.rol;
           this.isLogged = true;
+          console.log(this.perfil);
         }
         await this.obtenerIdProfesor()
       } catch(error){
