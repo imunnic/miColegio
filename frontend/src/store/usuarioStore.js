@@ -21,7 +21,6 @@ export const useUsuariosStore = defineStore("usuarios", {
           this.username = response.data.username;
           this.perfil = response.data.rol;
           this.isLogged = true;
-          console.log(this.perfil);
         }
         await this.obtenerIdProfesor()
       } catch(error){

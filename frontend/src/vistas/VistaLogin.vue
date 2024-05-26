@@ -3,7 +3,7 @@
   <v-container class="contenedor">
     <v-card elevation="3" class="card">
       Registro de entrada
-      <v-form class="formulario">
+      <v-form class="formulario" @keyup.enter="intentarLogin()">
         <v-text-field 
           v-model="login.username" 
           variant="outlined" 
@@ -61,7 +61,7 @@ export default {
       if (this.isLogged && this.perfil!= 'GESTOR') {
         this.$router.push('/home');
       } else if(this.isLogged && this.perfil == 'GESTOR') {
-        this.$router.push('/dashboard');
+        this.$router.push('/lugares');
       } else {
         this.intentos++;
       }

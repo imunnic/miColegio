@@ -1,7 +1,14 @@
 <template>
   <div class="tabla">
     <v-card flat>
-
+      <v-card-title class="d-flex align-center pe-2">
+        <v-icon icon="mdi-map-marker"></v-icon> &nbsp;
+        Lugares
+        <v-spacer></v-spacer>
+        <v-text-field v-model="search" density="compact" label="Buscar" prepend-inner-icon="mdi-magnify"
+          variant="solo-filled" flat hide-details single-line></v-text-field>
+      </v-card-title>
+      <v-divider></v-divider>
       <v-data-table :headers="headers" :items="lugaresColegio" :search="search"></v-data-table>
     </v-card>
   </div>
@@ -12,7 +19,7 @@ import { mapState } from 'pinia'
 export default {
   data() {
     return {
-     
+      search: '',
       headers: [
         {
           title: 'Id',
@@ -47,5 +54,7 @@ export default {
 }
 </script>
 <style scoped>
-
+.tabla{
+  margin-left: 2vw;
+}
 </style>
