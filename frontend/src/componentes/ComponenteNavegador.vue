@@ -26,7 +26,7 @@
       </v-list>
     </v-navigation-drawer>
     <v-main>
-      <div class="contenido">
+      <div class="vista">
         <router-view></router-view>
       </div>
     </v-main>
@@ -64,6 +64,10 @@ export default {
 }
 </script>
 <style scoped>
+.vista {
+  margin: 2vw;
+  margin-left: 0vw;
+}
 .profesor:hover {
   cursor: pointer;
 }

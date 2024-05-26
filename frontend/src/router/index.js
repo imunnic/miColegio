@@ -28,6 +28,12 @@ const routes = [
     name: "panel_control",
     component: () => import("../vistas/VistaPanelControl.vue"),
     meta: {requiresAuth:true, requiresPerfil:'GESTOR'}
+  },
+  {
+    path: "/lugares",
+    name: "lugares",
+    component:() => import("../vistas/VistaLugares.vue"),
+    meta: {requiresAuth:true, requiresPerfil:'GESTOR'}
   }
 ];
 
