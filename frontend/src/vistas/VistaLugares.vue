@@ -51,6 +51,11 @@ export default {
           key: 'capacidad',
           align: 'center',
           sortable: true
+        },
+        {
+          title:"Acciones",
+          key:'actions',
+          align:'center'
         }
       ],
     }
