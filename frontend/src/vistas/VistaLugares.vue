@@ -11,7 +11,7 @@
       </v-card-title>
 
       <v-dialog v-model="edicion" max-width="600">
-        <ComponenteFormularioLugar @cerrar="cambiarModo()"></ComponenteFormularioLugar>
+        <ComponenteFormularioLugar @cerrar="cambiarModo()" @guardar="crearLugar()"></ComponenteFormularioLugar>
       </v-dialog>
       <v-divider></v-divider>
       <v-data-table :headers="headers" :items="lugaresColegio" :search="search">
@@ -34,8 +34,9 @@
 </template>
 <script>
 import ComponenteFormularioLugar from '../componentes/ComponenteFormularioLugar.vue'
+import { useUsuariosStore } from '../store/usuarioStore'
 import { useLugaresStore } from '../store/lugaresStores'
-import { mapState } from 'pinia'
+import { mapState, mapActions } from 'pinia'
 export default {
   components: { ComponenteFormularioLugar },
   data() {
@@ -76,9 +77,10 @@ export default {
     }
   },
   computed: {
-    ...mapState(useLugaresStore, ['lugaresColegio','lugarSeleccionado'])
+    ...mapState(useLugaresStore, ['lugaresColegio', 'lugarSeleccionado'])
   },
   methods: {
+    ...mapActions(useLugaresStore,['arrancarServicio','crearNuevoLugar']),
     crear() {
       this.lugarSeleccionado.nombre = '';
       this.lugarSeleccionado.capacidad = null;
@@ -97,8 +99,14 @@ export default {
       this.lugarSeleccionado.proyector = item.proyector;
       this.lugarSeleccionado.deportes = item.deportes;
       this.cambiarModo();
+    },
+    crearLugar() {
+      this.crearNuevoLugar();
+      this.cambiarModo();
     }
-
+  },
+  mounted() {
+    this.arrancarServicio(useUsuariosStore().token);
   }
 }
 </script>

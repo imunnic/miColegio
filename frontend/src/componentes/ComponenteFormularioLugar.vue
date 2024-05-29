@@ -60,8 +60,7 @@ export default {
       this.$emit('cerrar');
     },
     guardar() {
-      this.$emit('guardar', this.lugar);
-      this.cerrar();
+      this.$emit('guardar');
 
     },
     quitarDeporte(item) {

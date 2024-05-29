@@ -1,4 +1,5 @@
 import { defineStore } from "pinia"
+import LugaresService from '../services/lugaresService'
 import lugares from "../assets/lugares.json"
 import { useAsignaturasStore } from "./asignaturasStore";
 import { useReservasStore } from "./reservasStore";
@@ -6,6 +7,7 @@ import { useReservasStore } from "./reservasStore";
 export const useLugaresStore = defineStore('lugares', {
   state: () => ({
     lugaresColegio: lugares.lugares,
+    lugaresService: null,
     lugarSeleccionado: {
       nombre: '',
       capacidad: '',
@@ -19,8 +21,17 @@ export const useLugaresStore = defineStore('lugares', {
       this.lugarSeleccionado = lugar;
     },
 
+    arrancarServicio(token){
+      this.lugaresService = new LugaresService(token)
+      console.log(this.lugaresService);
+    },
+
     getLugarPorId(id) {
       return this.lugaresColegio.find(lugar => lugar.id == id);
+    },
+
+    crearNuevoLugar() {
+      this.lugaresService.create(this.lugarSeleccionado);
     },
     
     /**
