@@ -25,13 +25,15 @@ export default class reservasService {
    * Función que devuelve todos los lugares
    */
   getAll() {
-    return axios.get(host + lugaresSearch + 'getLugares', config);
+    return axios.get(lugaresSearch + '/getLugares', config);
   }
 
   
   create(lugar) {
     if (lugar.tipo == 'Aula'){
       return axios.post(aulasEndPoint, lugar, config);
+    } else {
+      return axios.post(patiosEndPoint, lugar, config);
     }
   }
 

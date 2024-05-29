@@ -17,13 +17,13 @@ export const useLugaresStore = defineStore('lugares', {
     }
   }),
   actions: {
+
     seleccionarLugar(lugar) {
       this.lugarSeleccionado = lugar;
     },
 
     arrancarServicio(token){
       this.lugaresService = new LugaresService(token)
-      console.log(this.lugaresService);
     },
 
     getLugarPorId(id) {

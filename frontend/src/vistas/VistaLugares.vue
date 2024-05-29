@@ -4,7 +4,7 @@
       <v-card-title class="d-flex align-center pe-2">
         <v-icon icon="mdi-map-marker"></v-icon> &nbsp;
         Lugares
-        <v-btn @click="crear()">Crear</v-btn>
+        <v-btn class="crear" prepend-icon="mdi-plus" @click="crear()" >Nuevo Lugar</v-btn>
         <v-spacer></v-spacer>
         <v-text-field v-model="search" density="compact" label="Buscar" prepend-inner-icon="mdi-magnify"
           variant="solo-filled" flat hide-details single-line></v-text-field>
@@ -24,9 +24,7 @@
           </v-icon>
         </template>
         <template v-slot:no-data>
-          <v-btn color="primary" @click="initialize()">
-            Cargar datos
-          </v-btn>
+          No hay lugares
         </template>
       </v-data-table>
     </v-card>
@@ -44,12 +42,6 @@ export default {
       edicion: false,
       search: '',
       headers: [
-        {
-          title: 'Id',
-          align: 'center',
-          sortable: true,
-          key: 'id'
-        },
         {
           title: 'Tipo',
           align: 'center',
@@ -113,5 +105,8 @@ export default {
 <style scoped>
 .tabla {
   margin-left: 2vw;
+}
+.crear{
+  margin-left: 10px;
 }
 </style>
