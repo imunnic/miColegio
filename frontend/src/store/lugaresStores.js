@@ -6,7 +6,13 @@ import { useReservasStore } from "./reservasStore";
 export const useLugaresStore = defineStore('lugares', {
   state: () => ({
     lugaresColegio: lugares.lugares,
-    lugarSeleccionado: null
+    lugarSeleccionado: {
+      nombre: '',
+      capacidad: '',
+      tipo: 'AULA',
+      proyector: false,
+      deportes: []
+    }
   }),
   actions: {
     seleccionarLugar(lugar) {
@@ -27,7 +33,7 @@ export const useLugaresStore = defineStore('lugares', {
       let asignatura = useAsignaturasStore().getAsignaturaPorId(asignaturaId);
       let lugaresId = asignatura.lugares;
       let lugares = [];
-      let lugarSeleccionado = null;
+      let lugarDisponible = null;
       let disponible = false;
       lugaresId.forEach(id => {
         lugares.push(useLugaresStore().getLugarPorId(id))
@@ -38,7 +44,7 @@ export const useLugaresStore = defineStore('lugares', {
           periodo)
           .then(response => {
             if (response.data == true) {
-              lugarSeleccionado = lugar.id
+              lugarDisponible = lugar.id
               disponible = true;
             }
           }).catch(error => console.log(error.code));
@@ -46,7 +52,7 @@ export const useLugaresStore = defineStore('lugares', {
           break;
         }
       }
-      return lugarSeleccionado;
+      return lugarDisponible;
     }
   }
 })
