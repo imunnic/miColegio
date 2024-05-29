@@ -4,11 +4,12 @@
       <v-card-title class="d-flex align-center pe-2">
         <v-icon icon="mdi-map-marker"></v-icon> &nbsp;
         Lugares
+        <v-btn @click="crear()">Crear</v-btn>
         <v-spacer></v-spacer>
         <v-text-field v-model="search" density="compact" label="Buscar" prepend-inner-icon="mdi-magnify"
           variant="solo-filled" flat hide-details single-line></v-text-field>
       </v-card-title>
-      <v-btn @click="cambiarModo()">Crear</v-btn>
+
       <v-dialog v-model="edicion" max-width="600">
         <ComponenteFormularioLugar @cerrar="cambiarModo()"></ComponenteFormularioLugar>
       </v-dialog>
@@ -79,12 +80,22 @@ export default {
   },
   methods: {
     crear() {
+      this.lugarSeleccionado.nombre = '';
+      this.lugarSeleccionado.capacidad = null;
+      this.lugarSeleccionado.tipo = 'Aula';
+      this.lugarSeleccionado.proyector = false;
+      this.lugarSeleccionado.deportes = null;
       this.cambiarModo();
     },
     cambiarModo() {
       this.edicion = !this.edicion;
     },
-    editarLugar() {
+    editarLugar(item) {
+      this.lugarSeleccionado.nombre = item.nombre;
+      this.lugarSeleccionado.capacidad = item.capacidad;
+      this.lugarSeleccionado.tipo = item.tipo;
+      this.lugarSeleccionado.proyector = item.proyector;
+      this.lugarSeleccionado.deportes = item.deportes;
       this.cambiarModo();
     }
 

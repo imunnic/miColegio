@@ -12,13 +12,13 @@
     </v-toolbar>
     <v-card-text>
       <v-form>
-        <v-text-field v-model="lugarNuevo.nombre" label="Nombre" :rules="[rules.requerido]" required></v-text-field>
-        <v-text-field v-model="lugarNuevo.capacidad" label="Capacidad" type="number" :rules="[rules.numero, rules.positivo, rules.entero]"
+        <v-text-field v-model="lugarSeleccionado.nombre" label="Nombre" :rules="[rules.requerido]" required></v-text-field>
+        <v-text-field v-model="lugarSeleccionado.capacidad" label="Capacidad" type="number" :rules="[rules.numero, rules.positivo, rules.entero]"
           required></v-text-field>
 
-        <v-select v-model="lugarNuevo.tipo" :items="['AULA', 'PATIO']" label="Tipo" required></v-select>
-        <v-checkbox v-if="lugarNuevo.tipo == 'AULA'" v-model="lugarNuevo.proyector" label="Proyector"></v-checkbox>
-        <v-combobox v-if="lugarNuevo.tipo == 'PATIO'" v-model="lugarNuevo.deportes" :items="deportesOptions"
+        <v-select v-model="lugarSeleccionado.tipo" :items="['Aula', 'Patio']" label="Tipo" required></v-select>
+        <v-checkbox v-if="lugarSeleccionado.tipo == 'Aula'" v-model="lugarSeleccionado.proyector" label="Proyector"></v-checkbox>
+        <v-combobox v-if="lugarSeleccionado.tipo == 'Patio'" v-model="lugarSeleccionado.deportes" :items="deportesOptions"
           label="Deportes" clearable chips multiple>
           <template v-slot:selection="{ item, select }">
             <v-chip @click="select" @click:close="quitarDeporte(item)">
@@ -38,16 +38,11 @@
 </template>
 
 <script>
+import {useLugaresStore} from '../store/lugaresStores'
+import {mapState} from 'pinia'
 export default {
   data() {
     return {
-      lugarNuevo: {
-        nombre: '',
-        capacidad: '',
-        tipo: 'AULA',
-        proyector: false,
-        deportes: []
-      },
       deportesOptions: ['Futbol', 'Baloncesto'],
       rules: {
         requerido: value => !!value || 'Requerido.',
@@ -56,6 +51,9 @@ export default {
         entero: value => Number.isInteger(Number(value)) || 'Debe introducir un número entero.'
       }
     }
+  },
+  computed:{
+    ...mapState(useLugaresStore,['lugarSeleccionado'])
   },
   methods: {
     cerrar() {
