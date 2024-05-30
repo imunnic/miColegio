@@ -17,7 +17,7 @@
 
       <v-data-table :headers="headers" :items="lugaresColegio" :search="search">
         <template v-slot:item.actions="{ item }">
-          <v-icon class="me-2" size="small" @click="editarLugar(item)">
+          <v-icon class="me-2 iconoEditar" size="small" @click="editarLugar(item)">
             mdi-pencil
           </v-icon>
           <v-icon class="iconoBorrar" size="small" @click="confirmarBorrar(item)">
@@ -55,6 +55,8 @@ export default {
   components: { ComponenteFormularioLugar },
   data() {
     return {
+      //TODO controlar si se está editando o no para hacer un put o un post dependiendo
+      //si se crea o si se edita
       edicion: false,
       confirmar:false,
       lugarAEliminar:null,
@@ -149,5 +151,8 @@ export default {
 }
 .iconoBorrar:hover {
   color: rgb(168, 17, 17);
+}
+.iconoEditar:hover {
+  color: rgb(27, 124, 27);
 }
 </style>

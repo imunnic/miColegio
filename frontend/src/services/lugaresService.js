@@ -41,6 +41,6 @@ export default class reservasService {
   }
 
   update(href, data) {
-    return axios.patch(href, data, config);
+    return axios.put(href, data, config);
   }
 }
