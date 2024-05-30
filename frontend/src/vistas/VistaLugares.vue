@@ -10,8 +10,8 @@
           variant="solo-filled" flat hide-details single-line></v-text-field>
       </v-card-title>
 
-      <v-dialog v-model="edicion" max-width="600">
-        <ComponenteFormularioLugar @cerrar="cambiarModo()" @guardar="crearLugar()"></ComponenteFormularioLugar>
+      <v-dialog v-model="mostrarModal" max-width="600">
+        <ComponenteFormularioLugar @cerrar="cerrar()" @guardar="modificarLugares()"></ComponenteFormularioLugar>
       </v-dialog>
       <v-divider></v-divider>
 
@@ -57,7 +57,8 @@ export default {
     return {
       //TODO controlar si se está editando o no para hacer un put o un post dependiendo
       //si se crea o si se edita
-      edicion: false,
+      mostrarModal: false,
+      editar:false,
       confirmar:false,
       lugarAEliminar:null,
       search: '',
@@ -92,7 +93,8 @@ export default {
     ...mapState(useLugaresStore, ['lugaresColegio', 'lugarSeleccionado'])
   },
   methods: {
-    ...mapActions(useLugaresStore,['arrancarServicio','crearNuevoLugar','cargarLugares','borrarLugar']),
+    ...mapActions(useLugaresStore,['arrancarServicio','crearNuevoLugar','cargarLugares',
+    'borrarLugar','modificarLugar']),
     crear() {
       this.lugarSeleccionado.nombre = '';
       this.lugarSeleccionado.capacidad = null;
@@ -112,6 +114,10 @@ export default {
       this.confirmacion();
       this.lugarAEliminar = null;
     },
+    cerrar() {
+      this.cambiarModo();
+      this.editar = false;
+    },
     async borrarLugarConfirmado() {
       if (this.lugarAEliminar) {
         await this.borrarLugar(this.lugarAEliminar);
@@ -120,7 +126,7 @@ export default {
       }
     },
     cambiarModo() {
-      this.edicion = !this.edicion;
+      this.mostrarModal = !this.mostrarModal;
     },
     editarLugar(item) {
       this.lugarSeleccionado.nombre = item.nombre;
@@ -128,12 +134,21 @@ export default {
       this.lugarSeleccionado.tipo = item.tipo;
       this.lugarSeleccionado.proyector = item.proyector;
       this.lugarSeleccionado.deportes = item.deportes;
+      this.lugarSeleccionado.href = item._links.self.href;
+      this.editar = true;
       this.cambiarModo();
     },
-    async crearLugar() {
-      await this.crearNuevoLugar();
-      this.cambiarModo();
-      await this.cargarLugares();
+    async modificarLugares() {
+      if (this.editar == false) {
+        await this.crearNuevoLugar();
+        this.cambiarModo();
+        await this.cargarLugares();
+      } else {
+        await this.modificarLugar();
+        this.cambiarModo();
+        await this.cargarLugares();
+        this.editar = false;
+      }
     }
   },
   mounted() {

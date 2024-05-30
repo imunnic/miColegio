@@ -13,7 +13,8 @@ export const useLugaresStore = defineStore('lugares', {
       capacidad: '',
       tipo: 'AULA',
       proyector: false,
-      deportes: []
+      deportes: [],
+      href: null
     }
   }),
   actions: {
@@ -48,6 +49,11 @@ export const useLugaresStore = defineStore('lugares', {
 
     async crearNuevoLugar() {
       await this.lugaresService.create(this.lugarSeleccionado);
+    },
+
+    async modificarLugar() {
+      await this.lugaresService.update(this.lugarSeleccionado.href, 
+        this.lugarSeleccionado);
     },
     
     /**
