@@ -14,12 +14,13 @@
         <ComponenteFormularioLugar @cerrar="cambiarModo()" @guardar="crearLugar()"></ComponenteFormularioLugar>
       </v-dialog>
       <v-divider></v-divider>
+
       <v-data-table :headers="headers" :items="lugaresColegio" :search="search">
         <template v-slot:item.actions="{ item }">
           <v-icon class="me-2" size="small" @click="editarLugar(item)">
             mdi-pencil
           </v-icon>
-          <v-icon size="small" @click="borrarLugar(item)">
+          <v-icon class="iconoBorrar" size="small" @click="confirmarBorrar(item)">
             mdi-delete
           </v-icon>
         </template>
@@ -27,6 +28,21 @@
           No hay lugares
         </template>
       </v-data-table>
+
+      <v-dialog v-model="confirmar" max-width="600">
+      <v-card>
+        <v-card-title class="headline">Confirmar Borrado</v-card-title>
+        <v-card-text>
+          ¿Estás seguro de que deseas borrar este lugar?
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="red darken-1" text @click="cancelarBorrado">Cancelar</v-btn>
+          <v-btn color="green darken-1" text @click="borrarLugarConfirmado">Borrar</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
     </v-card>
   </div>
 </template>
@@ -40,6 +56,8 @@ export default {
   data() {
     return {
       edicion: false,
+      confirmar:false,
+      lugarAEliminar:null,
       search: '',
       headers: [
         {
@@ -72,7 +90,7 @@ export default {
     ...mapState(useLugaresStore, ['lugaresColegio', 'lugarSeleccionado'])
   },
   methods: {
-    ...mapActions(useLugaresStore,['arrancarServicio','crearNuevoLugar','cargarLugares']),
+    ...mapActions(useLugaresStore,['arrancarServicio','crearNuevoLugar','cargarLugares','borrarLugar']),
     crear() {
       this.lugarSeleccionado.nombre = '';
       this.lugarSeleccionado.capacidad = null;
@@ -80,6 +98,24 @@ export default {
       this.lugarSeleccionado.proyector = false;
       this.lugarSeleccionado.deportes = null;
       this.cambiarModo();
+    },
+    confirmacion() {
+      this.confirmar = !this.confirmar;
+    },
+    confirmarBorrar(item) {
+      this.confirmacion();
+      this.lugarAEliminar = item;
+    },
+    cancelarBorrado() {
+      this.confirmacion();
+      this.lugarAEliminar = null;
+    },
+    async borrarLugarConfirmado() {
+      if (this.lugarAEliminar) {
+        await this.borrarLugar(this.lugarAEliminar);
+        await this.cargarLugares();
+        this.cancelarBorrado();
+      }
     },
     cambiarModo() {
       this.edicion = !this.edicion;
@@ -108,7 +144,10 @@ export default {
 .tabla {
   margin-left: 2vw;
 }
-.crear{
+.crear {
   margin-left: 10px;
+}
+.iconoBorrar:hover {
+  color: rgb(168, 17, 17);
 }
 </style>

@@ -30,7 +30,10 @@ export const useLugaresStore = defineStore('lugares', {
       }));
       this.lugaresColegio = [...aulas, ...patios];
     },
-
+    async borrarLugar(lugar) {
+      await this.lugaresService.delete(lugar._links.self.href);
+      await this.cargarLugares();
+    },
     seleccionarLugar(lugar) {
       this.lugarSeleccionado = lugar;
     },
