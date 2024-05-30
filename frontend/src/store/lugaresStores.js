@@ -17,6 +17,19 @@ export const useLugaresStore = defineStore('lugares', {
     }
   }),
   actions: {
+    async cargarLugares() {
+      let response = await this.lugaresService.getAll();
+      let aulasYPatios = response.data._embedded;
+      let aulas = aulasYPatios.aulas.map(aula => ({
+        ...aula,
+        tipo:'Aula'
+      }));
+      let patios = aulasYPatios.patios.map(patio => ({
+        ...patio,
+        tipo:'Patio'
+      }));
+      this.lugaresColegio = [...aulas, ...patios];
+    },
 
     seleccionarLugar(lugar) {
       this.lugarSeleccionado = lugar;
@@ -30,8 +43,8 @@ export const useLugaresStore = defineStore('lugares', {
       return this.lugaresColegio.find(lugar => lugar.id == id);
     },
 
-    crearNuevoLugar() {
-      this.lugaresService.create(this.lugarSeleccionado);
+    async crearNuevoLugar() {
+      await this.lugaresService.create(this.lugarSeleccionado);
     },
     
     /**

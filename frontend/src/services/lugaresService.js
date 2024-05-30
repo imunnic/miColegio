@@ -27,7 +27,6 @@ export default class reservasService {
   getAll() {
     return axios.get(lugaresSearch + '/getLugares', config);
   }
-
   
   create(lugar) {
     if (lugar.tipo == 'Aula'){

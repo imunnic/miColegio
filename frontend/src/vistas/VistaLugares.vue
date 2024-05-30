@@ -72,7 +72,7 @@ export default {
     ...mapState(useLugaresStore, ['lugaresColegio', 'lugarSeleccionado'])
   },
   methods: {
-    ...mapActions(useLugaresStore,['arrancarServicio','crearNuevoLugar']),
+    ...mapActions(useLugaresStore,['arrancarServicio','crearNuevoLugar','cargarLugares']),
     crear() {
       this.lugarSeleccionado.nombre = '';
       this.lugarSeleccionado.capacidad = null;
@@ -92,13 +92,15 @@ export default {
       this.lugarSeleccionado.deportes = item.deportes;
       this.cambiarModo();
     },
-    crearLugar() {
-      this.crearNuevoLugar();
+    async crearLugar() {
+      await this.crearNuevoLugar();
       this.cambiarModo();
+      await this.cargarLugares();
     }
   },
   mounted() {
     this.arrancarServicio(useUsuariosStore().token);
+    this.cargarLugares();
   }
 }
 </script>
