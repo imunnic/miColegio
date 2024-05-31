@@ -42,6 +42,10 @@ public class Lugar {
     this.capacidad = capacidad;
   }
 
+  public Long getIdentificacion() {
+    return getId();
+  }
+
   public Lugar() {
   }
 

@@ -42,9 +42,8 @@ export const useLugaresStore = defineStore('lugares', {
     arrancarServicioLugares(token){
       this.lugaresService = new LugaresService(token)
     },
-    getLugarNombre(href) {
-      let lugar = this.lugaresColegio.find(lugar => lugar._links.self.href == href);
-      return lugar;
+    accessLugarPorId(id){
+      return this.lugaresColegio.find(l => l.identificacion == id);
     },
     getLugarPorNombre(nombre){
       let lugar = this.lugaresColegio.find(lugar => lugar.name === nombre);

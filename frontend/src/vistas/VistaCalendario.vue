@@ -3,10 +3,7 @@
   franjas horarias para una asignatura, grupo y lugar. 
 -->
 <template>
-  <ComponentEdicionEvento 
-    v-model="editando" 
-    @finEdicion="terminarEdicion" 
-    @cancelar="cancelarEdicion"
+  <ComponentEdicionEvento v-model="editando" @finEdicion="terminarEdicion" @cancelar="cancelarEdicion"
     :asignaturas="profesorSeleccionado.asignaturas">
   </ComponentEdicionEvento>
   <div class="contenedorColumnas">
@@ -15,53 +12,32 @@
         <v-form ref="form" v-if="profesorSeleccionado != null">
           {{ profesorSeleccionado.nombre }} {{ profesorSeleccionado.apellido }}
 
-          <v-select 
-            v-model="asignaturaSeleccionada" 
-            label="Asignaturas" 
-            :items="profesorSeleccionado.asignaturas">
-            <template 
-              v-slot:selection="{ item, index }" 
-              required>
+          <v-select v-model="asignaturaSeleccionada" label="Asignaturas" :items="profesorSeleccionado.asignaturas">
+            <template v-slot:selection="{ item, index }" required>
               {{ getAsignaturaPorId(item.props.value).nombre }}
             </template>
             <template v-slot:item="{ props, item }">
-              <v-list-item 
-                v-bind="props" 
-                :title="getAsignaturaPorId(item.props.value).nombre">
+              <v-list-item v-bind="props" :title="getAsignaturaPorId(item.props.value).nombre">
               </v-list-item>
             </template>
           </v-select>
 
-          <v-select 
-            v-model="grupoSeleccionado" 
-            label="Grupo" 
-            :items="getAsignaturaPorId(asignaturaSeleccionada).grupos"
-            @update:modelValue="cargarGrupo()" 
-            :rules="[v => !!v || 'Seleccione un grupo']" 
-            required>
+          <v-select v-model="grupoSeleccionado" label="Grupo" :items="getAsignaturaPorId(asignaturaSeleccionada).grupos"
+            @update:modelValue="cargarGrupo()" :rules="[v => !!v || 'Seleccione un grupo']" required>
             <template v-slot:selection="{ item, index }">
               {{ getGrupoPorId(item.props.value).nombre }}
             </template>
             <template v-slot:item="{ props, item }">
-              <v-list-item 
-                v-bind="props" 
-                :title="getGrupoPorId(item.props.value).nombre">
+              <v-list-item v-bind="props" :title="getGrupoPorId(item.props.value).nombre">
               </v-list-item>
             </template>
           </v-select>
 
-          <v-text-field 
-            class="fecha" 
-            prepend-icon="mdi-calendar" 
-            v-model="fechaSeleccionada" 
-            :disabled="true" 
-            required
+          <v-text-field class="fecha" prepend-icon="mdi-calendar" v-model="fechaSeleccionada" :disabled="true" required
             :rules="[v => !!v || 'Seleccione una fecha']">
           </v-text-field>
 
-          <v-btn 
-            @click="reservar" 
-            block>
+          <v-btn @click="reservar" block>
             Reservar
           </v-btn>
 
@@ -72,16 +48,23 @@
       </div>
     </div>
     <div class="columnaDerecha">
-      <Qalendar 
-        class="calendario" 
-        ref="calendarRef" 
-        :config="configuracion" 
-        :events="eventos"
-        @interval-was-clicked="clickEnIntervalo" 
-        @updated-period="actualizarCalendarioPorPeriodo"
-        @updated-mode="actualizarCalendarioPorModo" 
-        @delete-event="borrarEvento" 
-        @edit-event="editarEvento">
+      <Qalendar class="calendario" ref="calendarRef" :config="configuracion" :events="eventos"
+        @interval-was-clicked="clickEnIntervalo" @updated-period="actualizarCalendarioPorPeriodo"
+        @updated-mode="actualizarCalendarioPorModo" @delete-event="borrarEvento" @edit-event="editarEvento">
+        <template #weekDayEvent="eventProps">
+          <div
+            :style="{ backgroundColor: 'cornflowerblue', color: '#fff', width: '100%', height: '100%', overflow: 'hidden' }">
+            <p class="itemEvento">
+              {{ eventProps.eventData.topic }}
+            </p>
+            <p class="itemEvento">
+              {{ eventProps.eventData.location }}
+            </p>
+            <p class="itemEvento">
+              {{ eventProps.eventData.with }}
+            </p>
+          </div>
+        </template>
         <template #dayCell="{ dayData }">
           <div class="celdaDia">
             <div> {{ dayData.dateTimeString.substring(8, 10) }}</div>
@@ -143,12 +126,12 @@ export default {
 
   methods: {
     ...mapActions(useReservasStore, ['cargarReservas', 'guardarReserva', 'resetReserva',
-      'formatearFechaParaAPI', 'cargarReservasGrupo','mapReservaToEventoAjeno',
+      'formatearFechaParaAPI', 'cargarReservasGrupo', 'mapReservaToEventoAjeno',
       'mapReservaToEvento', 'agregarEventos', 'quitarUltimosEventosAdded',
       'convertirPeriodToPeriodo', 'arrancarServicio', 'eliminarReserva', 'modificarReserva']),
     ...mapActions(useAsignaturasStore, ['getAsignaturaPorId']),
     ...mapActions(useGruposStore, ['getGrupoPorId']),
-    ...mapActions(useLugaresStore, ['escogerLugarDisponible','cargarLugares','arrancarServicioLugares']),
+    ...mapActions(useLugaresStore, ['escogerLugarDisponible', 'cargarLugares', 'arrancarServicioLugares']),
 
     /**
      * Función para controlar los click en los intervalos del calendario. Coge la franja 
@@ -284,6 +267,7 @@ export default {
   mounted() {
     this.arrancarServicioLugares(useUsuariosStore().token);
     this.cargarLugares();
+
     let fechaFin = new Date(this.$refs.calendarRef.period.end);
     fechaFin.setDate(fechaFin.getDate() + 1);
     this.periodoSeleccionado = {
@@ -338,6 +322,11 @@ export default {
 .fecha {
   min-width: 200px;
 }
+
+.itemEvento {
+  margin-bottom: 0px;
+}
+
 
 /*Vista para dispositivos de menos de 575px*/
 @media (max-width: 575px) {

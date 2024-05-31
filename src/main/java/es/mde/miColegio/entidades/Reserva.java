@@ -66,6 +66,10 @@ public class Reserva {
   public Lugar getLugar() {
     return lugar;
   }
+
+  public Long getLugarId() {
+    return getLugar().getId();
+  }
   
   public void setLugar(Lugar lugar) {
     this.lugar = lugar;

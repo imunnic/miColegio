@@ -126,18 +126,19 @@ export const useReservasStore = defineStore("reservas", {
       });
       let evento = {
         id: reserva.identificacion,
-        title: "Clase",
+        title: '',
         time: {
           start: `${reserva.fecha} ${horaInicio}`,
           end: `${reserva.fecha} ${horaFin}`,
         },
         topic: asignatura.getAsignaturaPorId(reserva.asignatura).nombre,
         description: null,
-        location: lugares.getLugarNombre(reserva._links.lugar),
+        location: lugares.accessLugarPorId(reserva.lugarId).nombre,
         with: grupos.getGrupoPorId(reserva.grupo).nombre,
         isEditable: true,
         disableDnD: ["month", "week", "day"],
         disableResize: ["month", "week", "day"],
+        isCustom: true
       };
 
       return evento;

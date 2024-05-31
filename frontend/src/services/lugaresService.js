@@ -36,6 +36,10 @@ export default class reservasService {
     }
   }
 
+  getLugar(href) {
+    return axios.get(href, config);
+  }
+
   getHrefById(id){
     return lugaresEndPoint + '/' + id;
   }
