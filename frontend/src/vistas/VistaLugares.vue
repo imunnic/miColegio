@@ -93,7 +93,7 @@ export default {
     ...mapState(useLugaresStore, ['lugaresColegio', 'lugarSeleccionado'])
   },
   methods: {
-    ...mapActions(useLugaresStore,['arrancarServicio','crearNuevoLugar','cargarLugares',
+    ...mapActions(useLugaresStore,['arrancarServicioLugares','crearNuevoLugar','cargarLugares',
     'borrarLugar','modificarLugar']),
     crear() {
       this.lugarSeleccionado.nombre = '';
@@ -152,7 +152,7 @@ export default {
     }
   },
   mounted() {
-    this.arrancarServicio(useUsuariosStore().token);
+    this.arrancarServicioLugares(useUsuariosStore().token);
     this.cargarLugares();
   }
 }

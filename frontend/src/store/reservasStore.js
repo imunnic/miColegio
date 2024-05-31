@@ -133,7 +133,7 @@ export const useReservasStore = defineStore("reservas", {
         },
         topic: asignatura.getAsignaturaPorId(reserva.asignatura).nombre,
         description: null,
-        location: lugares.getLugarPorId(reserva.lugar).nombre,
+        location: lugares.getLugarNombre(reserva._links.lugar),
         with: grupos.getGrupoPorId(reserva.grupo).nombre,
         isEditable: true,
         disableDnD: ["month", "week", "day"],

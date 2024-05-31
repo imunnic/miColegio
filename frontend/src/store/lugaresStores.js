@@ -39,14 +39,20 @@ export const useLugaresStore = defineStore('lugares', {
       this.lugarSeleccionado = lugar;
     },
 
-    arrancarServicio(token){
+    arrancarServicioLugares(token){
       this.lugaresService = new LugaresService(token)
     },
-
-    getLugarPorId(id) {
-      return this.lugaresColegio.find(lugar => lugar.id == id);
+    getLugarNombre(href) {
+      let lugar = this.lugaresColegio.find(lugar => lugar._links.self.href == href);
+      return lugar;
     },
-
+    getLugarPorNombre(nombre){
+      let lugar = this.lugaresColegio.find(lugar => lugar.name === nombre);
+      return lugar._links.self.href;
+    },
+    getLugarPorId(id) {
+      return this.lugaresService.getHrefById(id);
+    },
     async crearNuevoLugar() {
       await this.lugaresService.create(this.lugarSeleccionado);
     },
@@ -69,15 +75,16 @@ export const useLugaresStore = defineStore('lugares', {
       let lugarDisponible = null;
       let disponible = false;
       lugaresId.forEach(id => {
-        lugares.push(useLugaresStore().getLugarPorId(id))
+        lugares.push(this.getLugarPorId(id))
       });
       lugares.sort((a, b) => b.capacidad - a.capacidad);
       for (let lugar of lugares) {
-        await useReservasStore().reservasService.isLugarDisponible(lugar.id, 
+        let id = lugar.split('/')[lugar.split('/').length - 1];
+        await useReservasStore().reservasService.isLugarDisponible(id, 
           periodo)
           .then(response => {
             if (response.data == true) {
-              lugarDisponible = lugar.id
+              lugarDisponible = lugar
               disponible = true;
             }
           }).catch(error => console.log(error.code));

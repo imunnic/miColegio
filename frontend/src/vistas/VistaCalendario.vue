@@ -148,7 +148,7 @@ export default {
       'convertirPeriodToPeriodo', 'arrancarServicio', 'eliminarReserva', 'modificarReserva']),
     ...mapActions(useAsignaturasStore, ['getAsignaturaPorId']),
     ...mapActions(useGruposStore, ['getGrupoPorId']),
-    ...mapActions(useLugaresStore, ['escogerLugarDisponible']),
+    ...mapActions(useLugaresStore, ['escogerLugarDisponible','cargarLugares','arrancarServicioLugares']),
 
     /**
      * Función para controlar los click en los intervalos del calendario. Coge la franja 
@@ -282,6 +282,8 @@ export default {
    * correcta. El problema viene de la librería.
    */
   mounted() {
+    this.arrancarServicioLugares(useUsuariosStore().token);
+    this.cargarLugares();
     let fechaFin = new Date(this.$refs.calendarRef.period.end);
     fechaFin.setDate(fechaFin.getDate() + 1);
     this.periodoSeleccionado = {

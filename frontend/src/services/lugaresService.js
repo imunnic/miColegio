@@ -36,6 +36,10 @@ export default class reservasService {
     }
   }
 
+  getHrefById(id){
+    return lugaresEndPoint + '/' + id;
+  }
+
   delete(href) {
     return axios.delete(href, config);
   }

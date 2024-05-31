@@ -82,11 +82,11 @@ export default class reservasService {
   /**
    * Función que dice si un lugar está disponible o no
    */
-  isLugarDisponible(lugarId, franjaHoraria) {
+  isLugarDisponible(href, franjaHoraria) {
     return axios.get(
       reservasSearch +
-        "/lugar-disponible?lugarId=" +
-        lugarId +
+        "/lugar-disponible?lugar=" +
+        href +
         "&fecha=" +
         franjaHoraria.fecha +
         "&hora=" +
