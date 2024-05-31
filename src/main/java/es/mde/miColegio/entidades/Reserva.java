@@ -1,12 +1,8 @@
 package es.mde.miColegio.entidades;
 
 import java.time.LocalDate;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
+
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "RESERVAS",
@@ -21,7 +17,9 @@ public class Reserva {
   private int profesor;
   private int asignatura;
   private int grupo;
-  private int lugar;
+  @ManyToOne
+  @JoinColumn(name = "lugar_id", nullable = false)
+  private Lugar lugar;
   private LocalDate fecha;
   private int hora;
   
@@ -65,11 +63,11 @@ public class Reserva {
     this.fecha = fecha;
   }
   
-  public int getLugar() {
+  public Lugar getLugar() {
     return lugar;
   }
   
-  public void setLugar(int lugar) {
+  public void setLugar(Lugar lugar) {
     this.lugar = lugar;
   }
   
@@ -87,7 +85,7 @@ public class Reserva {
   public Reserva() {
   }
   
-  public Reserva(int profesor, int grupo, int asignatura, int lugar, LocalDate fecha, int hora) {
+  public Reserva(int profesor, int grupo, int asignatura, Lugar lugar, LocalDate fecha, int hora) {
     setAsignatura(asignatura);
     setFecha(fecha);
     setGrupo(grupo);
@@ -97,4 +95,3 @@ public class Reserva {
   }
   
 }
-  

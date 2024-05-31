@@ -3,6 +3,7 @@ package es.mde.miColegio.repositorios;
 import java.time.LocalDate;
 import java.util.List;
 
+import es.mde.miColegio.entidades.Lugar;
 import es.mde.miColegio.entidades.Reserva;
 
 public interface ReservaDAOCustom {
@@ -13,7 +14,7 @@ public interface ReservaDAOCustom {
    * @param fecha es la fecha (yyyy-MM-dd) de la franja horaria
    * @param hora  es la hora a la que empieza
    */
-  boolean isLugarDisponible(int lugar, LocalDate fecha, int hora);
+  boolean isLugarDisponible(Lugar lugar, LocalDate fecha, int hora);
 
   public List<Reserva> getReservasDeProfesorEntreFechas(int profesor, LocalDate fechaInicio,
       LocalDate fechaFin);

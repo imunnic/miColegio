@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import es.mde.miColegio.entidades.Lugar;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import es.mde.miColegio.entidades.Reserva;
@@ -21,14 +22,14 @@ public class ReservaDAOImpl implements ReservaDAOCustom {
 
   /**
    * Función que devuelve si un lugar está disponible o no para una franja horaria determinada
-   * @param lugar id del lugar de la reserva
+   * @param lugar el lugar de la reserva
    * @param fecha fecha de la franja horaria
    * @param hora hora de la franja horaria
    * @return booleano
    * */
   @Override
-  public boolean isLugarDisponible(int lugar, LocalDate fecha, int hora) {
-    return (reservaDAO.findByLugarAndFechaAndHora(lugar, fecha, hora).isEmpty());
+  public boolean isLugarDisponible(Lugar lugar, LocalDate fecha, int hora) {
+    return (reservaDAO.findByLugarAndFechaAndHora(lugar,fecha,hora).isEmpty());
   }
 
   /**

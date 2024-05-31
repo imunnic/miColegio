@@ -2,6 +2,8 @@ package es.mde.miColegio.entidades;
 
 import jakarta.persistence.*;
 
+import java.util.Set;
+
 @Entity
 @Table(name="LUGARES")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
@@ -13,6 +15,8 @@ public class Lugar {
   private Long id;
   private String nombre;
   private int capacidad;
+  @OneToMany(mappedBy = "lugar")
+  private Set<Reserva> reservas;
 
   public Long getId() {
     return id;
