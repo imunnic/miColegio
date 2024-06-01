@@ -126,7 +126,7 @@ export const useReservasStore = defineStore("reservas", {
       });
       let evento = {
         id: reserva.identificacion,
-        title: '',
+        title: 'Clase',
         time: {
           start: `${reserva.fecha} ${horaInicio}`,
           end: `${reserva.fecha} ${horaFin}`,
@@ -153,6 +153,7 @@ export const useReservasStore = defineStore("reservas", {
     mapReservaToEventoAjeno(reserva) {
       let evento = this.mapReservaToEvento(reserva);
       evento.isEditable = false;
+      evento.color = "green";
       return evento;
     },
 

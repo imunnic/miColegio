@@ -3,61 +3,61 @@
     {
       "id": 1,
       "nombre": "Matemáticas",
-      "lugares": [1, 2],
+      "lugares": [11, 9, 1],
       "grupos": [1, 2, 3]
     },
     {
       "id": 2,
       "nombre": "Física",
-      "lugares": [3, 4],
+      "lugares": [10, 9],
       "grupos": [2, 3, 4]
     },
     {
       "id": 3,
       "nombre": "Lengua Española",
-      "lugares": [5, 6],
+      "lugares": [4, 7],
       "grupos": [1, 2, 3]
     },
     {
       "id": 4,
       "nombre": "Literatura",
-      "lugares": [7, 8],
+      "lugares": [7, 4],
       "grupos": [1, 2, 3]
     },
     {
       "id": 5,
       "nombre": "Historia",
-      "lugares": [6],
+      "lugares": [3, 6],
       "grupos": [1, 2, 3]
     },
     {
       "id": 6,
       "nombre": "Geografía",
-      "lugares": [11, 12],
+      "lugares": [3, 6],
       "grupos": [1, 2]
     },
     {
       "id": 7,
       "nombre": "Ciencias Naturales",
-      "lugares": [13, 14],
+      "lugares": [9],
       "grupos": [2, 3]
     },
     {
       "id": 8,
       "nombre": "Química",
-      "lugares": [14, 15],
+      "lugares": [9, 12],
       "grupos": [2, 3, 4]
     },
     {
       "id": 9,
       "nombre": "Educación Física",
-      "lugares": [16, 17],
+      "lugares": [2, 14],
       "grupos": [1, 2, 3]
     },
     {
       "id": 10,
       "nombre": "Deportes",
-      "lugares": [18, 19],
+      "lugares": [13, 14],
       "grupos": [1]
     }
   ]

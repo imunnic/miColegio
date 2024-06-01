@@ -53,7 +53,7 @@
         @updated-mode="actualizarCalendarioPorModo" @delete-event="borrarEvento" @edit-event="editarEvento">
         <template #weekDayEvent="eventProps">
           <div
-            :style="{ backgroundColor: 'cornflowerblue', color: '#fff', width: '100%', height: '100%', overflow: 'hidden', border:'1px solid gray'}">
+            :style="{ backgroundColor: eventProps.eventData.color || 'cornflowerblue', color: '#fff', width: '200%', height: '100%', overflow: 'hidden', border:'1px solid gray'}">
             <p class="itemEvento">
               <v-icon class="itemEvento" icon="mdi-book-open-variant-outline"></v-icon>{{ eventProps.eventData.topic }}
             </p>
@@ -175,7 +175,6 @@ export default {
           this.reserva.lugar = lugar;
           await this.guardarReserva();
           this.fechaSeleccionada = null;
-          this.grupoSeleccionado = null;
           await this.refrescarCalendario();
         } else {
           alert('No hay lugares disponibles para esa franja horaria, elija otra franja');
@@ -215,6 +214,7 @@ export default {
     async refrescarCalendario() {
       await this.cargarReservas(this.convertirPeriodToPeriodo(this.periodoSeleccionado));
       this.ultimosEventosGrupoCargados = 0;
+      this.cargarGrupo();
     },
 
     async actualizarCalendarioPorModo(modo) {
