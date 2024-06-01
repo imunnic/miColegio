@@ -53,15 +53,15 @@
         @updated-mode="actualizarCalendarioPorModo" @delete-event="borrarEvento" @edit-event="editarEvento">
         <template #weekDayEvent="eventProps">
           <div
-            :style="{ backgroundColor: 'cornflowerblue', color: '#fff', width: '100%', height: '100%', overflow: 'hidden' }">
+            :style="{ backgroundColor: 'cornflowerblue', color: '#fff', width: '100%', height: '100%', overflow: 'hidden', border:'1px solid gray'}">
             <p class="itemEvento">
-              {{ eventProps.eventData.topic }}
+              <v-icon class="itemEvento" icon="mdi-book-open-variant-outline"></v-icon>{{ eventProps.eventData.topic }}
             </p>
             <p class="itemEvento">
-              {{ eventProps.eventData.location }}
+              <v-icon class="itemEvento" icon="mdi-map-marker-outline"></v-icon>{{ eventProps.eventData.location }}
             </p>
             <p class="itemEvento">
-              {{ eventProps.eventData.with }}
+              <v-icon class="itemEvento" icon="mdi-account-group"></v-icon>{{ eventProps.eventData.with }}
             </p>
           </div>
         </template>
@@ -325,6 +325,7 @@ export default {
 
 .itemEvento {
   margin-bottom: 0px;
+  padding: 2px;
 }
 
 
