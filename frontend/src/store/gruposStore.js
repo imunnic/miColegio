@@ -11,6 +11,14 @@ export const useGruposStore = defineStore('grupos', {
       this.gruposSeleccionado = grupo;
     },
     getGrupoPorId(id) {
+      if (id == -1) {
+        let grupo = {
+          id: -1,
+          nombre:"Ninguno",
+          cantidad:0
+        }
+        return grupo;
+      }
       return this.gruposAlumnos.find(grupo => grupo.id == id);
     }
   }

@@ -22,8 +22,8 @@
             </template>
           </v-select>
 
-          <v-select v-model="grupoSeleccionado" label="Grupo" :items="getAsignaturaPorId(asignaturaSeleccionada).grupos"
-            @update:modelValue="cargarGrupo()" :rules="[v => !!v || 'Seleccione un grupo']" required>
+          <v-select v-model="grupoSeleccionado" label="Grupo" :items="gruposConNinguno"
+            @update:modelValue="cargarGrupo()" :rules="[v => !!v || 'Seleccione un grupo', v => v !== -1 || 'La opción Ninguno no es válida para reservar']" required>
             <template v-slot:selection="{ item, index }">
               {{ getGrupoPorId(item.props.value).nombre }}
             </template>
@@ -93,6 +93,10 @@ export default {
   data() {
     return {
       configuracion: {
+        week:{
+          startsOn: 'monday',
+          nDays:5
+        },
         dayBoundaries: {
           start: 9,
           end: 15
@@ -121,7 +125,12 @@ export default {
 
   computed: {
     ...mapState(useProfesoresStore, ['profesorSeleccionado']),
-    ...mapState(useReservasStore, ['reservas', 'eventos', 'reserva'])
+    ...mapState(useReservasStore, ['reservas', 'eventos', 'reserva']),
+    gruposConNinguno() {
+      let grupos = [-1, ...this.getAsignaturaPorId(this.asignaturaSeleccionada).grupos];
+
+      return grupos;
+    }
   },
 
   methods: {
@@ -189,18 +198,22 @@ export default {
      * TODO cambiar el color de los eventos del grupo para hacerlo un poco más amigable
      */
     async cargarGrupo() {
-      this.quitarUltimosEventosAdded(this.ultimosEventosGrupoCargados);
-      let eventosGrupo = [];
-      try {
-        let reservasGrupo = await this.cargarReservasGrupo(this.grupoSeleccionado,
-          this.periodoSeleccionado);
-        eventosGrupo = reservasGrupo.map((reserva) => { return this.mapReservaToEventoAjeno(reserva) })
-        eventosGrupo = eventosGrupo.filter(eventoGrupo => !this.eventos.some(evento => evento.id === eventoGrupo.id));
-        this.ultimosEventosGrupoCargados = eventosGrupo.length;
-        this.agregarEventos(eventosGrupo);
-      } catch (error) {
-        console.log(error);
-      }
+        this.quitarUltimosEventosAdded(this.ultimosEventosGrupoCargados);
+        let eventosGrupo = [];
+        try {
+          let reservasGrupo = await this.cargarReservasGrupo(this.grupoSeleccionado,
+            this.periodoSeleccionado);
+          if (reservasGrupo.length == 0) {
+            this.refrescarCalendario();
+          } else {
+            eventosGrupo = reservasGrupo.map((reserva) => { return this.mapReservaToEventoAjeno(reserva) })
+            eventosGrupo = eventosGrupo.filter(eventoGrupo => !this.eventos.some(evento => evento.id === eventoGrupo.id));
+            this.ultimosEventosGrupoCargados = eventosGrupo.length;
+            this.agregarEventos(eventosGrupo);
+          }
+        } catch (error) {
+          console.log(error);
+        }
     },
 
     /**
