@@ -27,6 +27,8 @@ export const useReservasStore = defineStore("reservas", {
      */
     async cargarReservas(periodo) {
       let profesores = useProfesoresStore();
+      let fechasImposibles = await this.reservasService.getReservasImposibleGrupo(this.getFiltro(periodo));
+      console.log(fechasImposibles);
       if (profesores.profesorSeleccionado != null) {
         try {
           let response = await this.reservasService.getReservasProfesorEntre(
@@ -197,6 +199,14 @@ export const useReservasStore = defineStore("reservas", {
       }
     },
 
+    getFiltro(periodo){
+      let filtro = {
+        fechaInicio: periodo.start,
+        fechaFin: periodo.end,
+        grupos: useProfesoresStore().getGruposDeProfesor()
+      };
+      return filtro;
+    },
 
     /**
      * Función que permite dar la vuelta a una fecha para guardarla en la API

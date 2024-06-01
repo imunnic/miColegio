@@ -2,7 +2,9 @@ package es.mde.miColegio.repositorios;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import es.mde.miColegio.entidades.Lugar;
@@ -69,6 +71,47 @@ public class ReservaDAOImpl implements ReservaDAOCustom {
                              p.getFecha().isEqual(fechaFin))
                          .collect(Collectors.toList());
     return reservas;
+  }
+
+  /**
+   * Función que devuelve las fechas y horas a las que no es posible reservar para ningún grupo
+   * del listado de grupos enviado
+   * @param grupos listado de ids de los grupos sobre los que se quiere hacer la consulta
+   * @param fechaInicio la fecha de inicio de la consulta
+   * @param fechaFin la fecha de fin de la consulta
+   * @return un mapa de la fechas fechas y horas correspondientes a las que no se puede reservar
+   * para ninguno de los grupos dados
+   * */
+  @Override
+  public Map<LocalDate, Integer> getFechasHorasReservadasPorGrupos(List<Integer> grupos,
+      LocalDate fechaInicio, LocalDate fechaFin) {
+    Map<LocalDate, Integer> fechasHorasReservadas = new HashMap<>();
+    int horaInicio = 9;
+    int horaFin = 14;
+    LocalDate fechaActual = fechaInicio;
+
+    while (!fechaActual.isAfter(fechaFin)) {
+      Integer horaReservada = null;
+      for (int hora = horaInicio; hora <= horaFin; hora++) {
+        boolean todasLasReservasHechas = true;
+        for (Integer grupo : grupos) {
+          List<Reserva> reservas = reservaDAO.findByGrupoAndFechaAndHora(grupo, fechaActual, hora);
+          if (reservas.isEmpty()) {
+            todasLasReservasHechas = false;
+            break;
+          } else {
+            horaReservada = hora;
+          }
+        }
+        if (todasLasReservasHechas) {
+          fechasHorasReservadas.put(fechaActual, horaReservada);
+          break;
+        }
+      }
+      fechaActual = fechaActual.plusDays(1);
+    }
+
+    return fechasHorasReservadas;
   }
 
 }

@@ -2,6 +2,7 @@ package es.mde.miColegio.repositorios;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 import es.mde.miColegio.entidades.Lugar;
 import es.mde.miColegio.entidades.Reserva;
@@ -21,5 +22,8 @@ public interface ReservaDAOCustom {
 
   public List<Reserva> getReservasDeGrupoEntreFechas(int grupo, LocalDate fechaInicio,
       LocalDate fechaFin);
+
+  public Map<LocalDate, Integer> getFechasHorasReservadasPorGrupos(List<Integer> grupos,
+      LocalDate fechaInicio, LocalDate fechaFin);
 
 }

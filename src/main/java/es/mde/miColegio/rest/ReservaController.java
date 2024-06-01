@@ -2,6 +2,7 @@ package es.mde.miColegio.rest;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 import es.mde.miColegio.entidades.Lugar;
 import org.springframework.context.annotation.Configuration;
@@ -11,9 +12,7 @@ import org.springframework.data.rest.webmvc.RepositoryRestController;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import es.mde.miColegio.entidades.Reserva;
 import es.mde.miColegio.repositorios.ReservaDAO;
 
@@ -51,5 +50,18 @@ public class ReservaController {
       @RequestParam("fechaFin") LocalDate fin, PersistentEntityResourceAssembler assembler) {
     List<Reserva> reservas = reservaDAO.getReservasDeGrupoEntreFechas(grupo, inicio, fin);
     return assembler.toCollectionModel(reservas);
+  }
+
+  @PostMapping("/reservas/search/fechas-imposible-reservar-grupo")
+  @ResponseBody
+  public ResponseEntity<Map<LocalDate, Integer>> getFechasImposibleReservarGrupo(
+      @RequestBody FiltroReservasGrupoImposible filtroReservas) {
+    Map<LocalDate, Integer> fechasHorasReservadas =
+        reservaDAO.getFechasHorasReservadasPorGrupos(
+            filtroReservas.getGrupos(),
+            filtroReservas.getFechaInicio(),
+            filtroReservas.getFechaFin());
+
+    return new ResponseEntity<>(fechasHorasReservadas, HttpStatus.OK);
   }
 }

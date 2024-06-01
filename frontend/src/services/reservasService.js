@@ -95,6 +95,16 @@ export default class reservasService {
     );
   }
 
+  /**
+   * Función que devuelve un mapa de fechas y horas a las que no se puede reservar
+   */
+  getReservasImposibleGrupo(filtro){
+    return axios.post(
+      reservasSearch + '/fechas-imposible-reservar-grupo',
+      filtro, config
+    );
+  }
+
   create(reserva) {
     return axios.post(reservas, reserva, config);
   }
