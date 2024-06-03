@@ -23,7 +23,7 @@ public interface ReservaDAOCustom {
   public List<Reserva> getReservasDeGrupoEntreFechas(int grupo, LocalDate fechaInicio,
       LocalDate fechaFin);
 
-  public Map<LocalDate, Integer> getFechasHorasReservadasPorGrupos(List<Integer> grupos,
+  public Map<LocalDate, List<Integer>> getFechasHorasReservadasPorGrupos(List<Integer> grupos,
       LocalDate fechaInicio, LocalDate fechaFin);
 
 }

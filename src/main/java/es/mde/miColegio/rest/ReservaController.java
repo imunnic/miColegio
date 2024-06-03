@@ -54,9 +54,9 @@ public class ReservaController {
 
   @PostMapping("/reservas/search/fechas-imposible-reservar-grupo")
   @ResponseBody
-  public ResponseEntity<Map<LocalDate, Integer>> getFechasImposibleReservarGrupo(
+  public ResponseEntity<Map<LocalDate, List<Integer>>> getFechasImposibleReservarGrupo(
       @RequestBody FiltroReservasGrupoImposible filtroReservas) {
-    Map<LocalDate, Integer> fechasHorasReservadas =
+    Map<LocalDate, List<Integer>> fechasHorasReservadas =
         reservaDAO.getFechasHorasReservadasPorGrupos(
             filtroReservas.getGrupos(),
             filtroReservas.getFechaInicio(),

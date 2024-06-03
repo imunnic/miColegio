@@ -83,15 +83,15 @@ public class ReservaDAOImpl implements ReservaDAOCustom {
    * para ninguno de los grupos dados
    * */
   @Override
-  public Map<LocalDate, Integer> getFechasHorasReservadasPorGrupos(List<Integer> grupos,
+  public Map<LocalDate, List<Integer>> getFechasHorasReservadasPorGrupos(List<Integer> grupos,
       LocalDate fechaInicio, LocalDate fechaFin) {
-    Map<LocalDate, Integer> fechasHorasReservadas = new HashMap<>();
+    Map<LocalDate, List<Integer>> fechasHorasReservadas = new HashMap<>();
     int horaInicio = 9;
     int horaFin = 14;
     LocalDate fechaActual = fechaInicio;
 
     while (!fechaActual.isAfter(fechaFin)) {
-      Integer horaReservada = null;
+      List<Integer> horasReservadas = new ArrayList<>();
       for (int hora = horaInicio; hora <= horaFin; hora++) {
         boolean todasLasReservasHechas = true;
         for (Integer grupo : grupos) {
@@ -99,15 +99,13 @@ public class ReservaDAOImpl implements ReservaDAOCustom {
           if (reservas.isEmpty()) {
             todasLasReservasHechas = false;
             break;
-          } else {
-            horaReservada = hora;
           }
         }
         if (todasLasReservasHechas) {
-          fechasHorasReservadas.put(fechaActual, horaReservada);
-          break;
+          horasReservadas.add(hora);
         }
       }
+      fechasHorasReservadas.put(fechaActual, horasReservadas);
       fechaActual = fechaActual.plusDays(1);
     }
 
