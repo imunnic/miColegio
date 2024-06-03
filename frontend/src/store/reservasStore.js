@@ -27,8 +27,6 @@ export const useReservasStore = defineStore("reservas", {
      */
     async cargarReservas(periodo) {
       let profesores = useProfesoresStore();
-      let fechasImposibles = await this.reservasService.getReservasImposibleGrupo(this.getFiltro(periodo));
-      console.log(fechasImposibles);
       if (profesores.profesorSeleccionado != null) {
         try {
           let response = await this.reservasService.getReservasProfesorEntre(
@@ -54,7 +52,7 @@ export const useReservasStore = defineStore("reservas", {
         this.eventos = [];
       }
     },
-    
+
     /**
      * Función que permite modificar la asignatura de una reserva y además el lugar automáticamente
      * @param idAsignaturaNueva es el id de la asignatura que se va a poner
@@ -128,7 +126,7 @@ export const useReservasStore = defineStore("reservas", {
       });
       let evento = {
         id: reserva.identificacion,
-        title: 'Clase',
+        title: "Clase",
         time: {
           start: `${reserva.fecha} ${horaInicio}`,
           end: `${reserva.fecha} ${horaFin}`,
@@ -140,14 +138,14 @@ export const useReservasStore = defineStore("reservas", {
         isEditable: true,
         disableDnD: ["month", "week", "day"],
         disableResize: ["month", "week", "day"],
-        isCustom: true
+        isCustom: true,
       };
 
       return evento;
     },
 
     /**
-     * Función que mapea una reserva en un evento de la librería "Qalendar" para que no se 
+     * Función que mapea una reserva en un evento de la librería "Qalendar" para que no se
      * pueda editar
      * @param reserva la reserva como se recibe de la API
      * @returns el evento en el formato de la librería "Qalendar" no editable
@@ -158,6 +156,55 @@ export const useReservasStore = defineStore("reservas", {
       evento.color = "green";
       return evento;
     },
+
+    mapReservaImposibleToEvento(mapaFechasHoraImposible) {
+      let eventos = [];
+      for (let fecha in mapaFechasHoraImposible) {
+        if (mapaFechasHoraImposible.hasOwnProperty(fecha)) {
+          let horas = mapaFechasHoraImposible[fecha];
+          for (let i = 0; i < horas.length; i++) {
+            let hora = horas[i];
+            let nuevoEvento = {
+              id: null,
+              title: 'No disponible',
+              time: {
+                start: null,
+                end: null,
+              },
+              topic: null,
+              description: null,
+              location: null,
+              with: null,
+              isEditable: false,
+              disableDnD: ["month", "week", "day"],
+              disableResize: ["month", "week", "day"],
+              isCustom: false,
+              color: 'red'
+            };
+    
+            let horaFin = hora + 1;
+    
+            nuevoEvento.id = new Date().getTime() + hora;
+            nuevoEvento.time.start = `${fecha} ${hora}:00`;
+            nuevoEvento.time.end = `${fecha} ${horaFin}:00`;
+    
+            eventos.push(nuevoEvento);
+          }
+        }
+      }
+    
+      return eventos;
+    },
+
+    async agregarFranjasImposibles(periodo) {
+      let fechasImposibles =
+      await this.reservasService.getReservasImposibleGrupo(
+        this.getFiltro(periodo)
+      );
+      let reservasImposibles = this.mapReservaImposibleToEvento(fechasImposibles.data);
+      this.agregarEventos(reservasImposibles);
+    },
+
 
     async guardarReserva() {
       try {
@@ -179,12 +226,12 @@ export const useReservasStore = defineStore("reservas", {
 
     async eliminarReserva(href) {
       try {
-        await this.reservasService.delete(href);
+        return await this.reservasService.delete(href);
       } catch (error) {
         console.log(error);
       }
     },
-    
+
     agregarEventos(eventos) {
       this.eventos = [...this.eventos, ...eventos];
     },
@@ -199,11 +246,19 @@ export const useReservasStore = defineStore("reservas", {
       }
     },
 
-    getFiltro(periodo){
+    quitarReservasImposibles() {
+      this.eventos = this.eventos.filter(e => e.title !== 'No disponible');
+    },
+
+    quitarEventosPorId(idEvento) {
+      this.eventos = this.eventos.filter(e => e.id !== idEvento);
+    },
+
+    getFiltro(periodo) {
       let filtro = {
         fechaInicio: periodo.start,
         fechaFin: periodo.end,
-        grupos: useProfesoresStore().getGruposDeProfesor()
+        grupos: useProfesoresStore().getGruposDeProfesor(),
       };
       return filtro;
     },

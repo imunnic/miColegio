@@ -136,8 +136,9 @@ export default {
   methods: {
     ...mapActions(useReservasStore, ['cargarReservas', 'guardarReserva', 'resetReserva',
       'formatearFechaParaAPI', 'cargarReservasGrupo', 'mapReservaToEventoAjeno',
-      'mapReservaToEvento', 'agregarEventos', 'quitarUltimosEventosAdded',
-      'convertirPeriodToPeriodo', 'arrancarServicio', 'eliminarReserva', 'modificarReserva']),
+      'mapReservaToEvento', 'agregarEventos', 'quitarUltimosEventosAdded','agregarFranjasImposibles',
+      'convertirPeriodToPeriodo', 'arrancarServicio', 'eliminarReserva', 'modificarReserva',
+      'quitarReservasImposibles', 'quitarEventosPorId']),
     ...mapActions(useAsignaturasStore, ['getAsignaturaPorId']),
     ...mapActions(useGruposStore, ['getGrupoPorId']),
     ...mapActions(useLugaresStore, ['escogerLugarDisponible', 'cargarLugares', 'arrancarServicioLugares']),
@@ -225,9 +226,11 @@ export default {
      * mostrarlo.
      */
     async refrescarCalendario() {
-      await this.cargarReservas(this.convertirPeriodToPeriodo(this.periodoSeleccionado));
+      let aux = this.convertirPeriodToPeriodo(this.periodoSeleccionado);
+      await this.cargarReservas(aux);
+      await this.agregarFranjasImposibles(aux);
       this.ultimosEventosGrupoCargados = 0;
-      this.cargarGrupo();
+      await this.cargarGrupo();
     },
 
     async actualizarCalendarioPorModo(modo) {
@@ -235,9 +238,12 @@ export default {
     },
 
     async actualizarCalendarioPorPeriodo(periodo) {
+      //TODO ordenar eventos en el orden correcto para que no se sustituyan los rojos
       this.periodoSeleccionado = periodo;
       let aux = this.convertirPeriodToPeriodo(this.periodoSeleccionado);
       await this.cargarReservas(aux);
+      await this.agregarFranjasImposibles(aux);
+      console.log(this.eventos);
       if (this.grupoSeleccionado != null) {
         await this.cargarGrupo();
       }
@@ -262,8 +268,10 @@ export default {
     },
 
     async borrarEvento(evento) {
-      await this.eliminarReserva(evento);
-      await this.refrescarCalendario();//devuelve el id, hay que buscar el evento por id
+      let idEliminado = await this.eliminarReserva(evento);
+      console.log(idEliminado.data.identificacion);
+      this.quitarEventosPorId(idEliminado.data.identificacion);
+      // await this.refrescarCalendario();//devuelve el id, hay que buscar el evento por id
     }
   },
 
@@ -277,9 +285,9 @@ export default {
    * si no da un día por detrás. Después de eso hay que almacenar el periodo seleccionado de forma
    * correcta. El problema viene de la librería.
    */
-  mounted() {
+  async mounted() {
     this.arrancarServicioLugares(useUsuariosStore().token);
-    this.cargarLugares();
+    await this.cargarLugares();
 
     let fechaFin = new Date(this.$refs.calendarRef.period.end);
     fechaFin.setDate(fechaFin.getDate() + 1);
@@ -290,7 +298,8 @@ export default {
     if (useReservasStore().reservasService == null) {
       this.arrancarServicio(useUsuariosStore().token);
     }
-    this.cargarReservas(this.convertirPeriodToPeriodo(this.periodoSeleccionado));
+    await this.cargarReservas(this.convertirPeriodToPeriodo(this.periodoSeleccionado));
+    await this.agregarFranjasImposibles(this.convertirPeriodToPeriodo(this.periodoSeleccionado));
   }
 }
 </script>
