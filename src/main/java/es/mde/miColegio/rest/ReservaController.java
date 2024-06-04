@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import es.mde.miColegio.entidades.Lugar;
+import es.mde.miColegio.repositorios.LugarDAO;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.rest.webmvc.PersistentEntityResource;
 import org.springframework.data.rest.webmvc.PersistentEntityResourceAssembler;
@@ -21,9 +22,11 @@ import es.mde.miColegio.repositorios.ReservaDAO;
 public class ReservaController {
 
   private ReservaDAO reservaDAO;
+  private LugarDAO lugarDAO;
 
-  public ReservaController(ReservaDAO reservaDAO) {
+  public ReservaController(ReservaDAO reservaDAO, LugarDAO lugarDAO) {
     this.reservaDAO = reservaDAO;
+    this.lugarDAO = lugarDAO;
   }
 
   @GetMapping("/reservas/search/lugar-disponible")
@@ -59,6 +62,19 @@ public class ReservaController {
     Map<LocalDate, List<Integer>> fechasHorasReservadas =
         reservaDAO.getFechasHorasReservadasPorGrupos(
             filtroReservas.getGrupos(),
+            filtroReservas.getFechaInicio(),
+            filtroReservas.getFechaFin());
+
+    return new ResponseEntity<>(fechasHorasReservadas, HttpStatus.OK);
+  }
+
+  @PostMapping("/reservas/search/fechas-imposible-reservar-lugar")
+  @ResponseBody
+  public ResponseEntity<Map<LocalDate, List<Integer>>> getFechasImposibleReservarLugar(
+      @RequestBody FiltroReservasLugarImposible filtroReservas) {
+    Map<LocalDate, List<Integer>> fechasHorasReservadas =
+        reservaDAO.getFechasHorasReservadasPorLugares(
+            filtroReservas.getLugaresId(),
             filtroReservas.getFechaInicio(),
             filtroReservas.getFechaFin());
 

@@ -18,6 +18,8 @@ import jakarta.persistence.PersistenceContext;
 public class ReservaDAOImpl implements ReservaDAOCustom {
 
   @Autowired
+  private LugarDAO lugarDAO;
+  @Autowired
   private ReservaDAO reservaDAO;
   @PersistenceContext
   private EntityManager entityManager;
@@ -97,6 +99,36 @@ public class ReservaDAOImpl implements ReservaDAOCustom {
         for (Integer grupo : grupos) {
           List<Reserva> reservas = reservaDAO.findByGrupoAndFechaAndHora(grupo, fechaActual, hora);
           if (reservas.isEmpty()) {
+            todasLasReservasHechas = false;
+            break;
+          }
+        }
+        if (todasLasReservasHechas) {
+          horasReservadas.add(hora);
+        }
+      }
+      fechasHorasReservadas.put(fechaActual, horasReservadas);
+      fechaActual = fechaActual.plusDays(1);
+    }
+
+    return fechasHorasReservadas;
+  }
+
+  @Override
+  public Map<LocalDate, List<Integer>> getFechasHorasReservadasPorLugares(List<Integer> lugares,
+      LocalDate fechaInicio, LocalDate fechaFin) {
+    Map<LocalDate, List<Integer>> fechasHorasReservadas = new HashMap<>();
+    int horaInicio = 9;
+    int horaFin = 14;
+    LocalDate fechaActual = fechaInicio;
+
+    while (!fechaActual.isAfter(fechaFin)) {
+      List<Integer> horasReservadas = new ArrayList<>();
+      for (int hora = horaInicio; hora <= horaFin; hora++) {
+        boolean todasLasReservasHechas = true;
+        for (Integer lugarId : lugares) {
+          Lugar lugar = lugarDAO.getById(Long.valueOf(lugarId));
+          if (reservaDAO.isLugarDisponible(lugar,fechaActual,hora)) {
             todasLasReservasHechas = false;
             break;
           }
