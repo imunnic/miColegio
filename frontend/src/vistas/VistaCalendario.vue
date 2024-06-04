@@ -3,6 +3,20 @@
   franjas horarias para una asignatura, grupo y lugar. 
 -->
 <template>
+  <v-menu v-model="menu" :close-on-content-click="false" :nudge-x="activacion.x" :nudge-y="activacion.y" absolute
+    offset-y>
+    <v-card :style="{ top: activacion.y + 'px', left: activacion.x + 'px' }">
+      <v-card-title>
+        Título del Popover
+      </v-card-title>
+      <v-card-text>
+        Este es el contenido del popover.
+      </v-card-text>
+      <v-card-actions>
+        <v-btn color="primary" @click="menu = false">Cerrar</v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-menu>
   <ComponentEdicionEvento v-model="editando" @finEdicion="terminarEdicion" @cancelar="cancelarEdicion"
     :asignaturas="profesorSeleccionado.asignaturas">
   </ComponentEdicionEvento>
@@ -13,7 +27,8 @@
           <!-- si se quisiera mostrar el nombre del profesor -->
           <!-- {{ profesorSeleccionado.nombre }} {{ profesorSeleccionado.apellido }} -->
           <v-spacer></v-spacer>
-          <v-select class="select" v-model="asignaturaSeleccionada" label="Asignaturas" :items="profesorSeleccionado.asignaturas">
+          <v-select class="select" v-model="asignaturaSeleccionada" label="Asignaturas"
+            :items="profesorSeleccionado.asignaturas">
             <template v-slot:selection="{ item, index }" required>
               {{ getAsignaturaPorId(item.props.value).nombre }}
             </template>
@@ -24,7 +39,9 @@
           </v-select>
 
           <v-select class="select" v-model="grupoSeleccionado" label="Grupo" :items="gruposConNinguno"
-            @update:modelValue="cargarGrupo()" :rules="[v => !!v || 'Seleccione un grupo', v => v !== -1 || 'La opción Ninguno no es válida para reservar']" required>
+            @update:modelValue="cargarGrupo()"
+            :rules="[v => !!v || 'Seleccione un grupo', v => v !== -1 || 'La opción Ninguno no es válida para reservar']"
+            required>
             <template v-slot:selection="{ item, index }">
               {{ getGrupoPorId(item.props.value).nombre }}
             </template>
@@ -46,7 +63,7 @@
         @updated-mode="actualizarCalendarioPorModo" @delete-event="borrarEvento" @edit-event="editarEvento">
         <template #weekDayEvent="eventProps">
           <div v-if="eventProps.eventData.title == 'No disponible'"
-            :style="{ backgroundColor: 'red', color: '#fff', width: '200%', height: '100%', overflow: 'hidden', border:'1px solid gray'}">
+            :style="{ backgroundColor: 'red', color: '#fff', width: '200%', height: '100%', overflow: 'hidden', border: '1px solid gray' }">
             <p class="itemEvento">
               {{ eventProps.eventData.title }}
             </p>
@@ -54,7 +71,7 @@
           </div>
 
           <div v-else
-            :style="{ backgroundColor: eventProps.eventData.color || 'cornflowerblue', color: '#fff', width: '200%', height: '100%', overflow: 'hidden', border:'1px solid gray'}">
+            :style="{ backgroundColor: eventProps.eventData.color || 'cornflowerblue', color: '#fff', width: '200%', height: '100%', overflow: 'hidden', border: '1px solid gray' }">
             <p class="itemEvento">
               <v-icon class="itemEvento" icon="mdi-book-open-variant-outline"></v-icon>{{ eventProps.eventData.topic }}
             </p>
@@ -94,9 +111,9 @@ export default {
   data() {
     return {
       configuracion: {
-        week:{
+        week: {
           startsOn: 'monday',
-          nDays:5
+          nDays: 5
         },
         dayBoundaries: {
           start: 9,
@@ -119,7 +136,9 @@ export default {
       periodoSeleccionado: null,
       fechaSeleccionada: "",
       idEventoEdicion: 0,
-      editando: false
+      editando: false,
+      menu: false,
+      activacion: { x: 0, y: 0 }
     }
   },
 
@@ -136,7 +155,7 @@ export default {
   methods: {
     ...mapActions(useReservasStore, ['cargarReservas', 'guardarReserva', 'resetReserva',
       'formatearFechaParaAPI', 'cargarReservasGrupo', 'mapReservaToEventoAjeno',
-      'mapReservaToEvento', 'agregarEventos', 'quitarEventosGrupo','agregarFranjasImposibles',
+      'mapReservaToEvento', 'agregarEventos', 'quitarEventosGrupo', 'agregarFranjasImposibles',
       'convertirPeriodToPeriodo', 'arrancarServicio', 'eliminarReserva', 'modificarReserva',
       'quitarReservasImposibles', 'quitarEventosPorId']),
     ...mapActions(useAsignaturasStore, ['getAsignaturaPorId']),
@@ -151,19 +170,25 @@ export default {
      * encuentra en la documentación oficial de Qalendar
      */
     async clickEnIntervalo(evento) {
-      if (this.profesorSeleccionado !== null) {
-        if (this.grupoSeleccionado != null && this.grupoSeleccionado != -1) {
-          let fecha = evento.intervalStart.substr(0, 10);
-          let partes = fecha.split("-");
-          fecha = partes[2] + "-" + partes[1] + "-" + partes[0];
-          this.fechaSeleccionada = fecha + " "
-            + evento.intervalStart.substr(11, 2) + "-" + evento.intervalEnd.substr(11, 2);
-          await this.reservar();
-        } else {
-          //TODO cambiar alert
-          alert('Por favor, seleccione un grupo antes de elegir franja horaria');
-        }
+      document.addEventListener('click', this.handleDocumentClick);
+      if (this.grupoSeleccionado != null && this.grupoSeleccionado != -1) {
+        let fecha = evento.intervalStart.substr(0, 10);
+        let partes = fecha.split("-");
+        fecha = partes[2] + "-" + partes[1] + "-" + partes[0];
+        this.fechaSeleccionada = fecha + " "
+          + evento.intervalStart.substr(11, 2) + "-" + evento.intervalEnd.substr(11, 2);
+        await this.reservar();
+        document.addEventListener('click', this.handleDocumentClick);
+
+      } else {
+        //TODO cambiar alert
+        this.menu = true;
       }
+    },
+    
+    handleDocumentClick(e) {
+      this.activacion = { x: e.clientX, y: e.clientY }; // Obtén las coordenadas del clic
+      document.removeEventListener('click', this.handleDocumentClick);
     },
 
     /**
@@ -201,26 +226,26 @@ export default {
      * TODO cambiar el color de los eventos del grupo para hacerlo un poco más amigable
      */
     async cargarGrupo() {
+      this.quitarEventosGrupo();
+      if (this.grupoSeleccionado == -1) {
         this.quitarEventosGrupo();
-        if(this.grupoSeleccionado == -1) {
-          this.quitarEventosGrupo();
-          this.agregarFranjasImposibles(this.convertirPeriodToPeriodo(this.periodoSeleccionado));
-        } else {
-          let eventosGrupo = [];
-          try {
-            let reservasGrupo = await this.cargarReservasGrupo(this.grupoSeleccionado,
-              this.periodoSeleccionado);
-            if (reservasGrupo.length == 0) {
-              this.refrescarCalendario();
-            } else {
-              eventosGrupo = reservasGrupo.map((reserva) => { return this.mapReservaToEventoAjeno(reserva) })
-              eventosGrupo = eventosGrupo.filter(eventoGrupo => !this.eventos.some(evento => evento.id == eventoGrupo.id));
-              this.agregarEventos(eventosGrupo);
-            }
-          } catch (error) {
-            console.log(error);
+        this.agregarFranjasImposibles(this.convertirPeriodToPeriodo(this.periodoSeleccionado));
+      } else {
+        let eventosGrupo = [];
+        try {
+          let reservasGrupo = await this.cargarReservasGrupo(this.grupoSeleccionado,
+            this.periodoSeleccionado);
+          if (reservasGrupo.length == 0) {
+            this.refrescarCalendario();
+          } else {
+            eventosGrupo = reservasGrupo.map((reserva) => { return this.mapReservaToEventoAjeno(reserva) })
+            eventosGrupo = eventosGrupo.filter(eventoGrupo => !this.eventos.some(evento => evento.id == eventoGrupo.id));
+            this.agregarEventos(eventosGrupo);
           }
+        } catch (error) {
+          console.log(error);
         }
+      }
     },
 
     /**
@@ -313,7 +338,8 @@ form {
   justify-content: center;
   align-items: center;
 }
-form .select{
+
+form .select {
   padding: 0px 5px;
   min-width: 150px;
 }

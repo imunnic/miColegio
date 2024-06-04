@@ -219,7 +219,6 @@ export const useReservasStore = defineStore("reservas", {
       for (const fecha in fechasImposiblesGrupos.data) {
         fechasImposibles[fecha] = [...new Set([...(fechasImposiblesGrupos.data[fecha] || []), ...(fechasImposiblesLugares.data[fecha] || [])])];
       }
-      console.log(fechasImposibles);
       let reservasImposibles = this.mapReservaImposibleToEvento(fechasImposibles);
       this.agregarEventos(reservasImposibles);
       this.ordenarEventos();
