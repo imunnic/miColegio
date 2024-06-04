@@ -10,9 +10,10 @@
     <div class="columnaIzquierda">
       <div class="formularioReserva">
         <v-form ref="form" v-if="profesorSeleccionado != null">
-          {{ profesorSeleccionado.nombre }} {{ profesorSeleccionado.apellido }}
-
-          <v-select v-model="asignaturaSeleccionada" label="Asignaturas" :items="profesorSeleccionado.asignaturas">
+          <!-- si se quisiera mostrar el nombre del profesor -->
+          <!-- {{ profesorSeleccionado.nombre }} {{ profesorSeleccionado.apellido }} -->
+          <v-spacer></v-spacer>
+          <v-select class="select" v-model="asignaturaSeleccionada" label="Asignaturas" :items="profesorSeleccionado.asignaturas">
             <template v-slot:selection="{ item, index }" required>
               {{ getAsignaturaPorId(item.props.value).nombre }}
             </template>
@@ -22,7 +23,7 @@
             </template>
           </v-select>
 
-          <v-select v-model="grupoSeleccionado" label="Grupo" :items="gruposConNinguno"
+          <v-select class="select" v-model="grupoSeleccionado" label="Grupo" :items="gruposConNinguno"
             @update:modelValue="cargarGrupo()" :rules="[v => !!v || 'Seleccione un grupo', v => v !== -1 || 'La opción Ninguno no es válida para reservar']" required>
             <template v-slot:selection="{ item, index }">
               {{ getGrupoPorId(item.props.value).nombre }}
@@ -32,14 +33,6 @@
               </v-list-item>
             </template>
           </v-select>
-
-          <v-text-field class="fecha" prepend-icon="mdi-calendar" v-model="fechaSeleccionada" :disabled="true" required
-            :rules="[v => !!v || 'Seleccione una fecha']">
-          </v-text-field>
-
-          <v-btn @click="reservar" block>
-            Reservar
-          </v-btn>
 
         </v-form>
         <div v-else>
@@ -157,15 +150,17 @@ export default {
      * @param evento es el evento elevado desde calendar al hacer click. El contenido se 
      * encuentra en la documentación oficial de Qalendar
      */
-    clickEnIntervalo(evento) {
+    async clickEnIntervalo(evento) {
       if (this.profesorSeleccionado !== null) {
-        if (this.grupoSeleccionado != null) {
+        if (this.grupoSeleccionado != null && this.grupoSeleccionado != -1) {
           let fecha = evento.intervalStart.substr(0, 10);
           let partes = fecha.split("-");
           fecha = partes[2] + "-" + partes[1] + "-" + partes[0];
           this.fechaSeleccionada = fecha + " "
             + evento.intervalStart.substr(11, 2) + "-" + evento.intervalEnd.substr(11, 2);
+          await this.reservar();
         } else {
+          //TODO cambiar alert
           alert('Por favor, seleccione un grupo antes de elegir franja horaria');
         }
       }
@@ -315,29 +310,39 @@ export default {
 </script>
 
 <style scoped>
+form {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+form .select{
+  padding: 0px 5px;
+  min-width: 150px;
+}
+
 .formularioReserva {
   display: flex;
-  flex-flow: column;
-  align-items: center;
+  flex-flow: row;
+  justify-content: space-around;
 }
 
 .contenedorColumnas {
   padding: 16px;
   width: 100%;
   display: flex;
-  flex-flow: row;
+  flex-flow: column;
   justify-content: center;
 }
 
 .columnaIzquierda {
   padding: 10px;
-  width: 33%;
+  width: 100%;
 }
 
 .columnaDerecha {
 
   padding: 10px;
-  width: 67%;
+  width: 100%;
 }
 
 .calendario {

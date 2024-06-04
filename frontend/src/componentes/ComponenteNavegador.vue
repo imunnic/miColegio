@@ -3,7 +3,7 @@
  -->
 <template>
   <v-layout>
-    <v-navigation-drawer v-if="isLogged"
+    <!-- <v-navigation-drawer v-if="isLogged"
       v-model="drawer" 
       :rail="rail"
       permanent
@@ -17,14 +17,14 @@
           prepend-icon="mdi-account" 
         @click.stop="navegarAHome(profesor)">
         </v-list-item>
-        <!-- <v-list-item
+        <v-list-item
           prepend-icon="mdi-account-group"
           :title="'Grupo'"
           @click.stop="navegarAGrupo"
         >
-        </v-list-item> -->
+        </v-list-item>
       </v-list>
-    </v-navigation-drawer>
+    </v-navigation-drawer> -->
     <v-main>
       <div class="vista">
         <router-view></router-view>
@@ -66,6 +66,7 @@ export default {
 <style scoped>
 .vista {
   margin: 2vw;
+  margin-top: 0;
   margin-left: 0vw;
 }
 .profesor:hover {
