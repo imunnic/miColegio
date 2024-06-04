@@ -52,7 +52,15 @@
         @interval-was-clicked="clickEnIntervalo" @updated-period="actualizarCalendarioPorPeriodo"
         @updated-mode="actualizarCalendarioPorModo" @delete-event="borrarEvento" @edit-event="editarEvento">
         <template #weekDayEvent="eventProps">
-          <div
+          <div v-if="eventProps.eventData.title == 'No disponible'"
+            :style="{ backgroundColor: 'red', color: '#fff', width: '200%', height: '100%', overflow: 'hidden', border:'1px solid gray'}">
+            <p class="itemEvento">
+              {{ eventProps.eventData.title }}
+            </p>
+
+          </div>
+
+          <div v-else
             :style="{ backgroundColor: eventProps.eventData.color || 'cornflowerblue', color: '#fff', width: '200%', height: '100%', overflow: 'hidden', border:'1px solid gray'}">
             <p class="itemEvento">
               <v-icon class="itemEvento" icon="mdi-book-open-variant-outline"></v-icon>{{ eventProps.eventData.topic }}
@@ -117,7 +125,6 @@ export default {
       menu: false,
       periodoSeleccionado: null,
       fechaSeleccionada: "",
-      ultimosEventosGrupoCargados: 0,
       idEventoEdicion: 0,
       editando: false
     }
@@ -136,7 +143,7 @@ export default {
   methods: {
     ...mapActions(useReservasStore, ['cargarReservas', 'guardarReserva', 'resetReserva',
       'formatearFechaParaAPI', 'cargarReservasGrupo', 'mapReservaToEventoAjeno',
-      'mapReservaToEvento', 'agregarEventos', 'quitarUltimosEventosAdded','agregarFranjasImposibles',
+      'mapReservaToEvento', 'agregarEventos', 'quitarEventosGrupo','agregarFranjasImposibles',
       'convertirPeriodToPeriodo', 'arrancarServicio', 'eliminarReserva', 'modificarReserva',
       'quitarReservasImposibles', 'quitarEventosPorId']),
     ...mapActions(useAsignaturasStore, ['getAsignaturaPorId']),
@@ -199,21 +206,25 @@ export default {
      * TODO cambiar el color de los eventos del grupo para hacerlo un poco más amigable
      */
     async cargarGrupo() {
-        this.quitarUltimosEventosAdded(this.ultimosEventosGrupoCargados);
-        let eventosGrupo = [];
-        try {
-          let reservasGrupo = await this.cargarReservasGrupo(this.grupoSeleccionado,
-            this.periodoSeleccionado);
-          if (reservasGrupo.length == 0) {
-            this.refrescarCalendario();
-          } else {
-            eventosGrupo = reservasGrupo.map((reserva) => { return this.mapReservaToEventoAjeno(reserva) })
-            eventosGrupo = eventosGrupo.filter(eventoGrupo => !this.eventos.some(evento => evento.id === eventoGrupo.id));
-            this.ultimosEventosGrupoCargados = eventosGrupo.length;
-            this.agregarEventos(eventosGrupo);
+        this.quitarEventosGrupo();
+        if(this.grupoSeleccionado == -1) {
+          this.quitarEventosGrupo();
+          this.agregarFranjasImposibles(this.convertirPeriodToPeriodo(this.periodoSeleccionado));
+        } else {
+          let eventosGrupo = [];
+          try {
+            let reservasGrupo = await this.cargarReservasGrupo(this.grupoSeleccionado,
+              this.periodoSeleccionado);
+            if (reservasGrupo.length == 0) {
+              this.refrescarCalendario();
+            } else {
+              eventosGrupo = reservasGrupo.map((reserva) => { return this.mapReservaToEventoAjeno(reserva) })
+              eventosGrupo = eventosGrupo.filter(eventoGrupo => !this.eventos.some(evento => evento.id == eventoGrupo.id));
+              this.agregarEventos(eventosGrupo);
+            }
+          } catch (error) {
+            console.log(error);
           }
-        } catch (error) {
-          console.log(error);
         }
     },
 
@@ -229,7 +240,6 @@ export default {
       let aux = this.convertirPeriodToPeriodo(this.periodoSeleccionado);
       await this.cargarReservas(aux);
       await this.agregarFranjasImposibles(aux);
-      this.ultimosEventosGrupoCargados = 0;
       await this.cargarGrupo();
     },
 

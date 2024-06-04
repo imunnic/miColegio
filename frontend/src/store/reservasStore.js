@@ -138,6 +138,7 @@ export const useReservasStore = defineStore("reservas", {
         isEditable: true,
         disableDnD: ["month", "week", "day"],
         disableResize: ["month", "week", "day"],
+        color: 'blue',
         isCustom: true,
       };
 
@@ -178,31 +179,41 @@ export const useReservasStore = defineStore("reservas", {
               isEditable: false,
               disableDnD: ["month", "week", "day"],
               disableResize: ["month", "week", "day"],
-              isCustom: false,
+              isCustom: true,
               color: 'red'
             };
-    
+
             let horaFin = hora + 1;
-    
+
             nuevoEvento.id = new Date().getTime() + hora;
             nuevoEvento.time.start = `${fecha} ${hora}:00`;
             nuevoEvento.time.end = `${fecha} ${horaFin}:00`;
-    
-            eventos.push(nuevoEvento);
+            if (this.eventos.filter(e => e.time.start == nuevoEvento.time.start).length > 0){
+
+            } else {
+              eventos.push(nuevoEvento);
+            }
           }
         }
       }
-    
+
       return eventos;
     },
 
     async agregarFranjasImposibles(periodo) {
       let fechasImposibles =
-      await this.reservasService.getReservasImposibleGrupo(
-        this.getFiltro(periodo)
-      );
+        await this.reservasService.getReservasImposibleGrupo(
+          this.getFiltro(periodo)
+        );
       let reservasImposibles = this.mapReservaImposibleToEvento(fechasImposibles.data);
       this.agregarEventos(reservasImposibles);
+      this.ordenarEventos();
+    },
+
+    ordenarEventos() {
+      const colorOrder = { 'blue': 1, 'red': 2, 'green': 3 };
+
+      this.eventos.sort((a, b) => colorOrder[a.color] - colorOrder[b.color]);
     },
 
 
@@ -240,10 +251,8 @@ export const useReservasStore = defineStore("reservas", {
      * Función que permite eliminar de la vista los eventos de grupo añadidos al calendario
      * @param numEventos es el número de eventos que se había añadido previamente
      */
-    quitarUltimosEventosAdded(numEventos) {
-      for (let index = 0; index < numEventos; index++) {
-        this.eventos.pop();
-      }
+    quitarEventosGrupo() {
+      this.eventos = this.eventos.filter(e => e.color != 'green');
     },
 
     quitarReservasImposibles() {
