@@ -243,7 +243,6 @@ export default {
     },
 
     async actualizarCalendarioPorPeriodo(periodo) {
-      //TODO ordenar eventos en el orden correcto para que no se sustituyan los rojos
       this.periodoSeleccionado = periodo;
       let aux = this.convertirPeriodToPeriodo(this.periodoSeleccionado);
       await this.cargarReservas(aux);
@@ -292,8 +291,7 @@ export default {
    */
   async mounted() {
     this.arrancarServicioLugares(useUsuariosStore().token);
-    await this.cargarLugares();
-
+    this.cargarLugares();
     let fechaFin = new Date(this.$refs.calendarRef.period.end);
     fechaFin.setDate(fechaFin.getDate() + 1);
     this.periodoSeleccionado = {

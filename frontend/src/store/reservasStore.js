@@ -200,12 +200,27 @@ export const useReservasStore = defineStore("reservas", {
       return eventos;
     },
 
+    mapLugaresNoPosiblesToEvento(){
+      let eventos = [];
+
+    },
+
     async agregarFranjasImposibles(periodo) {
-      let fechasImposibles =
+      let fechasImposiblesGrupos =
         await this.reservasService.getReservasImposibleGrupo(
-          this.getFiltro(periodo)
+          this.getFiltroGrupo(periodo)
         );
-      let reservasImposibles = this.mapReservaImposibleToEvento(fechasImposibles.data);
+      let fechasImposiblesLugares =
+        await this.reservasService.getReservasImposibleLugar(
+          this.getFiltroLugar(periodo)
+        )
+      // console.log(fechasImposiblesGrupos.data);
+      let fechasImposibles = {};
+      for (const fecha in fechasImposiblesGrupos.data) {
+        fechasImposibles[fecha] = [...new Set([...(fechasImposiblesGrupos.data[fecha] || []), ...(fechasImposiblesLugares.data[fecha] || [])])];
+      }
+      console.log(fechasImposibles);
+      let reservasImposibles = this.mapReservaImposibleToEvento(fechasImposibles);
       this.agregarEventos(reservasImposibles);
       this.ordenarEventos();
     },
@@ -263,11 +278,20 @@ export const useReservasStore = defineStore("reservas", {
       this.eventos = this.eventos.filter(e => e.id !== idEvento);
     },
 
-    getFiltro(periodo) {
+    getFiltroGrupo(periodo) {
       let filtro = {
         fechaInicio: periodo.start,
         fechaFin: periodo.end,
         grupos: useProfesoresStore().getGruposDeProfesor(),
+      };
+      return filtro;
+    },
+
+    getFiltroLugar(periodo) {
+      let filtro = {
+        fechaInicio: periodo.start,
+        fechaFin: periodo.end,
+        grupos: useProfesoresStore().getLugaresDeProfesor(),
       };
       return filtro;
     },

@@ -27,7 +27,7 @@
     {
       "id": 5,
       "nombre": "Historia",
-      "lugares": [3, 6],
+      "lugares": [3, 6, 12],
       "grupos": [1, 2, 3]
     },
     {

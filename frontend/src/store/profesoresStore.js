@@ -27,6 +27,17 @@ export const useProfesoresStore = defineStore('profesorado', {
           }
       });
       return Array.from(grupos);
-  }
+  },
+  getLugaresDeProfesor() {
+    const asignaturas = useAsignaturasStore().asignaturasColegio;
+    let lugares = new Set();
+    this.profesorSeleccionado.asignaturas.forEach(asignaturaId => {
+        let asignatura = asignaturas.find(asig => asig.id == asignaturaId);
+        if (asignatura) {
+            asignatura.lugares.forEach(lugar => lugares.add(lugar));
+        }
+    });
+    return Array.from(lugares);
+}
   }
 })
