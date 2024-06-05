@@ -144,4 +144,20 @@ public class ReservaDAOImpl implements ReservaDAOCustom {
     return fechasHorasReservadas;
   }
 
+  @Override
+  public List<Integer> getGruposReservasPorFecha(LocalDate fecha, int hora) {
+    List<Integer> grupos = new ArrayList<>();
+    List<Reserva> reservas = reservaDAO.findByFechaAndHora(fecha, hora);
+    reservas.forEach(r -> grupos.add(r.getGrupo()));
+    return grupos;
+  }
+
+  @Override
+  public List<Long> getLugaresReservasPorFecha(LocalDate fecha, int hora) {
+    List<Long> lugares = new ArrayList<>();
+    List<Reserva> reservas = reservaDAO.findByFechaAndHora(fecha, hora);
+    reservas.forEach(l -> lugares.add(l.getLugarId()));
+    return lugares;
+  }
+
 }

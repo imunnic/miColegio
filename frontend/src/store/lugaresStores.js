@@ -43,7 +43,9 @@ export const useLugaresStore = defineStore('lugares', {
       this.lugaresService = new LugaresService(token)
     },
     accessLugarPorId(id){
-      return this.lugaresColegio.find(l => l.identificacion == id);
+      console.log(id)
+      let lugar = this.lugaresColegio.find(l => l.identificacion == id);
+      return lugar;
     },
     getLugarPorNombre(nombre){
       let lugar = this.lugaresColegio.find(lugar => lugar.name === nombre);

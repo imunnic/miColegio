@@ -157,7 +157,7 @@ export default {
       'formatearFechaParaAPI', 'cargarReservasGrupo', 'mapReservaToEventoAjeno',
       'mapReservaToEvento', 'agregarEventos', 'quitarEventosGrupo', 'agregarFranjasImposibles',
       'convertirPeriodToPeriodo', 'arrancarServicio', 'eliminarReserva', 'modificarReserva',
-      'quitarReservasImposibles', 'quitarEventosPorId']),
+      'quitarReservasImposibles', 'quitarEventosPorId', 'getGruposReservados', 'getLugaresReservados']),
     ...mapActions(useAsignaturasStore, ['getAsignaturaPorId']),
     ...mapActions(useGruposStore, ['getGrupoPorId']),
     ...mapActions(useLugaresStore, ['escogerLugarDisponible', 'cargarLugares', 'arrancarServicioLugares']),
@@ -171,21 +171,30 @@ export default {
      */
     async clickEnIntervalo(evento) {
       document.addEventListener('click', this.handleDocumentClick);
+      let fecha = evento.intervalStart.substr(0, 10);
+      let partes = fecha.split("-");
+      fecha = partes[2] + "-" + partes[1] + "-" + partes[0];
+      this.fechaSeleccionada = fecha + " "
+        + evento.intervalStart.substr(11, 2) + "-" + evento.intervalEnd.substr(11, 2);
       if (this.grupoSeleccionado != null && this.grupoSeleccionado != -1) {
-        let fecha = evento.intervalStart.substr(0, 10);
-        let partes = fecha.split("-");
-        fecha = partes[2] + "-" + partes[1] + "-" + partes[0];
-        this.fechaSeleccionada = fecha + " "
-          + evento.intervalStart.substr(11, 2) + "-" + evento.intervalEnd.substr(11, 2);
         await this.reservar();
         document.addEventListener('click', this.handleDocumentClick);
 
       } else {
         //TODO cambiar alert
         this.menu = true;
+        let horaAux = parseInt(this.fechaSeleccionada.split(" ")[1].split("-")[0],10);
+        let fechaAux = partes[0] + "-" + partes[1] + "-" + partes[2];
+        let periodo = {
+          fecha: fechaAux,
+          hora: horaAux
+        }
+        let grupos = await this.getGruposReservados(periodo);
+        let lugares = await this.getLugaresReservados(periodo);
+        console.log(grupos,lugares);
       }
     },
-    
+
     handleDocumentClick(e) {
       this.activacion = { x: e.clientX, y: e.clientY }; // Obtén las coordenadas del clic
       document.removeEventListener('click', this.handleDocumentClick);
@@ -272,7 +281,6 @@ export default {
       let aux = this.convertirPeriodToPeriodo(this.periodoSeleccionado);
       await this.cargarReservas(aux);
       await this.agregarFranjasImposibles(aux);
-      console.log(this.eventos);
       if (this.grupoSeleccionado != null) {
         await this.cargarGrupo();
       }

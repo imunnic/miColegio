@@ -295,6 +295,16 @@ export const useReservasStore = defineStore("reservas", {
       return filtro;
     },
 
+    async getGruposReservados(periodo){
+      let grupos = await this.reservasService.getGruposReservados(periodo);
+      return grupos.data;
+    },
+
+    async getLugaresReservados(periodo){
+      let lugares = await this.reservasService.getLugaresReservados(periodo);
+      return lugares.data;
+    },
+
     /**
      * Función que permite dar la vuelta a una fecha para guardarla en la API
      * @param fecha la fecha en formato dd-MM-yyyy

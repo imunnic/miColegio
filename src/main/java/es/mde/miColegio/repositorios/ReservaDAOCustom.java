@@ -17,15 +17,18 @@ public interface ReservaDAOCustom {
    */
   boolean isLugarDisponible(Lugar lugar, LocalDate fecha, int hora);
 
-  public List<Reserva> getReservasDeProfesorEntreFechas(int profesor, LocalDate fechaInicio,
+  List<Reserva> getReservasDeProfesorEntreFechas(int profesor, LocalDate fechaInicio,
       LocalDate fechaFin);
 
-  public List<Reserva> getReservasDeGrupoEntreFechas(int grupo, LocalDate fechaInicio,
+  List<Reserva> getReservasDeGrupoEntreFechas(int grupo, LocalDate fechaInicio,
       LocalDate fechaFin);
 
-  public Map<LocalDate, List<Integer>> getFechasHorasReservadasPorGrupos(List<Integer> grupos,
+  Map<LocalDate, List<Integer>> getFechasHorasReservadasPorGrupos(List<Integer> grupos,
       LocalDate fechaInicio, LocalDate fechaFin);
 
-  public Map<LocalDate, List<Integer>> getFechasHorasReservadasPorLugares(List<Integer> lugares,
+  Map<LocalDate, List<Integer>> getFechasHorasReservadasPorLugares(List<Integer> lugares,
       LocalDate fechaInicio, LocalDate fechaFin);
+
+  List<Integer> getGruposReservasPorFecha(LocalDate fecha, int hora);
+  List<Long> getLugaresReservasPorFecha(LocalDate fecha, int hora);
 }

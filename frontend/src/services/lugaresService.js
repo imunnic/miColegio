@@ -13,7 +13,7 @@ let config = {
   },
 };
 
-export default class reservasService {
+export default class LugaresService {
   constructor(token) {
     this.actualizarCabecera(token);
   }

@@ -12,7 +12,7 @@ let config = {
   },
 };
 
-export default class reservasService {
+export default class ReservasService {
   constructor(token) {
     this.actualizarCabecera(token);
   }
@@ -114,6 +114,29 @@ export default class reservasService {
       filtro, config
     );
   }
+
+  getGruposReservados(periodo){
+    return axios.get(
+      reservasSearch +
+      '/grupos-reservados?fecha=' +
+      periodo.fecha +
+      '&hora=' +
+      periodo.hora,
+      config
+    );
+  }
+
+  getLugaresReservados(periodo){
+    return axios.get(
+      reservasSearch +
+      '/lugares-reservados?fecha=' +
+      periodo.fecha +
+      '&hora=' +
+      periodo.hora,
+      config
+    );
+  }
+
 
   create(reserva) {
     return axios.post(reservas, reserva, config);

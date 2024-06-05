@@ -22,11 +22,9 @@ import es.mde.miColegio.repositorios.ReservaDAO;
 public class ReservaController {
 
   private ReservaDAO reservaDAO;
-  private LugarDAO lugarDAO;
 
   public ReservaController(ReservaDAO reservaDAO, LugarDAO lugarDAO) {
     this.reservaDAO = reservaDAO;
-    this.lugarDAO = lugarDAO;
   }
 
   @GetMapping("/reservas/search/lugar-disponible")
@@ -79,5 +77,21 @@ public class ReservaController {
             filtroReservas.getFechaFin());
 
     return new ResponseEntity<>(fechasHorasReservadas, HttpStatus.OK);
+  }
+
+  @GetMapping("/reservas/search/grupos-reservados")
+  @ResponseBody
+  public ResponseEntity<List<Integer>> getGruposReservados(@RequestParam("fecha")LocalDate fecha,
+      @RequestParam("hora")int hora){
+    List<Integer> grupos = reservaDAO.getGruposReservasPorFecha(fecha, hora);
+    return new ResponseEntity<>(grupos, HttpStatus.OK);
+  }
+
+  @GetMapping("/reservas/search/lugares-reservados")
+  @ResponseBody
+  public ResponseEntity<List<Long>> getLugaresReservados(@RequestParam("fecha")LocalDate fecha,
+      @RequestParam("hora")int hora){
+    List<Long> lugares = reservaDAO.getLugaresReservasPorFecha(fecha, hora);
+    return new ResponseEntity<>(lugares, HttpStatus.OK);
   }
 }
