@@ -16,6 +16,18 @@
   <ComponentEdicionEvento v-model="editando" @finEdicion="terminarEdicion" @cancelar="cancelarEdicion"
     :asignaturas="profesorSeleccionado.asignaturas">
   </ComponentEdicionEvento>
+  <v-snackbar v-model="snack1" :timeout="-1">
+    Seleccione la asignatura sobre la que quiere reservar o seleccione una franja horaria
+  </v-snackbar>
+  <v-snackbar v-model="snack2" :timeout="-1">
+    Seleccione el grupo sobre el que quiere reservar
+  </v-snackbar>
+  <v-snackbar v-model="snack3" :timeout="-1">
+    Haga click sobre una franja horaria para reservar
+  </v-snackbar>
+  <v-snackbar v-model="snack4" :timeout="-1">
+    Seleccione una de las opciones para reservar
+  </v-snackbar>
   <div class="contenedorColumnas">
     <div class="columnaIzquierda">
       <div class="formularioReserva">
@@ -24,7 +36,7 @@
           <!-- {{ profesorSeleccionado.nombre }} {{ profesorSeleccionado.apellido }} -->
           <v-spacer></v-spacer>
           <v-select class="select" v-model="asignaturaSeleccionada" label="Asignaturas"
-            :items="profesorSeleccionado.asignaturas">
+            :items="profesorSeleccionado.asignaturas" @click="if (snack1 == true){snack1 = false; snack2=true}">
             <template v-slot:selection="{ item, index }" required>
               {{ getAsignaturaPorId(item.props.value).nombre }}
             </template>
@@ -35,7 +47,7 @@
           </v-select>
 
           <v-select class="select" v-model="grupoSeleccionado" label="Grupo" :items="gruposConNinguno"
-            @update:modelValue="cargarGrupo()"
+            @update:modelValue="cargarGrupo()" @click="if (snack2 == true){snack2 = false; snack3=true}"
             :rules="[v => !!v || 'Seleccione un grupo', v => v !== -1 || 'La opción Ninguno no es válida para reservar']"
             required>
             <template v-slot:selection="{ item, index }">
@@ -136,7 +148,11 @@ export default {
       editando: false,
       menu: false,
       posiblesReservas: [[1,1,1]],
-      activacion: { x: 0, y: 0 }
+      activacion: { x: 0, y: 0 },
+      snack1:false,
+      snack2:false,
+      snack3:false,
+      snack4:false,
     }
   },
 
@@ -169,6 +185,11 @@ export default {
      * encuentra en la documentación oficial de Qalendar
      */
     async clickEnIntervalo(evento) {
+      if(this.snack1 == true || this.snack2 == true){
+        this.snack1 = false;
+        this.snack2 = false;
+        this.snack4 = true;
+      }
       document.addEventListener('click', this.handleDocumentClick);
       let fecha = evento.intervalStart.substr(0, 10);
       let partes = fecha.split("-");
@@ -201,6 +222,7 @@ export default {
      * asignaturaId, grupoId, lugarId] 
      */
     async reservarOpcion(item){
+      this.snack4 = false;
       this.reserva.fecha = this.formatearFechaParaAPI(this.fechaSeleccionada.split(" ")[0]);
       this.reserva.hora = parseInt(this.fechaSeleccionada.split(" ")[1].split("-")[0]);
       this.reserva.profesor = this.profesorSeleccionado.id;
@@ -218,6 +240,7 @@ export default {
      * después realiza la reserva. Si no lo hay informa al usuario.
      */
     async reservar() {
+      this.snack3 = false;
       const { valid } = await this.$refs.form.validate();
       if (valid) {
         this.reserva.fecha = this.formatearFechaParaAPI(this.fechaSeleccionada.split(" ")[0]);
@@ -343,6 +366,9 @@ export default {
    * correcta. El problema viene de la librería.
    */
   async mounted() {
+    if(useUsuariosStore().primerInicio == true){
+      this.snack1 = true;
+    }
     let fechaFin = new Date(this.$refs.calendarRef.period.end);
     fechaFin.setDate(fechaFin.getDate() + 1);
     this.periodoSeleccionado = {

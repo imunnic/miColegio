@@ -9,6 +9,7 @@ export const useUsuariosStore = defineStore("usuarios", {
     perfil:"",
     isLogged: false,
     profesorId: null,
+    primerInicio:null,
     usuarioService: new UsuariosService(),
   }),
 
@@ -20,6 +21,7 @@ export const useUsuariosStore = defineStore("usuarios", {
           this.token = response.data.token;
           this.username = response.data.username;
           this.perfil = response.data.rol;
+          this.primerInicio = response.data.primerInicio;
           this.isLogged = true;
         }
         await this.obtenerIdProfesor()
