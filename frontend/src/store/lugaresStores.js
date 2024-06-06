@@ -20,12 +20,12 @@ export const useLugaresStore = defineStore('lugares', {
   actions: {
     async cargarLugares() {
       let response = await this.lugaresService.getAll();
-      let aulasYPatios = response.data._embedded;
-      let aulas = aulasYPatios.aulas.map(aula => ({
+      let aulasYPatios = response.data._embedded || {};
+      let aulas = (aulasYPatios.aulas || {}).map(aula => ({
         ...aula,
         tipo:'Aula'
       }));
-      let patios = aulasYPatios.patios.map(patio => ({
+      let patios = (aulasYPatios.patios || {}).map(patio => ({
         ...patio,
         tipo:'Patio'
       }));
