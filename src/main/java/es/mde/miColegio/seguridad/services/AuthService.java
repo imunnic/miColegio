@@ -36,9 +36,14 @@ public class AuthService {
         new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
     Usuario usuario = this.USUARIODAO.findByUsername(request.getUsername()).orElseThrow();
     UserDetails user = usuario;
+    boolean vez = usuario.isPrimeraVez();
+    if (vez) {
+      usuario.setPrimeraVez(false);
+      this.USUARIODAO.save(usuario);
+    }
     Rol rol = usuario.getRol();
     String token = this.JWTSERVICE.getToken(user);
-    return new AuthResponse(token, request.getUsername(), usuario.getRol());
+    return new AuthResponse(token, request.getUsername(), usuario.getRol(), vez);
   }
 
   public AuthResponse register(RegisterRequest request) {

@@ -22,6 +22,7 @@ public class Usuario implements UserDetails {
   private String nombre, password, apellido;
   @Enumerated(EnumType.STRING)
   private Rol rol;
+  private boolean primeraVez;
 
   public Long getId() {
     return id;
@@ -81,7 +82,16 @@ public class Usuario implements UserDetails {
     this.profesor = profesor;
   }
 
+  public boolean isPrimeraVez() {
+    return primeraVez;
+  }
+
+  public void setPrimeraVez(boolean primeraVez) {
+    this.primeraVez = primeraVez;
+  }
+
   public Usuario() {
+    this.primeraVez = true;
   }
 
   @Override

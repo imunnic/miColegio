@@ -10,6 +10,8 @@ public class AuthResponse {
   private String username;
   private Rol rol;
 
+  private boolean primerInicio;
+
   public String getToken() {
     return this.token;
   }
@@ -34,13 +36,28 @@ public class AuthResponse {
     this.rol = rol;
    }
 
-   public AuthResponse() {
+  public boolean isPrimerInicio() {
+    return primerInicio;
+  }
+
+  public void setPrimerInicio(boolean primerInicio) {
+    this.primerInicio = primerInicio;
+  }
+
+  public AuthResponse() {
   }
 
   public AuthResponse(String token, String username, Rol rol) {
     this.token = token;
     this.username = username;
     this.rol = rol;
+  }
+
+  public AuthResponse(String token, String username, Rol rol, boolean primerInicio) {
+    this.token = token;
+    this.username = username;
+    this.rol = rol;
+    this.primerInicio = primerInicio;
   }
 
 }
