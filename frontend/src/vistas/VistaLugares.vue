@@ -1,4 +1,10 @@
 <template>
+  <v-snackbar v-model="snack1" :timeout="-1">
+    Pulse sobre "Nuevo lugar" para crear un lugar
+  </v-snackbar>
+  <v-snackbar v-model="snack3" :timeout="3000">
+    Para editar o eliminar un lugar, pulse sobre los iconos correspondientes
+  </v-snackbar>
   <div class="tabla">
     <v-card flat>
       <v-card-title class="d-flex align-center pe-2">
@@ -11,7 +17,7 @@
       </v-card-title>
 
       <v-dialog v-model="mostrarModal" max-width="600">
-        <ComponenteFormularioLugar @cerrar="cerrar()" @guardar="modificarLugares()"></ComponenteFormularioLugar>
+        <ComponenteFormularioLugar :snack2="snack2" @cerrar="cerrar()" @guardar="modificarLugares()"></ComponenteFormularioLugar>
       </v-dialog>
       <v-divider></v-divider>
 
@@ -87,6 +93,9 @@ export default {
           align: 'center'
         }
       ],
+      snack1:false,
+      snack2:false,
+      snack3:false,
     }
   },
   computed: {
@@ -96,6 +105,10 @@ export default {
     ...mapActions(useLugaresStore,['arrancarServicioLugares','crearNuevoLugar','cargarLugares',
     'borrarLugar','modificarLugar']),
     crear() {
+      if(this.snack1){
+        this.snack1=false;
+        this.snack2=true;
+      }
       this.lugarSeleccionado.nombre = '';
       this.lugarSeleccionado.capacidad = null;
       this.lugarSeleccionado.tipo = 'Aula';
@@ -115,6 +128,10 @@ export default {
       this.lugarAEliminar = null;
     },
     cerrar() {
+      if(this.snack2) {
+        this.snack2=false;
+        this.snack3=true;
+      }
       this.cambiarModo();
       this.editar = false;
     },
@@ -139,6 +156,10 @@ export default {
       this.cambiarModo();
     },
     async modificarLugares() {
+      if(this.snack2) {
+        this.snack2=false;
+        this.snack3=true;
+      }
       if (this.editar == false) {
         await this.crearNuevoLugar();
         this.cambiarModo();
@@ -154,12 +175,15 @@ export default {
   mounted() {
     this.arrancarServicioLugares(useUsuariosStore().token);
     this.cargarLugares();
+    if (useUsuariosStore().primerInicio) {
+      this.snack1 = true;
+    }
   }
 }
 </script>
 <style scoped>
 .tabla {
-  margin-left: 2vw;
+  margin: 2vw;
 }
 .crear {
   margin-left: 10px;

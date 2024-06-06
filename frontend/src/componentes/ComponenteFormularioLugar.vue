@@ -1,4 +1,7 @@
 <template>
+    <v-snackbar v-model="snackAux" :timeout="-1">
+    Introduzca los datos del lugar y pulse guardar
+  </v-snackbar>
   <v-card>
     <v-toolbar>
           <v-btn
@@ -41,6 +44,11 @@
 import {useLugaresStore} from '../store/lugaresStores'
 import {mapState} from 'pinia'
 export default {
+  props:{
+    snack2:{
+      type:Boolean,
+    }
+  },
   data() {
     return {
       deportesOptions: ['Futbol', 'Baloncesto'],
@@ -49,7 +57,8 @@ export default {
         numero: value => !isNaN(value) || 'Debe introducir un número.',
         positivo: value => value > 0 || 'Debe introducir un número positivo.',
         entero: value => Number.isInteger(Number(value)) || 'Debe introducir un número entero.'
-      }
+      },
+      snackAux:false
     }
   },
   computed:{
@@ -77,6 +86,9 @@ export default {
         this.$set(this.lugar, 'proyector', undefined);
       }
     }
+  },
+  created(){
+    this.snackAux=this.snack2;
   }
 }
 </script>
