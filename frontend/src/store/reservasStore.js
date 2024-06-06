@@ -138,7 +138,7 @@ export const useReservasStore = defineStore("reservas", {
         isEditable: true,
         disableDnD: ["month", "week", "day"],
         disableResize: ["month", "week", "day"],
-        color: 'blue',
+        color: '#15054C',
         isCustom: true,
       };
 
@@ -154,7 +154,7 @@ export const useReservasStore = defineStore("reservas", {
     mapReservaToEventoAjeno(reserva) {
       let evento = this.mapReservaToEvento(reserva);
       evento.isEditable = false;
-      evento.color = "green";
+      evento.color = "#054D09";
       return evento;
     },
 
@@ -180,7 +180,7 @@ export const useReservasStore = defineStore("reservas", {
               disableDnD: ["month", "week", "day"],
               disableResize: ["month", "week", "day"],
               isCustom: true,
-              color: 'red'
+              color: '#C5B6F6'
             };
 
             let horaFin = hora + 1;
@@ -225,7 +225,7 @@ export const useReservasStore = defineStore("reservas", {
     },
 
     ordenarEventos() {
-      const colorOrder = { 'blue': 1, 'red': 2, 'green': 3 };
+      const colorOrder = { '#15054C': 1, '#C5B6F6': 2, '#054D09': 3 };
 
       this.eventos.sort((a, b) => colorOrder[a.color] - colorOrder[b.color]);
     },
@@ -266,7 +266,7 @@ export const useReservasStore = defineStore("reservas", {
      * @param numEventos es el número de eventos que se había añadido previamente
      */
     quitarEventosGrupo() {
-      this.eventos = this.eventos.filter(e => e.color != 'green');
+      this.eventos = this.eventos.filter(e => e.color != '#054D09');
     },
 
     quitarReservasImposibles() {

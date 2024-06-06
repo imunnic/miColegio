@@ -64,15 +64,14 @@ export const useProfesoresStore = defineStore("profesorado", {
       return combinaciones;
     },
 
-    async getReservasPosibles(combinaciones, periodo){
-      let gruposReservados = await useReservasStore().getGruposReservados();
-      let lugaresReservados = await useReservasStore().getLugaresReservados();
-      let combinacionesFiltradas = combinaciones.filter(([asignaturaId, grupoId, lugarId]) => {
+    async getReservasPosibles(periodo){
+      let gruposReservados = await useReservasStore().getGruposReservados(periodo);
+      let lugaresReservados = await useReservasStore().getLugaresReservados(periodo);
+      let combinacionesFiltradas = this.getCombinacionesReserva().filter(([asignaturaId, grupoId, lugarId]) => {
         let lugarEstaDisponible = !lugaresReservados.includes(lugarId);
         let grupoEstaDisponible = !gruposReservados.includes(grupoId);
         return lugarEstaDisponible && grupoEstaDisponible;
     });
-
     return combinacionesFiltradas;
     }
   },

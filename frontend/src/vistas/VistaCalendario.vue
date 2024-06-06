@@ -5,16 +5,12 @@
 <template>
   <v-menu v-model="menu" :close-on-content-click="false" :nudge-x="activacion.x" :nudge-y="activacion.y" absolute
     offset-y>
-    <v-card :style="{ top: activacion.y + 'px', left: activacion.x + 'px' }">
-      <v-card-title>
-        Título del Popover
-      </v-card-title>
-      <v-card-text>
-        Este es el contenido del popover.
-      </v-card-text>
-      <v-card-actions>
-        <v-btn color="primary" @click="menu = false">Cerrar</v-btn>
+    <v-card class="menu" :style="{ top: activacion.y + 'px', left: activacion.x + 'px' }">
+      <v-card-actions class="acciones">
+        <h6>Opciones de reserva</h6>
+        <v-btn color="primary" icon="mdi-close" @click="menu = false"></v-btn>
       </v-card-actions>
+      <ComponenteReservasPosibles class="opcionesReserva" :items="posiblesReservas" @opcion-seleccionada="reservarOpcion"></ComponenteReservasPosibles>
     </v-card>
   </v-menu>
   <ComponentEdicionEvento v-model="editando" @finEdicion="terminarEdicion" @cancelar="cancelarEdicion"
@@ -63,7 +59,7 @@
         @updated-mode="actualizarCalendarioPorModo" @delete-event="borrarEvento" @edit-event="editarEvento">
         <template #weekDayEvent="eventProps">
           <div v-if="eventProps.eventData.title == 'No disponible'"
-            :style="{ backgroundColor: 'red', color: '#fff', width: '200%', height: '100%', overflow: 'hidden', border: '1px solid gray' }">
+            :style="{ backgroundColor: '#C5B6F6', color: '#fff', width: '100%', height: '100%', overflow: 'hidden', border: '1px solid gray' }">
             <p class="itemEvento">
               {{ eventProps.eventData.title }}
             </p>
@@ -104,9 +100,10 @@ import { useGruposStore } from '../store/gruposStore';
 import { useLugaresStore } from '../store/lugaresStores';
 import { useUsuariosStore } from '../store/usuarioStore';
 import ComponentEdicionEvento from '../componentes/ComponentEdicionEvento.vue';
+import ComponenteReservasPosibles from '../componentes/ComponenteReservasPosibles.vue';
 
 export default {
-  components: { Qalendar, ComponentEdicionEvento },
+  components: { Qalendar, ComponentEdicionEvento, ComponenteReservasPosibles },
 
   data() {
     return {
@@ -138,6 +135,7 @@ export default {
       idEventoEdicion: 0,
       editando: false,
       menu: false,
+      posiblesReservas: [[1,1,1]],
       activacion: { x: 0, y: 0 }
     }
   },
@@ -160,7 +158,8 @@ export default {
       'quitarReservasImposibles', 'quitarEventosPorId', 'getGruposReservados', 'getLugaresReservados']),
     ...mapActions(useAsignaturasStore, ['getAsignaturaPorId']),
     ...mapActions(useGruposStore, ['getGrupoPorId']),
-    ...mapActions(useLugaresStore, ['escogerLugarDisponible', 'cargarLugares', 'arrancarServicioLugares']),
+    ...mapActions(useLugaresStore, ['escogerLugarDisponible', 'cargarLugares', 'arrancarServicioLugares', 'getLugarPorId']),
+    ...mapActions(useProfesoresStore,['getReservasPosibles']),
 
     /**
      * Función para controlar los click en los intervalos del calendario. Coge la franja 
@@ -181,7 +180,6 @@ export default {
         document.addEventListener('click', this.handleDocumentClick);
 
       } else {
-        //TODO cambiar alert
         this.menu = true;
         let horaAux = parseInt(this.fechaSeleccionada.split(" ")[1].split("-")[0],10);
         let fechaAux = partes[0] + "-" + partes[1] + "-" + partes[2];
@@ -189,15 +187,30 @@ export default {
           fecha: fechaAux,
           hora: horaAux
         }
-        let grupos = await this.getGruposReservados(periodo);
-        let lugares = await this.getLugaresReservados(periodo);
-        console.log(grupos,lugares);
+        this.posiblesReservas = await this.getReservasPosibles(periodo)
       }
     },
 
     handleDocumentClick(e) {
       this.activacion = { x: e.clientX, y: e.clientY }; // Obtén las coordenadas del clic
       document.removeEventListener('click', this.handleDocumentClick);
+    },
+    /**
+     * Función que dada una opción de respuesta seleccionada por el usuario realiza la reserva
+     * @param item representa la opción de reserva del usuario que es un item con la forma [
+     * asignaturaId, grupoId, lugarId] 
+     */
+    async reservarOpcion(item){
+      this.reserva.fecha = this.formatearFechaParaAPI(this.fechaSeleccionada.split(" ")[0]);
+      this.reserva.hora = parseInt(this.fechaSeleccionada.split(" ")[1].split("-")[0]);
+      this.reserva.profesor = this.profesorSeleccionado.id;
+      this.reserva.asignatura = item[0];
+      this.reserva.grupo = item[1];
+      this.reserva.lugar = this.getLugarPorId(item[2]);
+      await this.guardarReserva();
+      this.fechaSeleccionada = null;
+      await this.refrescarCalendario();
+      this.menu = false;
     },
 
     /**
@@ -269,7 +282,11 @@ export default {
       let aux = this.convertirPeriodToPeriodo(this.periodoSeleccionado);
       await this.cargarReservas(aux);
       await this.agregarFranjasImposibles(aux);
-      await this.cargarGrupo();
+      if (this.grupoSeleccionado == null || this.grupoSeleccionado == -1){
+
+      } else {
+        await this.cargarGrupo();
+      }
     },
 
     async actualizarCalendarioPorModo(modo) {
@@ -312,9 +329,12 @@ export default {
     }
   },
 
-  created() {
+  async created() {
     //Si no hay asignatura seleccionada dará error, por eso debe ser al crear
     this.asignaturaSeleccionada = this.profesorSeleccionado.asignaturas[0];
+    //Si se cargan los lugares en mounted 1 de cada 3 veces da error
+    this.arrancarServicioLugares(useUsuariosStore().token);
+    await this.cargarLugares();
 
   },
   /**
@@ -323,8 +343,6 @@ export default {
    * correcta. El problema viene de la librería.
    */
   async mounted() {
-    this.arrancarServicioLugares(useUsuariosStore().token);
-    this.cargarLugares();
     let fechaFin = new Date(this.$refs.calendarRef.period.end);
     fechaFin.setDate(fechaFin.getDate() + 1);
     this.periodoSeleccionado = {
@@ -397,6 +415,17 @@ form .select {
   padding: 2px;
 }
 
+.opcionesReserva{
+  overflow-y: scroll;
+}
+
+.menu{
+  max-height: 200px;
+}
+.acciones{
+  display: flex;
+  justify-content: space-between;
+}
 
 /*Vista para dispositivos de menos de 575px*/
 @media (max-width: 575px) {
