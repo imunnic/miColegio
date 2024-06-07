@@ -115,6 +115,9 @@ export default class ReservasService {
     );
   }
 
+  /**
+   * Función que devuelve un array de los grupos que tienen reservas para una franja horaria
+   */
   getGruposReservados(periodo){
     return axios.get(
       reservasSearch +
@@ -126,6 +129,9 @@ export default class ReservasService {
     );
   }
 
+  /**
+   * Función que devuelve un array de los lugares que tienen reservas para una franja horaria
+   */
   getLugaresReservados(periodo){
     return axios.get(
       reservasSearch +

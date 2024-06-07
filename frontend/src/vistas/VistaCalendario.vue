@@ -3,40 +3,44 @@
   franjas horarias para una asignatura, grupo y lugar. 
 -->
 <template>
-  <v-menu v-model="menu" :close-on-content-click="false" :nudge-x="activacion.x" :nudge-y="activacion.y" absolute
+  <v-menu v-model="menu" :close-on-content-click="false" :nudge-x="activacion.x" 
+  :nudge-y="activacion.y" absolute
     offset-y>
     <v-card class="menu" :style="{ top: activacion.y + 'px', left: activacion.x + 'px' }">
       <v-card-actions class="acciones">
         <h6>Opciones de reserva</h6>
         <v-btn color="primary" icon="mdi-close" @click="menu = false"></v-btn>
       </v-card-actions>
-      <ComponenteReservasPosibles class="opcionesReserva" :items="posiblesReservas" @opcion-seleccionada="reservarOpcion"></ComponenteReservasPosibles>
+      <ComponenteReservasPosibles class="opcionesReserva" :items="posiblesReservas" 
+      @opcion-seleccionada="reservarOpcion"></ComponenteReservasPosibles>
     </v-card>
   </v-menu>
   <ComponentEdicionEvento v-model="editando" @finEdicion="terminarEdicion" @cancelar="cancelarEdicion"
     :asignaturas="profesorSeleccionado.asignaturas">
   </ComponentEdicionEvento>
-  <v-snackbar v-model="snack1" :timeout="-1">
-    Seleccione la asignatura sobre la que quiere reservar o seleccione una franja horaria
+  <v-snackbar v-model="snack1" :timeout="-1" :location="snackPosition" :color="'#C5B6F6'">
+    Seleccione la asignatura sobre la que quiere reservar o haga click sobre una franja horaria
   </v-snackbar>
-  <v-snackbar v-model="snack2" :timeout="-1">
+  <v-snackbar v-model="snack2" :timeout="-1" :location="snackPosition" :color="'#C5B6F6'">
     Seleccione el grupo sobre el que quiere reservar
   </v-snackbar>
-  <v-snackbar v-model="snack3" :timeout="-1">
+  <v-snackbar v-model="snack3" :timeout="-1" :location="snackPosition" :color="'#C5B6F6'">
     Haga click sobre una franja horaria para reservar
   </v-snackbar>
-  <v-snackbar v-model="snack4" :timeout="-1">
+  <v-snackbar v-model="snack4" :timeout="-1" :location="snackPosition" :color="'#C5B6F6'">
     Seleccione una de las opciones para reservar
   </v-snackbar>
   <div class="contenedorColumnas">
     <div class="columnaIzquierda">
       <div class="formularioReserva">
+        <h4>Mis asignaturas</h4>
         <v-form ref="form" v-if="profesorSeleccionado != null">
           <!-- si se quisiera mostrar el nombre del profesor -->
           <!-- {{ profesorSeleccionado.nombre }} {{ profesorSeleccionado.apellido }} -->
           <v-spacer></v-spacer>
           <v-select class="select" v-model="asignaturaSeleccionada" label="Asignaturas"
-            :items="profesorSeleccionado.asignaturas" @click="if (snack1 == true){snack1 = false; snack2=true}">
+            :items="profesorSeleccionado.asignaturas" 
+            @click="if (snack1 == true){snack1 = false; snack2=true}">
             <template v-slot:selection="{ item, index }" required>
               {{ getAsignaturaPorId(item.props.value).nombre }}
             </template>
@@ -47,8 +51,10 @@
           </v-select>
 
           <v-select class="select" v-model="grupoSeleccionado" label="Grupo" :items="gruposConNinguno"
-            @update:modelValue="cargarGrupo()" @click="if (snack2 == true){snack2 = false; snack3=true}"
-            :rules="[v => !!v || 'Seleccione un grupo', v => v !== -1 || 'La opción Ninguno no es válida para reservar']"
+            @update:modelValue="cargarGrupo()" 
+            @click="if (snack1 == trueb || snack2 == true){snack1=false; snack2 = false; snack3=true}"
+            :rules="[v => !!v || 'Seleccione un grupo', v => v !== -1 ||
+             'La opción Ninguno no es válida para reservar']"
             required>
             <template v-slot:selection="{ item, index }">
               {{ getGrupoPorId(item.props.value).nombre }}
@@ -71,7 +77,8 @@
         @updated-mode="actualizarCalendarioPorModo" @delete-event="borrarEvento" @edit-event="editarEvento">
         <template #weekDayEvent="eventProps">
           <div v-if="eventProps.eventData.title == 'No disponible'"
-            :style="{ backgroundColor: '#C5B6F6', color: '#fff', width: '100%', height: '100%', overflow: 'hidden', border: '1px solid gray' }">
+            :style="{ backgroundColor: '#C5B6F6', color: '#fff', width: '100%', 
+            height: '100%', overflow: 'hidden', border: '1px solid gray' }">
             <p class="itemEvento">
               {{ eventProps.eventData.title }}
             </p>
@@ -79,15 +86,20 @@
           </div>
 
           <div v-else
-            :style="{ backgroundColor: eventProps.eventData.color || 'cornflowerblue', color: '#fff', width: '200%', height: '100%', overflow: 'hidden', border: '1px solid gray' }">
+            :style="{ backgroundColor: eventProps.eventData.color || 
+              'cornflowerblue', color: '#fff', width: '200%', height: '100%', 
+              overflow: 'hidden', border: '1px solid gray' }">
             <p class="itemEvento">
-              <v-icon class="itemEvento" icon="mdi-book-open-variant-outline"></v-icon>{{ eventProps.eventData.topic }}
+              <v-icon class="itemEvento" icon="mdi-book-open-variant-outline"></v-icon>
+              {{ eventProps.eventData.topic }}
             </p>
             <p class="itemEvento">
-              <v-icon class="itemEvento" icon="mdi-map-marker-outline"></v-icon>{{ eventProps.eventData.location }}
+              <v-icon class="itemEvento" icon="mdi-map-marker-outline"></v-icon>
+              {{ eventProps.eventData.location }}
             </p>
             <p class="itemEvento">
-              <v-icon class="itemEvento" icon="mdi-account-group"></v-icon>{{ eventProps.eventData.with }}
+              <v-icon class="itemEvento" icon="mdi-account-group"></v-icon>
+              {{ eventProps.eventData.with }}
             </p>
           </div>
         </template>
@@ -98,6 +110,7 @@
           </div>
         </template>
       </Qalendar>
+      <ComponenteLeyendaReserva></ComponenteLeyendaReserva>
     </div>
   </div>
 </template>
@@ -113,9 +126,11 @@ import { useLugaresStore } from '../store/lugaresStores';
 import { useUsuariosStore } from '../store/usuarioStore';
 import ComponentEdicionEvento from '../componentes/ComponentEdicionEvento.vue';
 import ComponenteReservasPosibles from '../componentes/ComponenteReservasPosibles.vue';
+import ComponenteLeyendaReserva from '../componentes/ComponenteLeyendaReserva.vue';
 
 export default {
-  components: { Qalendar, ComponentEdicionEvento, ComponenteReservasPosibles },
+  components: { Qalendar, ComponentEdicionEvento, ComponenteReservasPosibles, 
+    ComponenteLeyendaReserva },
 
   data() {
     return {
@@ -153,6 +168,7 @@ export default {
       snack2:false,
       snack3:false,
       snack4:false,
+      snackPosition:'top',
     }
   },
 
@@ -170,11 +186,12 @@ export default {
     ...mapActions(useReservasStore, ['cargarReservas', 'guardarReserva', 'resetReserva',
       'formatearFechaParaAPI', 'cargarReservasGrupo', 'mapReservaToEventoAjeno',
       'mapReservaToEvento', 'agregarEventos', 'quitarEventosGrupo', 'agregarFranjasImposibles',
-      'convertirPeriodToPeriodo', 'arrancarServicio', 'eliminarReserva', 'modificarReserva',
-      'quitarReservasImposibles', 'quitarEventosPorId', 'getGruposReservados', 'getLugaresReservados']),
+      'convertirPeriodToPeriodo', 'arrancarServicio', 'eliminarReserva', 'modificarReserva', 
+      'quitarEventosPorId']),
     ...mapActions(useAsignaturasStore, ['getAsignaturaPorId']),
     ...mapActions(useGruposStore, ['getGrupoPorId']),
-    ...mapActions(useLugaresStore, ['escogerLugarDisponible', 'cargarLugares', 'arrancarServicioLugares', 'getLugarPorId']),
+    ...mapActions(useLugaresStore, ['escogerLugarDisponible', 'cargarLugares', 
+    'arrancarServicioLugares', 'getLugarPorId']),
     ...mapActions(useProfesoresStore,['getReservasPosibles']),
 
     /**
@@ -208,7 +225,7 @@ export default {
           fecha: fechaAux,
           hora: horaAux
         }
-        this.posiblesReservas = await this.getReservasPosibles(periodo)
+        this.posiblesReservas = await this.getReservasPosibles(periodo);
       }
     },
 
@@ -268,7 +285,6 @@ export default {
     /**
      * Función que añade a los eventos los del grupo seleccionado para que los profesores puedan ver
      * cuando el grupo no está disponible.
-     * TODO cambiar el color de los eventos del grupo para hacerlo un poco más amigable
      */
     async cargarGrupo() {
       this.quitarEventosGrupo();
@@ -346,7 +362,6 @@ export default {
 
     async borrarEvento(evento) {
       let idEliminado = await this.eliminarReserva(evento);
-      console.log(idEliminado.data.identificacion);
       this.quitarEventosPorId(idEliminado.data.identificacion);
       // await this.refrescarCalendario();//devuelve el id, hay que buscar el evento por id
     }
@@ -400,6 +415,11 @@ form .select {
   display: flex;
   flex-flow: row;
   justify-content: space-around;
+  align-items: center;
+}
+
+.formularioReserva h4 {
+  align-self: center
 }
 
 .contenedorColumnas {
@@ -446,6 +466,7 @@ form .select {
 }
 
 .menu{
+  width: 17vw;
   max-height: 200px;
 }
 .acciones{

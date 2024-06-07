@@ -3,6 +3,7 @@
  -->
 <template>
   <v-layout>
+    <!-- drawer para el futuro para la selección entre distintas ventanas del gestor -->
     <!-- <v-navigation-drawer v-if="isLogged"
       v-model="drawer" 
       :rail="rail"
@@ -50,10 +51,6 @@ export default {
   },
   methods: {
     ...mapActions(useProfesoresStore,['seleccionarProfesor']),
-    cambiarProfesor(profesor) {
-      this.rail = true;
-      this.seleccionarProfesor(profesor);
-    },
     navegarAHome(){
       this.$router.push('/home')
     },

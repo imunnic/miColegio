@@ -18,6 +18,10 @@ export const useLugaresStore = defineStore('lugares', {
     }
   }),
   actions: {
+    /**
+     * Función que permite cargar los lugares en la variable lugaresColegio.
+     * Carga todos los lugares en la BBDD
+     */
     async cargarLugares() {
       let response = await this.lugaresService.getAll();
       let aulasYPatios = response.data._embedded || {};
@@ -31,10 +35,20 @@ export const useLugaresStore = defineStore('lugares', {
       }));
       this.lugaresColegio = [...aulas, ...patios];
     },
+
+    /**
+     * Función que borra un lugar de la BBDD
+     * @param lugar objeto lugar
+     */
     async borrarLugar(lugar) {
       await this.lugaresService.delete(lugar._links.self.href);
       await this.cargarLugares();
     },
+
+    /**
+     * Función que marca un lugar como seleccionado
+     * @param lugar objeto lugar
+     */
     seleccionarLugar(lugar) {
       this.lugarSeleccionado = lugar;
     },
@@ -42,17 +56,34 @@ export const useLugaresStore = defineStore('lugares', {
     arrancarServicioLugares(token){
       this.lugaresService = new LugaresService(token)
     },
+
+    /**
+     * Función que devuelve un lugar por su id
+     * @param lugar id del lugar
+     */
     accessLugarPorId(id){
       let lugar = this.lugaresColegio.find(l => l.identificacion == id);
       return lugar;
     },
+
+    /**
+     * Función que devuelve un lugar por su nombre
+     * @param lugar nombre del lugar
+     */
     getLugarPorNombre(nombre){
       let lugar = this.lugaresColegio.find(lugar => lugar.name === nombre);
       return lugar._links.self.href;
     },
+
+    /**
+     * Función que devuelve el href de un lugar por su id
+     * @param lugar id del lugar
+     */
     getLugarPorId(id) {
       return this.lugaresService.getHrefById(id);
     },
+
+    
     async crearNuevoLugar() {
       await this.lugaresService.create(this.lugarSeleccionado);
     },

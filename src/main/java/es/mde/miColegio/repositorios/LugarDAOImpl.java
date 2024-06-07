@@ -16,6 +16,10 @@ public class LugarDAOImpl implements LugarDAOCustom{
   @PersistenceContext
   EntityManager entityManager;
 
+  /**
+   * Función que devuelve el listado de lugares sin paginar
+   * @return listado de lugares sin paginar
+   */
   @Override
   public List<Lugar> getLugares() {
     return lugarDAO.findAll();

@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 
 import java.util.Set;
 
+//Entidad que representa un lugar
 @Entity
 @Table(name="LUGARES")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)

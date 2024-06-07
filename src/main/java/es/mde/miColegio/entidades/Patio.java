@@ -5,6 +5,7 @@ import jakarta.persistence.Entity;
 
 import java.util.List;
 
+//Entidad que representa un lugar tipo Patio
 @Entity
 @DiscriminatorValue("PATIO")
 public class Patio extends Lugar {

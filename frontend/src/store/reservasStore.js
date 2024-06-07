@@ -158,6 +158,13 @@ export const useReservasStore = defineStore("reservas", {
       return evento;
     },
 
+    /**
+     * Función que mapea una reserva que no se puede realiza en un evento de la librería "Qalendar" 
+     * para que se muestre
+     * @param mapaFechasHoraImposible un objeto que tiene como propiedad las fechas no disponibles y
+     * como valor un array con las horas a las que no es posible
+     * @returns el evento en el formato de la librería "Qalendar" no editable
+     */
     mapReservaImposibleToEvento(mapaFechasHoraImposible) {
       let eventos = [];
       for (let fecha in mapaFechasHoraImposible) {
@@ -200,11 +207,10 @@ export const useReservasStore = defineStore("reservas", {
       return eventos;
     },
 
-    mapLugaresNoPosiblesToEvento(){
-      let eventos = [];
-
-    },
-
+    /**
+     * Función que agrega a la vista las reservas que no son posibles
+     * @param periodo un objeto con fecha de inicio y fecha de fin
+     */
     async agregarFranjasImposibles(periodo) {
       let fechasImposiblesGrupos =
         await this.reservasService.getReservasImposibleGrupo(
@@ -214,7 +220,6 @@ export const useReservasStore = defineStore("reservas", {
         await this.reservasService.getReservasImposibleLugar(
           this.getFiltroLugar(periodo)
         )
-      // console.log(fechasImposiblesGrupos.data);
       let fechasImposibles = {};
       for (const fecha in fechasImposiblesGrupos.data) {
         fechasImposibles[fecha] = [...new Set([...(fechasImposiblesGrupos.data[fecha] || []), ...(fechasImposiblesLugares.data[fecha] || [])])];
@@ -224,6 +229,9 @@ export const useReservasStore = defineStore("reservas", {
       this.ordenarEventos();
     },
 
+    /**
+     * Función que ordena los eventos en base a no disponibles, del profesor y de grupo para mostrarlos
+     */
     ordenarEventos() {
       const colorOrder = { '#15054C': 1, '#C5B6F6': 2, '#054D09': 3 };
 
@@ -263,12 +271,14 @@ export const useReservasStore = defineStore("reservas", {
 
     /**
      * Función que permite eliminar de la vista los eventos de grupo añadidos al calendario
-     * @param numEventos es el número de eventos que se había añadido previamente
      */
     quitarEventosGrupo() {
       this.eventos = this.eventos.filter(e => e.color != '#054D09');
     },
 
+    /**
+     * Función que permite eliminar de la vista los eventos que no se podrían reservar
+     */
     quitarReservasImposibles() {
       this.eventos = this.eventos.filter(e => e.title !== 'No disponible');
     },
@@ -277,6 +287,11 @@ export const useReservasStore = defineStore("reservas", {
       this.eventos = this.eventos.filter(e => e.id !== idEvento);
     },
 
+    /**
+     * Función que permite obtener un objeto con un periodo determinado y los grupos de un profesor
+     * para pasar el parámetro a una de las consultas de la API
+     * @returns el objeto con fechaInicio, fechaFin y un array con las id de los grupos
+     */
     getFiltroGrupo(periodo) {
       let filtro = {
         fechaInicio: periodo.start,
@@ -286,6 +301,11 @@ export const useReservasStore = defineStore("reservas", {
       return filtro;
     },
 
+    /**
+     * Función que permite obtener un objeto con un periodo determinado y los lugares de un profesor
+     * para pasar el parámetro a una de las consultas de la API
+     * @returns el objeto con fechaInicio, fechaFin y un array con las id de los lugares
+     */
     getFiltroLugar(periodo) {
       let filtro = {
         fechaInicio: periodo.start,
@@ -295,11 +315,22 @@ export const useReservasStore = defineStore("reservas", {
       return filtro;
     },
 
+    /**
+     * Función que permite obtener los id de los grupos que están reservados para un franja horaria
+     * @param periodo objeto que contiene fecha y hora
+     * @returns un array con los id de los grupos
+     */
     async getGruposReservados(periodo){
       let grupos = await this.reservasService.getGruposReservados(periodo);
       return grupos.data;
     },
 
+    /**
+     * Función que permite obtener los id de los lugares que están reservados para un franja 
+     * horaria
+     * @param periodo objeto que contiene fecha y hora
+     * @returns un array con los id de los lugares
+     */
     async getLugaresReservados(periodo){
       let lugares = await this.reservasService.getLugaresReservados(periodo);
       return lugares.data;

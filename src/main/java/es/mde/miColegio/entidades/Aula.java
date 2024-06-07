@@ -3,6 +3,7 @@ package es.mde.miColegio.entidades;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 
+//Entidad que representa un lugar tipo Aula
 @Entity
 @DiscriminatorValue("AULA")
 public class Aula extends Lugar {

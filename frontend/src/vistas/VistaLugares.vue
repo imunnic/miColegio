@@ -1,8 +1,8 @@
 <template>
-  <v-snackbar v-model="snack1" :timeout="-1">
+  <v-snackbar v-model="snack1" :timeout="-1" :location="snackPosition" :color="'#C5B6F6'">
     Pulse sobre "Nuevo lugar" para crear un lugar
   </v-snackbar>
-  <v-snackbar v-model="snack3" :timeout="3000">
+  <v-snackbar v-model="snack3" :timeout="3000" :location="snackPosition" :color="'#C5B6F6'">
     Para editar o eliminar un lugar, pulse sobre los iconos correspondientes
   </v-snackbar>
   <div class="tabla">
@@ -12,12 +12,14 @@
         Lugares
         <v-btn class="crear" prepend-icon="mdi-plus" @click="crear()" >Nuevo Lugar</v-btn>
         <v-spacer></v-spacer>
-        <v-text-field v-model="search" density="compact" label="Buscar" prepend-inner-icon="mdi-magnify"
+        <v-text-field v-model="search" density="compact" label="Buscar" 
+        prepend-inner-icon="mdi-magnify"
           variant="solo-filled" flat hide-details single-line></v-text-field>
       </v-card-title>
 
       <v-dialog v-model="mostrarModal" max-width="600">
-        <ComponenteFormularioLugar :snack2="snack2" @cerrar="cerrar()" @guardar="modificarLugares()"></ComponenteFormularioLugar>
+        <ComponenteFormularioLugar :snack2="snack2" @cerrar="cerrar()" 
+        @guardar="modificarLugares()"></ComponenteFormularioLugar>
       </v-dialog>
       <v-divider></v-divider>
 
@@ -61,8 +63,6 @@ export default {
   components: { ComponenteFormularioLugar },
   data() {
     return {
-      //TODO controlar si se está editando o no para hacer un put o un post dependiendo
-      //si se crea o si se edita
       mostrarModal: false,
       editar:false,
       confirmar:false,
@@ -96,6 +96,7 @@ export default {
       snack1:false,
       snack2:false,
       snack3:false,
+      snackPosition:'top',
     }
   },
   computed: {
@@ -116,17 +117,21 @@ export default {
       this.lugarSeleccionado.deportes = null;
       this.cambiarModo();
     },
+    
     confirmacion() {
       this.confirmar = !this.confirmar;
     },
+
     confirmarBorrar(item) {
       this.confirmacion();
       this.lugarAEliminar = item;
     },
+
     cancelarBorrado() {
       this.confirmacion();
       this.lugarAEliminar = null;
     },
+
     cerrar() {
       if(this.snack2) {
         this.snack2=false;
@@ -135,6 +140,7 @@ export default {
       this.cambiarModo();
       this.editar = false;
     },
+    
     async borrarLugarConfirmado() {
       if (this.lugarAEliminar) {
         await this.borrarLugar(this.lugarAEliminar);
@@ -142,9 +148,11 @@ export default {
         this.cancelarBorrado();
       }
     },
+
     cambiarModo() {
       this.mostrarModal = !this.mostrarModal;
     },
+
     editarLugar(item) {
       this.lugarSeleccionado.nombre = item.nombre;
       this.lugarSeleccionado.capacidad = item.capacidad;
@@ -155,6 +163,7 @@ export default {
       this.editar = true;
       this.cambiarModo();
     },
+
     async modificarLugares() {
       if(this.snack2) {
         this.snack2=false;
@@ -172,6 +181,7 @@ export default {
       }
     }
   },
+
   mounted() {
     this.arrancarServicioLugares(useUsuariosStore().token);
     this.cargarLugares();

@@ -19,6 +19,12 @@ export const useProfesoresStore = defineStore("profesorado", {
     getProfesorPorId(id) {
       return this.profesorado.find((profesor) => profesor.id == id);
     },
+
+    /**
+     * Función que permite obtener todos los grupos que tiene asignados un profesor en todas
+     * sus asignaturas.
+     * @returns un array de id de los grupos a los que da clase el profesor sin repetir grupos
+     */
     getGruposDeProfesor() {
       const asignaturas = useAsignaturasStore().asignaturasColegio;
       let grupos = new Set();
@@ -31,6 +37,11 @@ export const useProfesoresStore = defineStore("profesorado", {
       return Array.from(grupos);
     },
 
+    /**
+     * Función que permite obtener todos los lugares que tiene asignados un profesor en todas
+     * sus asignaturas.
+     * @returns un array de id de los lugares a los que da clase el profesor sin repetir lugares
+     */
     getLugaresDeProfesor() {
       const asignaturas = useAsignaturasStore().asignaturasColegio;
       let lugares = new Set();
@@ -42,6 +53,7 @@ export const useProfesoresStore = defineStore("profesorado", {
       });
       return Array.from(lugares);
     },
+
     /**
      * Funcion que permite obtener todas las reservas posibles de un profesor en formato
      * de array [asignaturaId, grupoId, lugarId]
@@ -64,6 +76,13 @@ export const useProfesoresStore = defineStore("profesorado", {
       return combinaciones;
     },
 
+    /**
+     * Funcion que permite obtener todas las reservas posibles de un profesor en formato
+     * de array [asignaturaId, grupoId, lugarId] filtrandolas con las reservas que ya se
+     * han realizado
+     * @returns devuelve todas las combinaciones posibles de reserva de un profesor sin
+     * aquellas que no son posibles
+     */
     async getReservasPosibles(periodo){
       let gruposReservados = await useReservasStore().getGruposReservados(periodo);
       let lugaresReservados = await useReservasStore().getLugaresReservados(periodo);

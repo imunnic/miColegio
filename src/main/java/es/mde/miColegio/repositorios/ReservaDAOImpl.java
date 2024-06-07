@@ -114,6 +114,14 @@ public class ReservaDAOImpl implements ReservaDAOCustom {
     return fechasHorasReservadas;
   }
 
+  /**
+   * Función que devuelve un mapa que asocia fechas a los lugares reservados
+   * @param lugares listado de ids de los lugares sobre los que se quiere hacer la consulta
+   * @param fechaInicio la fecha de inicio de la consulta
+   * @param fechaFin la fecha de fin de la consulta
+   * @return un mapa de la fechas fechas y horas correspondientes a las que no se puede reservar
+   * para ninguno de los lugares dados
+   * */
   @Override
   public Map<LocalDate, List<Integer>> getFechasHorasReservadasPorLugares(List<Integer> lugares,
       LocalDate fechaInicio, LocalDate fechaFin) {
@@ -144,6 +152,12 @@ public class ReservaDAOImpl implements ReservaDAOCustom {
     return fechasHorasReservadas;
   }
 
+  /**
+   * Función que los grupos reservados para una fecha y hora concreta
+   * @param fecha la fecha de la consulta
+   * @param hora la hora de la consulta
+   * @return un array con los grupos reservados
+   * */
   @Override
   public List<Integer> getGruposReservasPorFecha(LocalDate fecha, int hora) {
     List<Integer> grupos = new ArrayList<>();
@@ -152,6 +166,12 @@ public class ReservaDAOImpl implements ReservaDAOCustom {
     return grupos;
   }
 
+  /**
+   * Función que los lugares reservados para una fecha y hora concreta
+   * @param fecha la fecha de la consulta
+   * @param hora la hora de la consulta
+   * @return un array con los lugares reservados
+   * */
   @Override
   public List<Long> getLugaresReservasPorFecha(LocalDate fecha, int hora) {
     List<Long> lugares = new ArrayList<>();

@@ -13,7 +13,7 @@ export default {
     <v-main>
       <ComponenteHeader class="cabecera" color="#15054c"></ComponenteHeader>
       <ComponenteNavegador class="contenido"></ComponenteNavegador>
-      <ComponenteFooter class="pie" color="#15054c"></ComponenteFooter>
+      <ComponenteFooter id="pie" color="#15054c"></ComponenteFooter>
     </v-main>
   </v-app>
 </template>
@@ -24,12 +24,13 @@ export default {
 }
 
 .contenido {
-  min-height: 86vh;
+  min-height: 88vh;
   max-width: none;
 }
 
-.pie {
+#pie {
   z-index: 1000;
+  height: 100px;
   width: 100vw;
 }
 </style>
