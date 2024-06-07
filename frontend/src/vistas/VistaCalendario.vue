@@ -74,7 +74,7 @@
     <div class="columnaDerecha">
       <Qalendar class="calendario" ref="calendarRef" :config="configuracion" :events="eventos"
         @interval-was-clicked="clickEnIntervalo" @updated-period="actualizarCalendarioPorPeriodo"
-        @updated-mode="actualizarCalendarioPorModo" @delete-event="borrarEvento" @edit-event="editarEvento">
+        @updated-mode="actualizarCalendarioPorModo" @delete-event="confirmarBorrado" @edit-event="editarEvento">
         <template #weekDayEvent="eventProps">
           <div v-if="eventProps.eventData.title == 'No disponible'"
             :style="{ backgroundColor: '#C5B6F6', color: '#fff', width: '100%', 
@@ -113,6 +113,8 @@
       <ComponenteLeyendaReserva></ComponenteLeyendaReserva>
     </div>
   </div>
+  <ComponenteConfirmacionBorrado v-model="confirmar" @cancelar-borrado="cancelarBorrado" 
+  @borrar-item="borrarEvento"></ComponenteConfirmacionBorrado>
 </template>
 
 <script>
@@ -127,10 +129,11 @@ import { useUsuariosStore } from '../store/usuarioStore';
 import ComponentEdicionEvento from '../componentes/ComponentEdicionEvento.vue';
 import ComponenteReservasPosibles from '../componentes/ComponenteReservasPosibles.vue';
 import ComponenteLeyendaReserva from '../componentes/ComponenteLeyendaReserva.vue';
+import ComponenteConfirmacionBorrado from '../componentes/ComponenteConfirmacionBorrado.vue';
 
 export default {
   components: { Qalendar, ComponentEdicionEvento, ComponenteReservasPosibles, 
-    ComponenteLeyendaReserva },
+    ComponenteLeyendaReserva, ComponenteConfirmacionBorrado },
 
   data() {
     return {
@@ -169,6 +172,8 @@ export default {
       snack3:false,
       snack4:false,
       snackPosition:'top',
+      confirmar:false,
+      reservaAEliminar: null,
     }
   },
 
@@ -360,9 +365,21 @@ export default {
       this.idEventoEdicion = 0;
     },
 
-    async borrarEvento(evento) {
-      let idEliminado = await this.eliminarReserva(evento);
+    confirmarBorrado(evento){
+      this.confirmar = true;
+      this.reservaAEliminar = evento;
+    },
+
+    cancelarBorrado(){
+      this.reservaAEliminar = null,
+      this.confirmar = false;
+    },
+
+    async borrarEvento() {
+      let idEliminado = await this.eliminarReserva(this.reservaAEliminar);
       this.quitarEventosPorId(idEliminado.data.identificacion);
+      this.reservaAEliminar = null;
+      this.confirmar = false;
       // await this.refrescarCalendario();//devuelve el id, hay que buscar el evento por id
     }
   },

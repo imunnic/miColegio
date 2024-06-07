@@ -36,31 +36,19 @@
           No hay lugares
         </template>
       </v-data-table>
-
-      <v-dialog v-model="confirmar" max-width="600">
-      <v-card>
-        <v-card-title class="headline">Confirmar Borrado</v-card-title>
-        <v-card-text>
-          ¿Estás seguro de que deseas borrar este lugar?
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn color="red darken-1" text @click="cancelarBorrado">Cancelar</v-btn>
-          <v-btn color="green darken-1" text @click="borrarLugarConfirmado">Borrar</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-
+    <ComponenteConfirmacionBorrado v-model="confirmar" @cancelar-borrado="cancelarBorrado" 
+    @borrar-item="borrarLugarConfirmado"></ComponenteConfirmacionBorrado>
     </v-card>
   </div>
 </template>
 <script>
 import ComponenteFormularioLugar from '../componentes/ComponenteFormularioLugar.vue'
+import ComponenteConfirmacionBorrado from '../componentes/ComponenteConfirmacionBorrado.vue'
 import { useUsuariosStore } from '../store/usuarioStore'
 import { useLugaresStore } from '../store/lugaresStores'
 import { mapState, mapActions } from 'pinia'
 export default {
-  components: { ComponenteFormularioLugar },
+  components: { ComponenteFormularioLugar, ComponenteConfirmacionBorrado },
   data() {
     return {
       mostrarModal: false,
