@@ -54,6 +54,7 @@ public class AuthService {
     usuario.setApellido(request.getApellido());
     usuario.setProfesor(request.getProfesor());
     usuario.setRol(Rol.PROFESOR);
+    usuario.setPrimeraVez(true);
     this.USUARIODAO.save(usuario);
     
     return new AuthResponse(this.JWTSERVICE.getToken(usuario), usuario.getUsername(),
