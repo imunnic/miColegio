@@ -9,8 +9,8 @@
             @click="cerrar()"
           ></v-btn>
 
-          <v-toolbar-title v-if="editar">Crear Nuevo Lugar</v-toolbar-title>
-          <v-toolbar-title v-else="editar">Editar Lugar</v-toolbar-title>
+          <v-toolbar-title v-if="!editar">Crear Nuevo Lugar</v-toolbar-title>
+          <v-toolbar-title v-else>Editar Lugar</v-toolbar-title>
 
           <v-spacer></v-spacer>
     </v-toolbar>
