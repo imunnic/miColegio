@@ -25,14 +25,23 @@ export const useLugaresStore = defineStore('lugares', {
     async cargarLugares() {
       let response = await this.lugaresService.getAll();
       let aulasYPatios = response.data._embedded || {};
-      let aulas = (aulasYPatios.aulas || {}).map(aula => ({
-        ...aula,
-        tipo:'Aula'
-      }));
-      let patios = (aulasYPatios.patios || {}).map(patio => ({
-        ...patio,
-        tipo:'Patio'
-      }));
+      let aulas = [];
+      let patios = [];
+
+      if (aulasYPatios.aulas) {
+        aulas = aulasYPatios.aulas.map(aula => ({
+          ...aula,
+          tipo: 'Aula'
+        }));
+      }
+
+      if (aulasYPatios.patios) {
+        patios = aulasYPatios.patios.map(patio => ({
+          ...patio,
+          tipo: 'Patio'
+        }));
+      }
+
       this.lugaresColegio = [...aulas, ...patios];
     },
 
@@ -53,7 +62,7 @@ export const useLugaresStore = defineStore('lugares', {
       this.lugarSeleccionado = lugar;
     },
 
-    arrancarServicioLugares(token){
+    arrancarServicioLugares(token) {
       this.lugaresService = new LugaresService(token)
     },
 
@@ -61,7 +70,7 @@ export const useLugaresStore = defineStore('lugares', {
      * Función que devuelve un lugar por su id
      * @param lugar id del lugar
      */
-    accessLugarPorId(id){
+    accessLugarPorId(id) {
       let lugar = this.lugaresColegio.find(l => l.identificacion == id);
       return lugar;
     },
@@ -70,7 +79,7 @@ export const useLugaresStore = defineStore('lugares', {
      * Función que devuelve un lugar por su nombre
      * @param lugar nombre del lugar
      */
-    getLugarPorNombre(nombre){
+    getLugarPorNombre(nombre) {
       let lugar = this.lugaresColegio.find(lugar => lugar.name === nombre);
       return lugar._links.self.href;
     },
@@ -83,16 +92,16 @@ export const useLugaresStore = defineStore('lugares', {
       return this.lugaresService.getHrefById(id);
     },
 
-    
+
     async crearNuevoLugar() {
       await this.lugaresService.create(this.lugarSeleccionado);
     },
 
     async modificarLugar() {
-      await this.lugaresService.update(this.lugarSeleccionado.href, 
+      await this.lugaresService.update(this.lugarSeleccionado.href,
         this.lugarSeleccionado);
     },
-    
+
     /**
     * Función que devuelve un lugar seleccionado automáticamente entre los lugares disponibles 
     * para una asignatura, en funcion de su capacidad.
@@ -111,7 +120,7 @@ export const useLugaresStore = defineStore('lugares', {
       lugares.sort((a, b) => b.capacidad - a.capacidad);
       for (let lugar of lugares) {
         let id = lugar.split('/')[lugar.split('/').length - 1];
-        await useReservasStore().reservasService.isLugarDisponible(id, 
+        await useReservasStore().reservasService.isLugarDisponible(id,
           periodo)
           .then(response => {
             if (response.data == true) {

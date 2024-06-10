@@ -9,7 +9,8 @@
             @click="cerrar()"
           ></v-btn>
 
-          <v-toolbar-title>Crear Nuevo Lugar</v-toolbar-title>
+          <v-toolbar-title v-if="editar">Crear Nuevo Lugar</v-toolbar-title>
+          <v-toolbar-title v-else="editar">Editar Lugar</v-toolbar-title>
 
           <v-spacer></v-spacer>
     </v-toolbar>
@@ -19,7 +20,7 @@
         <v-text-field v-model="lugarSeleccionado.capacidad" label="Capacidad" type="number" :rules="[rules.numero, rules.positivo, rules.entero]"
           required></v-text-field>
 
-        <v-select v-model="lugarSeleccionado.tipo" :items="['Aula', 'Patio']" label="Tipo" required></v-select>
+        <v-select v-model="lugarSeleccionado.tipo" :items="['Aula', 'Patio']" label="Tipo" required :disabled="editar"></v-select>
         <v-checkbox v-if="lugarSeleccionado.tipo == 'Aula'" v-model="lugarSeleccionado.proyector" label="Proyector"></v-checkbox>
         <v-combobox v-if="lugarSeleccionado.tipo == 'Patio'" v-model="lugarSeleccionado.deportes" :items="deportesOptions"
           label="Deportes" clearable chips multiple>
@@ -46,6 +47,9 @@ import {mapState} from 'pinia'
 export default {
   props:{
     snack2:{
+      type:Boolean,
+    },
+    editar:{
       type:Boolean,
     }
   },

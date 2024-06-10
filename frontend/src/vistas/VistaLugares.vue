@@ -18,7 +18,7 @@
       </v-card-title>
 
       <v-dialog v-model="mostrarModal" max-width="600">
-        <ComponenteFormularioLugar :snack2="snack2" @cerrar="cerrar()" 
+        <ComponenteFormularioLugar :editar="editar" :snack2="snack2" @cerrar="cerrar()" 
         @guardar="modificarLugares()"></ComponenteFormularioLugar>
       </v-dialog>
       <v-divider></v-divider>

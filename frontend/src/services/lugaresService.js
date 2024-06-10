@@ -1,7 +1,7 @@
 import axios from "axios";
 
-// const host = "https://micolegio-c6e07df12596.herokuapp.com/api";
-const host = "http://localhost:8080/api"
+ const host = "https://micolegio-c6e07df12596.herokuapp.com/api";
+//const host = "http://localhost:8080/api"
 const lugaresEndPoint = host + "/lugares";
 const aulasEndPoint = host + "/aulas";
 const patiosEndPoint = host + "/patios";
