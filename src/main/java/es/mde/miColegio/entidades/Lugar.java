@@ -50,4 +50,8 @@ public class Lugar {
   public Lugar() {
   }
 
+  @Override
+  public String toString() {
+    return getNombre();
+  }
 }

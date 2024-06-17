@@ -1,0 +1,63 @@
+[
+    {
+      "id": 1,
+      "nombre": "Matemáticas",
+      "lugares": [11, 9, 1],
+      "grupos": [1, 2, 3]
+    },
+    {
+      "id": 2,
+      "nombre": "Física",
+      "lugares": [10, 9],
+      "grupos": [2, 3, 4]
+    },
+    {
+      "id": 3,
+      "nombre": "Lengua Española",
+      "lugares": [4, 7],
+      "grupos": [1, 2, 3]
+    },
+    {
+      "id": 4,
+      "nombre": "Literatura",
+      "lugares": [7, 4],
+      "grupos": [1, 2, 3]
+    },
+    {
+      "id": 5,
+      "nombre": "Historia",
+      "lugares": [3, 6, 12],
+      "grupos": [1, 2, 3]
+    },
+    {
+      "id": 6,
+      "nombre": "Geografía",
+      "lugares": [3, 6],
+      "grupos": [1, 2]
+    },
+    {
+      "id": 7,
+      "nombre": "Ciencias Naturales",
+      "lugares": [9],
+      "grupos": [2, 3]
+    },
+    {
+      "id": 8,
+      "nombre": "Química",
+      "lugares": [9, 12],
+      "grupos": [2, 3, 4]
+    },
+    {
+      "id": 9,
+      "nombre": "Educación Física",
+      "lugares": [2, 14],
+      "grupos": [1, 2, 3]
+    },
+    {
+      "id": 10,
+      "nombre": "Deportes",
+      "lugares": [13, 14],
+      "grupos": [1]
+    }
+]
+

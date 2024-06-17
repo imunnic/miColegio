@@ -1,6 +1,7 @@
 package es.mde.miColegio.rest;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -10,6 +11,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.rest.webmvc.PersistentEntityResource;
 import org.springframework.data.rest.webmvc.PersistentEntityResourceAssembler;
 import org.springframework.data.rest.webmvc.RepositoryRestController;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -93,5 +95,15 @@ public class ReservaController {
       @RequestParam("hora")int hora){
     List<Long> lugares = reservaDAO.getLugaresReservasPorFecha(fecha, hora);
     return new ResponseEntity<>(lugares, HttpStatus.OK);
+  }
+
+  @GetMapping("/reservas/search/consultar-disponible")
+  @ResponseBody
+  public ResponseEntity<List<Reserva>> getReservasDisponibles(@RequestParam("profesor") int profesor,
+      @RequestParam("fechaInicio") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaInicio,
+      @RequestParam("fechaFin") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaFin){
+    List<Reserva> reservasDisponibles = new ArrayList<>();
+    reservasDisponibles = reservaDAO.consultarDisponible(profesor, fechaInicio, fechaFin);
+    return new ResponseEntity<>(reservasDisponibles, HttpStatus.OK);
   }
 }

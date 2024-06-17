@@ -7,7 +7,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import es.mde.miColegio.BackendApplication;
+import es.mde.miColegio.entidades.Asignatura;
 import es.mde.miColegio.entidades.Lugar;
+import es.mde.miColegio.entidades.Profesor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import es.mde.miColegio.entidades.Reserva;
@@ -34,6 +37,11 @@ public class ReservaDAOImpl implements ReservaDAOCustom {
   @Override
   public boolean isLugarDisponible(Lugar lugar, LocalDate fecha, int hora) {
     return (reservaDAO.findByLugarAndFechaAndHora(lugar,fecha,hora).isEmpty());
+  }
+
+  @Override
+  public boolean isGrupoDisponible(int grupoId, LocalDate fecha, int hora) {
+    return (reservaDAO.findByGrupoAndFechaAndHora(grupoId,fecha,hora).isEmpty());
   }
 
   /**
@@ -151,6 +159,59 @@ public class ReservaDAOImpl implements ReservaDAOCustom {
 
     return fechasHorasReservadas;
   }
+
+  @Override
+  public List<Reserva> consultarDisponible(int profesorId, LocalDate fechaInicio,
+      LocalDate fechaFin) {
+
+    int horaInicio = 9;
+    int horaFin = 14;
+    List<Reserva> reservasPosibles = new ArrayList<>();
+    Profesor profesor = BackendApplication.getProfesores().stream()
+        .filter(p -> p.getId() == profesorId)
+        .findFirst()
+        .orElse(null);
+
+    if (profesor == null) {
+      return reservasPosibles;
+    }
+    List<Integer> asignaturasProfesor = profesor.getAsignaturas();
+    for (int asignaturaId : asignaturasProfesor) {
+      Asignatura asignatura = BackendApplication.getAsignaturas().stream()
+          .filter(a -> a.getId() == asignaturaId)
+          .findFirst()
+          .orElse(null);
+
+      if (asignatura == null) {
+        continue;
+      }
+
+      List<Integer> gruposAsignatura = asignatura.getGrupos();
+      List<Long> lugaresAsignatura = asignatura.getLugares();
+      List<Lugar> lugares = new ArrayList<>();
+      lugaresAsignatura.forEach(l -> lugares.add(lugarDAO.getById(l)));
+
+      for (int grupoId : gruposAsignatura) {
+        for (Lugar lugar : lugares) {
+        LocalDate fechaActual = fechaInicio;
+        while (!fechaActual.isAfter(fechaFin)) {
+          for (int hora = horaInicio; hora <= horaFin; hora++) {
+            if (isLugarDisponible(lugar, fechaActual, hora) && isGrupoDisponible(grupoId, fechaActual, hora)) {
+              Reserva reserva = new Reserva(profesorId, grupoId, asignaturaId, lugar, fechaActual, hora);
+              reservasPosibles.add(reserva);
+            }
+          }
+          fechaActual = fechaActual.plusDays(1);
+        }
+
+        }
+      }
+    }
+
+    return reservasPosibles;
+  }
+
+
 
   /**
    * Función que los grupos reservados para una fecha y hora concreta

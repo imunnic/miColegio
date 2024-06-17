@@ -17,6 +17,8 @@ public interface ReservaDAOCustom {
    */
   boolean isLugarDisponible(Lugar lugar, LocalDate fecha, int hora);
 
+  boolean isGrupoDisponible(int grupoId, LocalDate fecha, int hora);
+
   List<Reserva> getReservasDeProfesorEntreFechas(int profesor, LocalDate fechaInicio,
       LocalDate fechaFin);
 
@@ -28,6 +30,8 @@ public interface ReservaDAOCustom {
 
   Map<LocalDate, List<Integer>> getFechasHorasReservadasPorLugares(List<Integer> lugares,
       LocalDate fechaInicio, LocalDate fechaFin);
+
+  List<Reserva> consultarDisponible(int profesorID, LocalDate fechaInicio, LocalDate fechafin);
 
   List<Integer> getGruposReservasPorFecha(LocalDate fecha, int hora);
   List<Long> getLugaresReservasPorFecha(LocalDate fecha, int hora);
