@@ -8,9 +8,9 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import es.mde.miColegio.BackendApplication;
-import es.mde.miColegio.entidades.Asignatura;
+import es.mde.miColegio.modelos.Asignatura;
 import es.mde.miColegio.entidades.Lugar;
-import es.mde.miColegio.entidades.Profesor;
+import es.mde.miColegio.modelos.Profesor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import es.mde.miColegio.entidades.Reserva;

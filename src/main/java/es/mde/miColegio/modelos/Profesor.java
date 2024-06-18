@@ -1,4 +1,4 @@
-package es.mde.miColegio.entidades;
+package es.mde.miColegio.modelos;
 
 import java.util.List;
 

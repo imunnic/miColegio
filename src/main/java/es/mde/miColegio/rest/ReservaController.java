@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import es.mde.miColegio.entidades.Lugar;
+import es.mde.miColegio.modelos.ReservaDisponibleResponse;
 import es.mde.miColegio.repositorios.LugarDAO;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.rest.webmvc.PersistentEntityResource;
@@ -99,11 +100,13 @@ public class ReservaController {
 
   @GetMapping("/reservas/search/consultar-disponible")
   @ResponseBody
-  public ResponseEntity<List<Reserva>> getReservasDisponibles(@RequestParam("profesor") int profesor,
+  public ResponseEntity<List<ReservaDisponibleResponse>> getReservasDisponibles(@RequestParam("profesor") int profesor,
       @RequestParam("fechaInicio") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaInicio,
       @RequestParam("fechaFin") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaFin){
+    List<ReservaDisponibleResponse> respuesta = new ArrayList<>();
     List<Reserva> reservasDisponibles = new ArrayList<>();
     reservasDisponibles = reservaDAO.consultarDisponible(profesor, fechaInicio, fechaFin);
-    return new ResponseEntity<>(reservasDisponibles, HttpStatus.OK);
+    reservasDisponibles.forEach(r -> respuesta.add(new ReservaDisponibleResponse(r)));
+    return new ResponseEntity<>(respuesta, HttpStatus.OK);
   }
 }

@@ -1,4 +1,4 @@
-package es.mde.miColegio.entidades;
+package es.mde.miColegio.modelos;
 
 public class Grupo {
   private int id;

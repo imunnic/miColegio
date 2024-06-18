@@ -32,8 +32,8 @@ public class LugarController {
   @ResponseBody
   public CollectionModel<PersistentEntityResource> getLugares(
       PersistentEntityResourceAssembler assembler) {
-    List<Lugar> federados = lugarDAO.getLugares();
-    return assembler.toCollectionModel(federados);
+    List<Lugar> lugares = lugarDAO.getLugares();
+    return assembler.toCollectionModel(lugares);
   }
 
 }

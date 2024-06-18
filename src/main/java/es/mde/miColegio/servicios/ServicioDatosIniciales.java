@@ -1,4 +1,4 @@
-package es.mde.miColegio.repositorios;
+package es.mde.miColegio.servicios;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;

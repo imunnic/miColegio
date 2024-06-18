@@ -1,21 +1,15 @@
 package es.mde.miColegio;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import es.mde.miColegio.entidades.Asignatura;
-import es.mde.miColegio.entidades.Grupo;
-import es.mde.miColegio.entidades.Profesor;
-import es.mde.miColegio.repositorios.ServicioDatosIniciales;
+import es.mde.miColegio.modelos.Asignatura;
+import es.mde.miColegio.modelos.Grupo;
+import es.mde.miColegio.modelos.Profesor;
+import es.mde.miColegio.servicios.ServicioDatosIniciales;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
